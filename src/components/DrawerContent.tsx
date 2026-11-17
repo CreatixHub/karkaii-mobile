@@ -45,7 +45,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           resizeMode="contain"
         />
         <View className="mt-3 flex-row items-center justify-between">
-          <Text className="text-base font-bold text-slate-900 flex-1 numberOfLines={1}">
+          <Text className="text-base font-bold text-slate-900 flex-1" numberOfLines={1}>
             {schoolName}
           </Text>
           {hasMultipleOrgs ? (

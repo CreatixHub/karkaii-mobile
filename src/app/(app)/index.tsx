@@ -276,14 +276,14 @@ export default function DashboardScreen() {
       {/* ============================================================== */}
       <View className="mb-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm shadow-black/5">
         <View className="flex-row items-center justify-between">
-          <div>
+          <View>
             <Text className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
               CAPACITY
             </Text>
             <Text className="mt-0.5 text-base font-bold text-[#202C4B]">
               Class-Wise Distribution
             </Text>
-          </div>
+          </View>
           <View className="rounded-full bg-emerald-50 px-2 py-0.5">
             <Text className="text-[10px] font-bold text-emerald-600">
               {data.classDistribution.yoyGrowth}
@@ -321,12 +321,12 @@ export default function DashboardScreen() {
       {/* ============================================================== */}
       <View className="mb-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm shadow-black/5">
         <View className="flex-row items-center justify-between">
-          <div>
+          <View>
             <Text className="text-[10px] font-bold uppercase tracking-wider text-slate-400">HEAT</Text>
             <Text className="mt-0.5 text-base font-bold text-[#202C4B]">
               Performance Risk Matrix
             </Text>
-          </div>
+          </View>
           <View className="rounded-full bg-emerald-50 px-2.5 py-0.5">
             <Text className="text-[10px] font-bold text-emerald-600">
               {data.riskMatrix.healthPercent}
