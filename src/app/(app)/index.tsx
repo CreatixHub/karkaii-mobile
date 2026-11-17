@@ -8,10 +8,12 @@ import AttendanceBreakdown from '@/components/AttendanceBreakdown';
 import ActivityTimeline from '@/components/ActivityTimeline';
 import { STAT_CARDS } from '@/data/dashboard';
 import { API_URL } from '@/config/env';
+import { useAuth } from '@/hooks/useAuth';
 
 type ConnectionState = 'idle' | 'checking' | 'ok' | 'error';
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [connection, setConnection] = useState<ConnectionState>('idle');
 
   const checkBackend = useCallback(async () => {
@@ -27,7 +29,9 @@ export default function Dashboard() {
   return (
     <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerClassName="p-4 pb-10">
       <View className="mb-4 rounded-2xl bg-[#3D5EE1] p-5">
-        <Text className="text-lg font-bold text-white">Welcome back 👋</Text>
+        <Text className="text-lg font-bold text-white">
+          Welcome back{user?.name ? `, ${user.name}` : ''} 👋
+        </Text>
         <Text className="mt-1 text-sm text-white/80">
           Here&rsquo;s what&rsquo;s happening across your school today.
         </Text>
