@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -9,18 +9,18 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather, FontAwesome } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useAuth } from '@/hooks/useAuth';
-import { tokenStorage } from '@/services/tokenStorage';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Feather, FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useAuth } from "@/hooks/useAuth";
+import { tokenStorage } from "@/services/tokenStorage";
 
 export default function LoginScreen() {
   const { login, isLoggingIn, error, clearError } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -55,17 +55,17 @@ export default function LoginScreen() {
     const cleanEmail = email.trim();
 
     if (!cleanEmail) {
-      setEmailError('Email is required');
+      setEmailError("Email is required");
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setEmailError('Please enter a valid email address');
+      setEmailError("Please enter a valid email address");
       isValid = false;
     } else {
       setEmailError(null);
     }
 
     if (!password) {
-      setPasswordError('Password is required');
+      setPasswordError("Password is required");
       isValid = false;
     } else {
       setPasswordError(null);
@@ -85,13 +85,13 @@ export default function LoginScreen() {
       });
 
       // Role-based or default navigation to (app)
-      router.replace('/(app)');
+      router.replace("/(app)");
     } catch {
       // Error is caught and surfaced in context
     }
   };
 
-  const fillDemoAccount = (roleEmail: string, rolePass = 'Password123!') => {
+  const fillDemoAccount = (roleEmail: string, rolePass = "Password123!") => {
     setEmail(roleEmail);
     setPassword(rolePass);
     if (emailError) setEmailError(null);
@@ -102,7 +102,7 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#f4f6fb]">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
       >
         <ScrollView
@@ -114,7 +114,7 @@ export default function LoginScreen() {
           {/* Brand Logo Header */}
           <View className="items-center mb-6">
             <Image
-              source={require('../../../assets/karkaii-logo.png')}
+              source={require("../../../assets/karkaii-logo.png")}
               style={{ width: 180, height: 46 }}
               resizeMode="contain"
             />
@@ -144,7 +144,9 @@ export default function LoginScreen() {
             {/* "Or" Divider */}
             <View className="my-5 flex-row items-center">
               <View className="flex-1 h-px bg-slate-200" />
-              <Text className="mx-3 text-xs uppercase font-medium text-slate-400">Or</Text>
+              <Text className="mx-3 text-xs uppercase font-medium text-slate-400">
+                Or
+              </Text>
               <View className="flex-1 h-px bg-slate-200" />
             </View>
 
@@ -165,10 +167,16 @@ export default function LoginScreen() {
               </Text>
               <View
                 className={`flex-row items-center rounded-xl border px-3.5 py-2.5 bg-white ${
-                  emailError ? 'border-red-500 bg-red-50/20' : 'border-slate-200 focus:border-[#3D5EE1]'
+                  emailError
+                    ? "border-red-500 bg-red-50/20"
+                    : "border-slate-200 focus:border-[#3D5EE1]"
                 }`}
               >
-                <Feather name="mail" size={16} color={emailError ? '#DC2626' : '#6A7287'} />
+                <Feather
+                  name="mail"
+                  size={16}
+                  color={emailError ? "#DC2626" : "#6A7287"}
+                />
                 <TextInput
                   value={email}
                   onChangeText={handleEmailChange}
@@ -188,13 +196,21 @@ export default function LoginScreen() {
 
             {/* Password Field */}
             <View className="mb-4">
-              <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">Password</Text>
+              <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">
+                Password
+              </Text>
               <View
                 className={`flex-row items-center rounded-xl border px-3.5 py-2.5 bg-white ${
-                  passwordError ? 'border-red-500 bg-red-50/20' : 'border-slate-200'
+                  passwordError
+                    ? "border-red-500 bg-red-50/20"
+                    : "border-slate-200"
                 }`}
               >
-                <Feather name="lock" size={16} color={passwordError ? '#DC2626' : '#6A7287'} />
+                <Feather
+                  name="lock"
+                  size={16}
+                  color={passwordError ? "#DC2626" : "#6A7287"}
+                />
                 <TextInput
                   value={password}
                   onChangeText={handlePasswordChange}
@@ -212,14 +228,16 @@ export default function LoginScreen() {
                   className="p-1"
                 >
                   <Feather
-                    name={isPasswordVisible ? 'eye' : 'eye-off'}
+                    name={isPasswordVisible ? "eye" : "eye-off"}
                     size={16}
                     color="#6A7287"
                   />
                 </Pressable>
               </View>
               {passwordError ? (
-                <Text className="mt-1 text-xs text-red-600">{passwordError}</Text>
+                <Text className="mt-1 text-xs text-red-600">
+                  {passwordError}
+                </Text>
               ) : null}
             </View>
 
@@ -231,16 +249,24 @@ export default function LoginScreen() {
               >
                 <View
                   className={`h-4 w-4 items-center justify-center rounded border ${
-                    rememberMe ? 'bg-[#3D5EE1] border-[#3D5EE1]' : 'border-slate-300 bg-white'
+                    rememberMe
+                      ? "bg-[#3D5EE1] border-[#3D5EE1]"
+                      : "border-slate-300 bg-white"
                   }`}
                 >
-                  {rememberMe ? <Feather name="check" size={11} color="#ffffff" /> : null}
+                  {rememberMe ? (
+                    <Feather name="check" size={11} color="#ffffff" />
+                  ) : null}
                 </View>
-                <Text className="ml-2 text-xs font-medium text-slate-700">Remember Me</Text>
+                <Text className="ml-2 text-xs font-medium text-slate-700">
+                  Remember Me
+                </Text>
               </Pressable>
 
-              <Pressable onPress={() => router.push('/(auth)/forgot-password')}>
-                <Text className="text-xs font-semibold text-[#E82646]">Forgot Password?</Text>
+              <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
+                <Text className="text-xs font-semibold text-[#E82646]">
+                  Forgot Password?
+                </Text>
               </Pressable>
             </View>
 
@@ -249,13 +275,15 @@ export default function LoginScreen() {
               onPress={handleSubmit}
               disabled={isLoggingIn}
               className={`items-center justify-center rounded-xl bg-[#3D5EE1] py-3.5 shadow-sm shadow-[#3D5EE1]/30 active:bg-[#2F49B3] ${
-                isLoggingIn ? 'opacity-70' : ''
+                isLoggingIn ? "opacity-70" : ""
               }`}
             >
               {isLoggingIn ? (
                 <View className="flex-row items-center">
                   <ActivityIndicator size="small" color="#ffffff" />
-                  <Text className="ml-2 text-sm font-bold text-white">Signing in…</Text>
+                  <Text className="ml-2 text-sm font-bold text-white">
+                    Signing in…
+                  </Text>
                 </View>
               ) : (
                 <Text className="text-sm font-bold text-white">Sign In</Text>
@@ -265,11 +293,8 @@ export default function LoginScreen() {
             {/* Sign Up Link */}
             <View className="mt-5 items-center">
               <Text className="text-xs text-slate-600">
-                Don’t have an account?{' '}
-                <Text
-                  onPress={() => {}}
-                  className="font-bold text-[#3D5EE1]"
-                >
+                Don’t have an account?{" "}
+                <Text onPress={() => {}} className="font-bold text-[#3D5EE1]">
                   Create Account
                 </Text>
               </Text>
@@ -283,22 +308,34 @@ export default function LoginScreen() {
             </Text>
             <View className="flex-row justify-center gap-2">
               <Pressable
-                onPress={() => fillDemoAccount('admin@karkaii.com', 'Password123!')}
+                onPress={() =>
+                  fillDemoAccount("admin@karkaii.com", "Password123!")
+                }
                 className="rounded-lg bg-slate-100 px-2.5 py-1"
               >
-                <Text className="text-[11px] font-medium text-slate-700">Admin</Text>
+                <Text className="text-[11px] font-medium text-slate-700">
+                  Admin
+                </Text>
               </Pressable>
               <Pressable
-                onPress={() => fillDemoAccount('teacher@karkaii.com', 'Password123!')}
+                onPress={() =>
+                  fillDemoAccount("teacher@karkaii.com", "Password123!")
+                }
                 className="rounded-lg bg-slate-100 px-2.5 py-1"
               >
-                <Text className="text-[11px] font-medium text-slate-700">Teacher</Text>
+                <Text className="text-[11px] font-medium text-slate-700">
+                  Teacher
+                </Text>
               </Pressable>
               <Pressable
-                onPress={() => fillDemoAccount('parent@karkaii.com', 'Password123!')}
+                onPress={() =>
+                  fillDemoAccount("parent@karkaii.com", "Password123!")
+                }
                 className="rounded-lg bg-slate-100 px-2.5 py-1"
               >
-                <Text className="text-[11px] font-medium text-slate-700">Parent</Text>
+                <Text className="text-[11px] font-medium text-slate-700">
+                  Parent
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -306,7 +343,7 @@ export default function LoginScreen() {
           {/* Copyright Line */}
           <View className="mt-8 items-center">
             <Text className="text-[11px] text-slate-400">
-              Copyright © 2024 - Karkaii
+              Copyright © 2026 - Karkaii
             </Text>
           </View>
         </ScrollView>
