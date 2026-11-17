@@ -270,7 +270,9 @@ export default function ResetPasswordScreen() {
 
           {/* Copyright Line */}
           <View className="mt-8 items-center">
-            <Text className="text-[11px] text-slate-400">Copyright © 2024 - Karkaii</Text>
+            <Text className="text-[11px] text-slate-400">
+              Copyright © {new Date().getFullYear()} - Karkaii
+            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

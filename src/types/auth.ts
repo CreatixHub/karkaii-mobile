@@ -41,6 +41,7 @@ export interface AuthUser {
 export interface LoginCredentials {
   email: string;
   password: string;
+  role?: string;
   organization?: string;
   rememberMe?: boolean;
 }

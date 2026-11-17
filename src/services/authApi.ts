@@ -148,8 +148,10 @@ export const authApi = {
    * Returns { accessToken, refreshToken, expiresIn, user, organizations }
    */
   async login(credentials: LoginCredentials): Promise<AuthSession> {
-    const payload: Record<string, string> = {
-      email: credentials.email.trim(),
+    const identifier = credentials.email.trim();
+    const who = identifier.includes('@') ? { email: identifier } : { username: identifier };
+    const payload: Record<string, string | undefined> = {
+      ...who,
       password: credentials.password,
     };
     if (credentials.organization?.trim()) {
