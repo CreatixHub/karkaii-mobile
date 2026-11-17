@@ -110,6 +110,15 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   return parseResponse<T>(response);
 }
 
+// The backend wraps every successful response as { success: true, data, meta } (see backend/src/lib/respond.ts).
+// Error responses are NOT wrapped (e.g. { message, errors }), so only unwrap on the success path.
+function unwrapEnvelope<T>(body: unknown): T {
+  if (body !== null && typeof body === 'object' && 'success' in body && 'data' in body) {
+    return (body as { data: T }).data;
+  }
+  return body as T;
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
   let json: any = null;
@@ -129,7 +138,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
     throw new ApiError(message, response.status, json);
   }
 
-  return json as T;
+  return unwrapEnvelope<T>(json);
 }
 
 export const authApi = {
