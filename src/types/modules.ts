@@ -324,13 +324,55 @@ export interface ExamItem {
 }
 
 // --- HRM ---
+export interface StudentAttendanceItem {
+  id: string;
+  studentName: string;
+  admissionNo: string;
+  rollNo: string;
+  className: string;
+  section: string;
+  date: string;
+  checkInTime: string;
+  checkOutTime: string;
+  checkInGate?: string;
+  attendancePercent: number;
+  status: 'Present' | 'Late' | 'Half Day' | 'On Leave' | 'Absent';
+  guardianName: string;
+  guardianPhone: string;
+  notes?: string;
+}
+
+export interface TeacherAttendanceItem {
+  id: string;
+  employeeId: string;
+  name: string;
+  department: string;
+  designation: string;
+  subjects: string;
+  classes: string;
+  date: string;
+  checkInTime: string;
+  checkOutTime: string;
+  workingHours: string;
+  breakTime?: string;
+  overtime?: string;
+  method: 'Biometric' | 'RFID' | 'Manual';
+  status: 'Present' | 'Late' | 'Half Day' | 'On Leave' | 'Absent';
+  notes?: string;
+}
+
 export interface StaffAttendanceItem {
   id: string;
   staffId: string;
   name: string;
   department: string;
+  designation?: string;
+  shift?: string;
   checkInTime: string;
   checkOutTime: string;
+  workingHours?: string;
+  overtime?: string;
+  method?: 'Biometric' | 'RFID' | 'Manual';
   status: 'Present' | 'Late' | 'Half Day' | 'On Leave' | 'Absent';
   date: string;
 }
@@ -339,22 +381,37 @@ export interface LeaveRequestItem {
   id: string;
   applicantName: string;
   applicantRole: string;
-  leaveType: 'Casual Leave' | 'Sick Leave' | 'Maternity Leave' | 'Emergency Leave';
+  staffId?: string;
+  department?: string;
+  designation?: string;
+  leaveType: 'Casual Leave' | 'Sick Leave' | 'Maternity Leave' | 'Emergency Leave' | string;
   fromDate: string;
   toDate: string;
+  from?: string;
+  to?: string;
   days: number;
   reason: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Forwarded' | 'Cancelled';
   appliedOn: string;
+  applied?: string;
+  approver?: string;
 }
 
 export interface HolidayItem {
   id: string;
   title: string;
+  name?: string;
+  category?: 'Public' | 'School' | 'Festival' | 'Examination' | 'Optional';
   date: string;
   dayOfWeek: string;
-  type: 'Public Holiday' | 'School Holiday' | 'Observance';
+  type: 'Public Holiday' | 'School Holiday' | 'Observance' | string;
   durationDays: number;
+  duration?: string;
+  start?: string;
+  end?: string;
+  classes?: string;
+  branch?: string;
+  description?: string;
 }
 
 export interface DepartmentItem {

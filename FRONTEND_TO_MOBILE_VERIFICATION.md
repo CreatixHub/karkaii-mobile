@@ -60,13 +60,13 @@
 
 ## Batch 4: HRM (5 Pages)
 
-| # | Page Title | Submodule | Frontend Route | PDF Page | Frontend Source File | Target Mobile Screen Path | Status |
-|---|---|---|---|---|---|---|---|
-| 30 | Holidays | Holidays | `/holidays` | Page 30 (§9.1) | `src/views/hrm/holidays` | `src/app/(app)/hrm.tsx` (Holidays Tab) | Pending |
-| 31 | Student Attendance | Attendance | `/student-attendance` | Page 30 (§9.2.1) | `src/views/hrm/attendance/student-attendance` | `src/app/(app)/hrm.tsx` (Student Attendance) | Pending |
-| 32 | Teacher Attendance | Attendance | `/teacher-attendance` | Page 30 (§9.2.2) | `src/views/hrm/attendance/teacher-attendance.tsx` | `src/app/(app)/hrm.tsx` (Teacher Attendance) | Pending |
-| 33 | Staff Attendance | Attendance | `/staff-attendance` | Page 31 (§9.2.3) | `src/views/hrm/attendance/staff-attendance` | `src/app/(app)/hrm.tsx` (Staff Attendance) | Pending |
-| 34 | Leave List | Attendance | `/leave-list` | Page 31 (§9.2.4) | `src/views/hrm/leaves/list-leaves` | `src/app/(app)/hrm.tsx` (Leaves Tab) | Pending |
+| # | Page Title | Submodule | Frontend Route | PDF Page | Frontend Source File | Target Mobile Screen Path | Status | Verification & Implementation Notes |
+|---|---|---|---|---|---|---|---|---|
+| 30 | Holidays | Holidays | `/holidays` | Page 30 (§9.1) | `src/views/hrm/holidays` | `src/app/(app)/hrm.tsx` (Holidays Module) | Verified | Academic calendar holiday schedule cards with date tile, day of week, category pill (Public, School, Festival, Examination, Optional), duration (1 day to 46 days), applicable classes (All Classes, Grade X & XII), campus branch, description callout, category filter pills, and Add Holiday modal. |
+| 31 | Student Attendance | Attendance | `/student-attendance` | Page 30 (§9.2.1) | `src/views/hrm/attendance/student-attendance` | `src/app/(app)/hrm.tsx` (Student Attendance Sub-Tab) | Verified | Daily student register with Roll No, Admission No, Student Name, Class & Section, Check-In gate & time, Check-Out bus & time, attendance YTD percentage, status badge (Present, Absent, Late, On Leave, Half Day), guardian contact button, teacher log remark, interactive 1-tap status toggle, Student 360° Attendance Drawer modal, and Bulk Mark All Present action. |
+| 32 | Teacher Attendance | Attendance | `/teacher-attendance` | Page 30 (§9.2.2) | `src/views/hrm/attendance/teacher-attendance.tsx` | `src/app/(app)/hrm.tsx` (Teacher Attendance Sub-Tab) | Verified | Faculty attendance workspace with Employee ID (EMP-T01 to EMP-T05), Teacher Name, Department badge, Designation, assigned subjects & classes, check-in time, check-out time, working hours calculation, overtime tracking, verification method badge (Biometric, RFID, Manual), status badge, duty notes, and 1-tap status change action. |
+| 33 | Staff Attendance | Attendance | `/staff-attendance` | Page 31 (§9.2.3) | `src/views/hrm/attendance/staff-attendance` | `src/app/(app)/hrm.tsx` (Staff Attendance Sub-Tab) | Verified | Non-teaching staff attendance log with Staff ID (EMP-S-001 to EMP-S-005), Name, Department (Finance, Library, Operations, Health, Sports), Designation, Shift pill (Morning), Time In, Time Out, Working Hours, Overtime tag, verification method, status badge, and interactive status changer. |
+| 34 | Leave List | Attendance | `/leave-list` | Page 31 (§9.2.4) | `src/views/hrm/leaves/list-leaves` | `src/app/(app)/hrm.tsx` (Leave List Module) | Verified | Staff leave approval queue cards with Application ID (LV-101 to LV-106), Staff ID, Applicant Name, Role, Department, Leave Type badge (Casual Leave, Sick Leave, Emergency Leave, Special Leave), duration in days, date range (From Date → To Date), reason for leave quotation, approver designation, status badges (Approved, Pending, Forwarded, Rejected), 1-tap Approve & Reject action buttons, and Apply Leave modal. |
 
 ---
 
