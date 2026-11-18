@@ -1,6 +1,8 @@
 import type {
   ExpenseItem,
+  FeeGroupItem,
   FeeInvoiceItem,
+  FeeReceiptItem,
   FeeStructureItem,
 } from '@/types/modules';
 
@@ -151,3 +153,64 @@ export const INITIAL_EXPENSES: ExpenseItem[] = [
     status: 'Pending',
   },
 ];
+
+export const INITIAL_RECEIPTS: FeeReceiptItem[] = [
+  {
+    id: 'rcp-1',
+    receiptNo: 'RCP-2026-501',
+    invoiceNo: 'INV-2026-8801',
+    studentName: 'Emily Carter',
+    grade: 'Grade XII-A',
+    amountPaid: 1450,
+    paymentMode: 'Online / UPI',
+    paymentDate: '15 Nov 2026',
+    collectedBy: 'Finance Portal',
+  },
+  {
+    id: 'rcp-2',
+    receiptNo: 'RCP-2026-502',
+    invoiceNo: 'INV-2026-8802',
+    studentName: 'Ethan Davis',
+    grade: 'Grade X-B',
+    amountPaid: 1250,
+    paymentMode: 'Card',
+    paymentDate: '12 Nov 2026',
+    collectedBy: 'Arthur Pendelton',
+  },
+  {
+    id: 'rcp-3',
+    receiptNo: 'RCP-2026-503',
+    invoiceNo: 'INV-2026-8803',
+    studentName: 'Sophia Williams',
+    grade: 'Grade VII-A',
+    amountPaid: 600,
+    paymentMode: 'Bank Transfer',
+    paymentDate: '10 Nov 2026',
+    collectedBy: 'Bursar Office',
+  },
+];
+
+export const INITIAL_FEE_GROUPS: FeeGroupItem[] = [
+  {
+    id: 'fg-1',
+    name: 'Senior Secondary STEM Group',
+    description: 'Comprehensive curriculum, physics & chemistry advanced laboratory kits.',
+    feeTypesCount: 4,
+    totalAnnualAmount: 4350,
+  },
+  {
+    id: 'fg-2',
+    name: 'Secondary General Education',
+    description: 'Standard academic coursework, digital library and sports access.',
+    feeTypesCount: 3,
+    totalAnnualAmount: 3750,
+  },
+  {
+    id: 'fg-3',
+    name: 'Middle School Explorer Group',
+    description: 'General tuition, arts, physical training, and foundation IT courses.',
+    feeTypesCount: 3,
+    totalAnnualAmount: 3300,
+  },
+];
+

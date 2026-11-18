@@ -60,6 +60,14 @@ export default function AdminDashboardView({
             <Feather name="bar-chart-2" size={14} color="#3D5EE1" />
             <Text className="ml-1.5 text-xs font-bold text-[#202C4B]">Report</Text>
           </Pressable>
+
+          <Pressable
+            onPress={() => router.push('/(app)/communication')}
+            className="flex-row items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 active:bg-slate-50"
+          >
+            <Feather name="message-square" size={14} color="#3D5EE1" />
+            <Text className="ml-1.5 text-xs font-bold text-[#202C4B]">Notice Board</Text>
+          </Pressable>
         </View>
       </View>
 

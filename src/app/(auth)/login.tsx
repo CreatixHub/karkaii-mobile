@@ -272,15 +272,53 @@ export default function LoginScreen() {
               )}
             </Pressable>
 
+            {/* Quick Demo Role Logins */}
+            <View className="mt-5 border-t border-slate-100 pt-4">
+              <Text className="text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">
+                Quick Demo Access (Static Data Mode)
+              </Text>
+              <View className="flex-row flex-wrap justify-between gap-2">
+                {[
+                  { role: 'admin', label: 'Admin', icon: 'shield', color: '#3D5EE1' },
+                  { role: 'teacher', label: 'Teacher', icon: 'user', color: '#0ca678' },
+                  { role: 'student', label: 'Student', icon: 'book', color: '#f39c12' },
+                  { role: 'parent', label: 'Parent', icon: 'heart', color: '#e83e8c' },
+                ].map((demo) => (
+                  <Pressable
+                    key={demo.role}
+                    onPress={async () => {
+                      try {
+                        await login({
+                          email: `${demo.role}@karkaii.com`,
+                          password: 'password123',
+                          role: demo.role,
+                          rememberMe: true,
+                        });
+                        router.replace('/(app)');
+                      } catch (e) {
+                        console.warn(e);
+                      }
+                    }}
+                    className="flex-1 min-w-[45%] flex-row items-center justify-center rounded-xl bg-slate-50 border border-slate-200 py-2.5 px-2 active:bg-slate-100"
+                  >
+                    <Feather name={demo.icon as any} size={13} color={demo.color} />
+                    <Text className="ml-1.5 text-xs font-semibold text-slate-700">
+                      {demo.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
             {/* Sign Up Link */}
             <View className="mt-5 items-center">
               <Text className="text-xs text-slate-600">
                 Don’t have an account?{' '}
                 <Text
-                  onPress={() => {}}
+                  onPress={() => router.push('/(auth)/select-organization')}
                   className="font-bold text-[#3D5EE1]"
                 >
-                  Create Account
+                  Explore Campuses
                 </Text>
               </Text>
             </View>

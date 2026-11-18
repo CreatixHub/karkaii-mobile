@@ -15,6 +15,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { key: 'hrm', label: 'HRM', icon: 'briefcase' },
   { key: 'finance', label: 'Finance & Accounts', icon: 'credit-card' },
   { key: 'campus', label: 'Campus Operations', icon: 'map-pin' },
+  { key: 'communication', label: 'Communication', icon: 'message-square' },
   { key: 'reports', label: 'Reports', icon: 'bar-chart-2' },
   { key: 'administration', label: 'Administration', icon: 'settings' },
 ];

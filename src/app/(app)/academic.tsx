@@ -14,20 +14,31 @@ import SearchBar from '@/components/common/SearchBar';
 import StatusBadge from '@/components/common/StatusBadge';
 import {
   INITIAL_CLASSES,
+  INITIAL_EXAMS,
+  INITIAL_EXAM_RESULTS,
+  INITIAL_HOMEWORKS,
+  INITIAL_STUDY_MATERIALS,
   INITIAL_SUBJECTS,
   INITIAL_TIMETABLE,
-  INITIAL_HOMEWORKS,
-  INITIAL_EXAMS,
 } from '@/data/academicMock';
 import type {
   ClassItem,
   ExamItem,
+  ExamResultItem,
   HomeworkItem,
+  StudyMaterialItem,
   SubjectItem,
   TimetableSlot,
 } from '@/types/modules';
 
-type AcademicTab = 'classes' | 'subjects' | 'timetable' | 'homework' | 'exams';
+type AcademicTab =
+  | 'classes'
+  | 'subjects'
+  | 'timetable'
+  | 'homework'
+  | 'exams'
+  | 'materials'
+  | 'results';
 
 export default function AcademicScreen() {
   const [activeTab, setActiveTab] = useState<AcademicTab>('classes');
@@ -40,6 +51,8 @@ export default function AcademicScreen() {
   const [timetable] = useState<TimetableSlot[]>(INITIAL_TIMETABLE);
   const [homeworks, setHomeworks] = useState<HomeworkItem[]>(INITIAL_HOMEWORKS);
   const [exams, setExams] = useState<ExamItem[]>(INITIAL_EXAMS);
+  const [materials, setMaterials] = useState<StudyMaterialItem[]>(INITIAL_STUDY_MATERIALS);
+  const [results] = useState<ExamResultItem[]>(INITIAL_EXAM_RESULTS);
 
   // Add Modal State
   const [showAddModal, setShowAddModal] = useState(false);
@@ -53,9 +66,19 @@ export default function AcademicScreen() {
       { id: 'subjects', label: 'Subjects', badge: subjects.length },
       { id: 'timetable', label: 'Timetable', badge: timetable.length },
       { id: 'homework', label: 'Homework', badge: homeworks.length },
-      { id: 'exams', label: 'Examinations', badge: exams.length },
+      { id: 'exams', label: 'Exams', badge: exams.length },
+      { id: 'materials', label: 'Study Materials', badge: materials.length },
+      { id: 'results', label: 'Marks & Results', badge: results.length },
     ],
-    [classes.length, subjects.length, timetable.length, homeworks.length, exams.length]
+    [
+      classes.length,
+      subjects.length,
+      timetable.length,
+      homeworks.length,
+      exams.length,
+      materials.length,
+      results.length,
+    ]
   );
 
   // Filtered queries
@@ -104,6 +127,24 @@ export default function AcademicScreen() {
         e.examType.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [exams, searchQuery]);
+
+  const filteredMaterials = useMemo(() => {
+    return materials.filter(
+      (m) =>
+        m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.chapter.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [materials, searchQuery]);
+
+  const filteredResults = useMemo(() => {
+    return results.filter(
+      (r) =>
+        r.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.rollNo.includes(searchQuery) ||
+        r.subject.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [results, searchQuery]);
 
   // Handlers
   const handleAddNewItem = () => {
@@ -166,6 +207,20 @@ export default function AcademicScreen() {
       };
       setExams([newExam, ...exams]);
       Alert.alert('Success', `Exam schedule registered.`);
+    } else if (activeTab === 'materials') {
+      const newMat: StudyMaterialItem = {
+        id: `sm-${Date.now()}`,
+        title: formTitle,
+        subject: formSubtitle || 'Physics',
+        grade: formMeta || 'Grade XII',
+        chapter: 'Supplemental Chapter',
+        fileType: 'PDF',
+        fileSize: '3.2 MB',
+        uploadDate: 'Today',
+        uploadedBy: 'Faculty Member',
+      };
+      setMaterials([newMat, ...materials]);
+      Alert.alert('Success', `Study material "${formTitle}" uploaded.`);
     }
 
     setFormTitle('');
@@ -201,10 +256,10 @@ export default function AcademicScreen() {
         <View className="flex-row items-center justify-between mb-2.5">
           <View>
             <Text className="text-base font-bold text-slate-900 capitalize">
-              Academic Management
+              Academic Hub
             </Text>
             <Text className="text-xs text-slate-500">
-              Classes, subjects, daily timetable & homework tracking
+              Classes, subjects, timetable, homework, materials & results
             </Text>
           </View>
 
@@ -226,7 +281,7 @@ export default function AcademicScreen() {
         {/* Day Selector for Timetable */}
         {activeTab === 'timetable' && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-2.5">
-            {(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as TimetableSlot['day'][]).map(
+            {(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as TimetableSlot['day'][]).map(
               (day) => (
                 <Pressable
                   key={day}
@@ -252,7 +307,7 @@ export default function AcademicScreen() {
       {/* Main Content Area */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="p-4 pb-12"
+        contentContainerClassName="p-4 pb-14"
       >
         {/* CLASSES & SECTIONS */}
         {activeTab === 'classes' && (
@@ -482,6 +537,94 @@ export default function AcademicScreen() {
             ))}
           </View>
         )}
+
+        {/* STUDY MATERIALS */}
+        {activeTab === 'materials' && (
+          <View className="gap-y-3">
+            {filteredMaterials.map((mat) => (
+              <View
+                key={mat.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <View className="rounded-md bg-rose-50 px-2 py-0.5 border border-rose-200">
+                        <Text className="text-[10px] font-bold text-rose-700">{mat.fileType}</Text>
+                      </View>
+                      <View className="rounded-md bg-slate-100 px-2 py-0.5">
+                        <Text className="text-[10px] font-semibold text-slate-600">{mat.grade}</Text>
+                      </View>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{mat.title}</Text>
+                    <Text className="text-xs text-slate-500 mt-0.5">{mat.subject} · {mat.chapter}</Text>
+                  </View>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
+                  <Text className="text-[11px] text-slate-400">
+                    Uploaded: {mat.uploadDate} ({mat.fileSize})
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      Alert.alert('Download Resource', `Downloading file "${mat.title}" (${mat.fileSize})`)
+                    }
+                    className="flex-row items-center rounded-lg bg-blue-50 px-2.5 py-1 border border-blue-200"
+                  >
+                    <Feather name="download" size={12} color="#3D5EE1" />
+                    <Text className="ml-1 text-xs font-bold text-[#3D5EE1]">Download</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* MARKS & ASSESSMENT RESULTS */}
+        {activeTab === 'results' && (
+          <View className="gap-y-3">
+            <View className="rounded-2xl bg-indigo-50/60 p-4 border border-indigo-100">
+              <Text className="text-sm font-bold text-indigo-900">
+                Official Examination Scorecard
+              </Text>
+              <Text className="text-xs text-indigo-700 mt-0.5">
+                Verified marks, letter grades & faculty evaluation remarks.
+              </Text>
+            </View>
+
+            {filteredResults.map((res) => (
+              <View
+                key={res.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <Text className="text-xs font-bold text-[#3D5EE1]">Roll #{res.rollNo}</Text>
+                      <View className="rounded-md bg-slate-100 px-2 py-0.5">
+                        <Text className="text-[10px] font-semibold text-slate-600">{res.grade}</Text>
+                      </View>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{res.studentName}</Text>
+                    <Text className="text-xs text-slate-500">{res.subject}</Text>
+                  </View>
+                  <View className="items-center rounded-xl bg-emerald-50 px-3 py-1.5 border border-emerald-200">
+                    <Text className="text-lg font-bold text-emerald-700">{res.gradeLetter}</Text>
+                    <Text className="text-[10px] font-semibold text-emerald-600">
+                      {res.marksObtained}/{res.totalMarks}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="mt-2.5 rounded-xl bg-slate-50 p-2.5">
+                  <Text className="text-xs text-slate-600 leading-relaxed italic">
+                    &ldquo;{res.remarks}&rdquo;
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       {/* Add Modal */}
@@ -495,7 +638,7 @@ export default function AcademicScreen() {
           <View className="rounded-t-3xl bg-white p-5 pb-8">
             <View className="flex-row items-center justify-between border-b border-slate-100 pb-3">
               <Text className="text-base font-bold text-slate-900 capitalize">
-                New {activeTab === 'classes' ? 'Class' : activeTab === 'subjects' ? 'Subject' : activeTab === 'homework' ? 'Homework' : 'Exam'}
+                New {activeTab === 'classes' ? 'Class' : activeTab === 'subjects' ? 'Subject' : activeTab === 'homework' ? 'Homework' : activeTab === 'materials' ? 'Study Material' : 'Exam'}
               </Text>
               <Pressable onPress={() => setShowAddModal(false)} hitSlop={10}>
                 <Feather name="x" size={20} color="#64748b" />

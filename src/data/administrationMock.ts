@@ -1,4 +1,6 @@
 import type {
+  AuditLogItem,
+  BranchItem,
   RolePermissionItem,
   SchoolSetting,
 } from '@/types/modules';
@@ -64,3 +66,79 @@ export const INITIAL_SCHOOL_SETTING: SchoolSetting = {
   currency: 'USD ($)',
   timezone: 'Europe/London (GMT+0)',
 };
+
+export const INITIAL_BRANCHES: BranchItem[] = [
+  {
+    id: 'br-1',
+    name: 'Oxford International (Main Campus)',
+    campusCode: 'OXF-MAIN',
+    address: 'Wellington Square, Oxford, UK',
+    principal: 'Arthur Wright',
+    totalStudents: 1450,
+    phone: '+44 1865 270000',
+    email: 'main@oxfordschool.edu',
+    isMain: true,
+  },
+  {
+    id: 'br-2',
+    name: 'Sunrise Public Campus (North Branch)',
+    campusCode: 'OXF-NORTH',
+    address: '24 Banbury Road, Summertown, Oxford',
+    principal: 'Dr. Helen Harper',
+    totalStudents: 820,
+    phone: '+44 1865 270110',
+    email: 'north@oxfordschool.edu',
+    isMain: false,
+  },
+  {
+    id: 'br-3',
+    name: 'Riverside Academy (West Branch)',
+    campusCode: 'OXF-WEST',
+    address: '15 Botley Road, Oxford',
+    principal: 'Marcus Thornton',
+    totalStudents: 640,
+    phone: '+44 1865 270220',
+    email: 'west@oxfordschool.edu',
+    isMain: false,
+  },
+];
+
+export const INITIAL_AUDIT_LOGS: AuditLogItem[] = [
+  {
+    id: 'aud-1',
+    timestamp: 'Today, 10:14 AM',
+    user: 'Arthur Pendelton',
+    action: 'Issued Fee Receipt #RCP-2026-501 ($1,450)',
+    module: 'Finance & Accounts',
+    ipAddress: '192.168.1.42',
+    status: 'Success',
+  },
+  {
+    id: 'aud-2',
+    timestamp: 'Today, 09:30 AM',
+    user: 'Sarah Mitchell',
+    action: 'Marked Class Attendance for Grade XII-A',
+    module: 'Academic',
+    ipAddress: '192.168.1.18',
+    status: 'Success',
+  },
+  {
+    id: 'aud-3',
+    timestamp: 'Today, 08:45 AM',
+    user: 'Jane Cooper',
+    action: 'Created Admission File APP-2026-128',
+    module: 'People & Admission',
+    ipAddress: '192.168.1.12',
+    status: 'Success',
+  },
+  {
+    id: 'aud-4',
+    timestamp: 'Yesterday, 05:20 PM',
+    user: 'Security Gate 1',
+    action: 'Exited Visitor Pass #GP-2026-904',
+    module: 'Campus Operations',
+    ipAddress: '192.168.1.99',
+    status: 'Success',
+  },
+];
+

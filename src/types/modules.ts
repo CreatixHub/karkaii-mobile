@@ -73,6 +73,27 @@ export interface UserAccount {
   status: 'Active' | 'Inactive' | 'Invited';
 }
 
+export interface AlumniRecord {
+  id: string;
+  admissionNo: string;
+  name: string;
+  graduatingBatch: string;
+  higherEducation: string;
+  currentProfession: string;
+  contactEmail: string;
+  phone: string;
+}
+
+export interface StudentPromotionItem {
+  id: string;
+  studentName: string;
+  currentGrade: string;
+  promotedGrade: string;
+  gpa: string;
+  promotionStatus: 'Promoted' | 'Under Review' | 'Held Back';
+  academicYear: string;
+}
+
 // --- ACADEMIC ---
 export interface ClassItem {
   id: string;
@@ -208,6 +229,26 @@ export interface ExpenseItem {
   status: 'Approved' | 'Pending';
 }
 
+export interface FeeReceiptItem {
+  id: string;
+  receiptNo: string;
+  invoiceNo: string;
+  studentName: string;
+  grade: string;
+  amountPaid: number;
+  paymentMode: 'Cash' | 'Card' | 'Online / UPI' | 'Bank Transfer';
+  paymentDate: string;
+  collectedBy: string;
+}
+
+export interface FeeGroupItem {
+  id: string;
+  name: string;
+  description: string;
+  feeTypesCount: number;
+  totalAnnualAmount: number;
+}
+
 // --- CAMPUS OPERATIONS ---
 export interface TransportRouteItem {
   id: string;
@@ -296,3 +337,161 @@ export interface SchoolSetting {
   currency: string;
   timezone: string;
 }
+
+// --- COMMUNICATION ---
+export interface AnnouncementItem {
+  id: string;
+  title: string;
+  content: string;
+  targetAudience: 'All' | 'Teachers' | 'Parents' | 'Students' | 'Staff';
+  priority: 'Urgent' | 'General' | 'Academic' | 'Event';
+  publishedDate: string;
+  author: string;
+  attachmentName?: string;
+}
+
+export interface BroadcastScheduleItem {
+  id: string;
+  title: string;
+  channel: 'SMS' | 'WhatsApp' | 'Push Notification' | 'Email';
+  scheduledTime: string;
+  targetGroup: string;
+  status: 'Scheduled' | 'Sent' | 'Draft';
+  recipientCount: number;
+}
+
+export interface MessageLogItem {
+  id: string;
+  recipientName: string;
+  recipientPhone: string;
+  channel: 'SMS' | 'WhatsApp';
+  messageText: string;
+  sentTime: string;
+  status: 'Delivered' | 'Sent' | 'Failed';
+}
+
+export interface MessageTemplateItem {
+  id: string;
+  name: string;
+  category: 'Fee' | 'Attendance' | 'Exam' | 'General';
+  channel: 'SMS' | 'WhatsApp';
+  templateBody: string;
+}
+
+// --- CAMPUS OPERATIONS EXTENDED ---
+export interface LibraryBookItem {
+  id: string;
+  isbn: string;
+  title: string;
+  author: string;
+  category: string;
+  totalCopies: number;
+  availableCopies: number;
+  rackNumber: string;
+  status: 'Available' | 'Low Stock' | 'Checked Out';
+}
+
+export interface HostelRoomItem {
+  id: string;
+  hostelName: string;
+  roomNumber: string;
+  floor: string;
+  roomType: 'Single AC' | 'Double Non-AC' | 'Triple Shared' | 'Dormitory';
+  capacity: number;
+  occupied: number;
+  feePerTerm: number;
+  status: 'Available' | 'Full' | 'Maintenance';
+}
+
+export interface CafeteriaMenuItem {
+  id: string;
+  itemName: string;
+  category: 'Breakfast' | 'Lunch' | 'Snacks' | 'Beverages';
+  price: number;
+  calories: number;
+  isVeg: boolean;
+  isAvailable: boolean;
+}
+
+// --- HRM EXTENDED ---
+export interface PayrollItem {
+  id: string;
+  employeeId: string;
+  name: string;
+  role: string;
+  department: string;
+  basicSalary: number;
+  allowances: number;
+  deductions: number;
+  netSalary: number;
+  status: 'Paid' | 'Processing' | 'Pending';
+  paymentDate: string;
+}
+
+export interface PayslipItem {
+  id: string;
+  payslipNumber: string;
+  employeeName: string;
+  month: string;
+  year: number;
+  grossPay: number;
+  deductions: number;
+  netPay: number;
+}
+
+export interface DesignationItem {
+  id: string;
+  title: string;
+  department: string;
+  totalHolders: number;
+  level: string;
+}
+
+// --- ACADEMIC EXTENDED ---
+export interface StudyMaterialItem {
+  id: string;
+  title: string;
+  subject: string;
+  grade: string;
+  chapter: string;
+  fileType: 'PDF' | 'DOC' | 'Video';
+  fileSize: string;
+  uploadDate: string;
+  uploadedBy: string;
+}
+
+export interface ExamResultItem {
+  id: string;
+  studentName: string;
+  rollNo: string;
+  grade: string;
+  subject: string;
+  marksObtained: number;
+  totalMarks: number;
+  gradeLetter: string;
+  remarks: string;
+}
+
+// --- ADMINISTRATION EXTENDED ---
+export interface BranchItem {
+  id: string;
+  name: string;
+  campusCode: string;
+  address: string;
+  principal: string;
+  totalStudents: number;
+  phone: string;
+  email: string;
+  isMain: boolean;
+}
+
+export interface AuditLogItem {
+  id: string;
+  timestamp: string;
+  user: string;
+  action: string;
+  module: string;
+  ipAddress: string;
+  status: 'Success' | 'Warning' | 'Failed';
+}
+

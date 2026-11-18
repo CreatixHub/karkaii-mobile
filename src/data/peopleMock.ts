@@ -1,7 +1,9 @@
 import type {
   AdmissionRecord,
-  StudentRecord,
+  AlumniRecord,
   StaffRecord,
+  StudentPromotionItem,
+  StudentRecord,
   TeacherRecord,
   UserAccount,
 } from '@/types/modules';
@@ -289,3 +291,67 @@ export const INITIAL_USERS: UserAccount[] = [
     status: 'Active',
   },
 ];
+
+export const INITIAL_ALUMNI: AlumniRecord[] = [
+  {
+    id: 'alm-1',
+    admissionNo: 'ADM-2022-045',
+    name: 'Alexander Hayes',
+    graduatingBatch: 'Class of 2024',
+    higherEducation: 'University of Cambridge, B.A. Law',
+    currentProfession: 'Trainee Solicitor',
+    contactEmail: 'alex.hayes@alumni.oxford.edu',
+    phone: '+44 7700 900123',
+  },
+  {
+    id: 'alm-2',
+    admissionNo: 'ADM-2021-018',
+    name: 'Jessica Chen',
+    graduatingBatch: 'Class of 2023',
+    higherEducation: 'Imperial College London, B.Eng Computing',
+    currentProfession: 'Software Engineer at DeepMind',
+    contactEmail: 'jess.chen@alumni.oxford.edu',
+    phone: '+44 7700 900456',
+  },
+  {
+    id: 'alm-3',
+    admissionNo: 'ADM-2020-092',
+    name: 'Benjamin Ross',
+    graduatingBatch: 'Class of 2022',
+    higherEducation: 'University of Edinburgh, MBChB Medicine',
+    currentProfession: 'Junior Resident Physician',
+    contactEmail: 'ben.ross@alumni.oxford.edu',
+    phone: '+44 7700 900789',
+  },
+];
+
+export const INITIAL_PROMOTIONS: StudentPromotionItem[] = [
+  {
+    id: 'prm-1',
+    studentName: 'Emily Carter',
+    currentGrade: 'Grade XI',
+    promotedGrade: 'Grade XII',
+    gpa: '3.95 / 4.0',
+    promotionStatus: 'Promoted',
+    academicYear: 'AY 2026-27',
+  },
+  {
+    id: 'prm-2',
+    studentName: 'Ethan Davis',
+    currentGrade: 'Grade IX',
+    promotedGrade: 'Grade X',
+    gpa: '3.80 / 4.0',
+    promotionStatus: 'Promoted',
+    academicYear: 'AY 2026-27',
+  },
+  {
+    id: 'prm-3',
+    studentName: 'Oliver Brown',
+    currentGrade: 'Grade VIII',
+    promotedGrade: 'Grade IX',
+    gpa: '3.10 / 4.0',
+    promotionStatus: 'Promoted',
+    academicYear: 'AY 2026-27',
+  },
+];
+

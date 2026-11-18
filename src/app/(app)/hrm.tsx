@@ -13,29 +13,39 @@ import TabNavigation from '@/components/common/TabNavigation';
 import SearchBar from '@/components/common/SearchBar';
 import StatusBadge from '@/components/common/StatusBadge';
 import {
-  INITIAL_STAFF_ATTENDANCE,
-  INITIAL_LEAVE_REQUESTS,
-  INITIAL_HOLIDAYS,
   INITIAL_DEPARTMENTS,
+  INITIAL_DESIGNATIONS,
+  INITIAL_HOLIDAYS,
+  INITIAL_LEAVE_REQUESTS,
+  INITIAL_PAYROLL,
+  INITIAL_PAYSLIPS,
+  INITIAL_STAFF_ATTENDANCE,
 } from '@/data/hrmMock';
 import type {
   DepartmentItem,
+  DesignationItem,
   HolidayItem,
   LeaveRequestItem,
+  PayrollItem,
+  PayslipItem,
   StaffAttendanceItem,
 } from '@/types/modules';
 
-type HrmTab = 'attendance' | 'leaves' | 'holidays' | 'departments';
+type HrmTab = 'attendance' | 'leaves' | 'payroll' | 'holidays' | 'departments' | 'designations';
 
 export default function HrmScreen() {
   const [activeTab, setActiveTab] = useState<HrmTab>('attendance');
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('All');
 
   // Local state for HRM records
-  const [attendance] = useState<StaffAttendanceItem[]>(INITIAL_STAFF_ATTENDANCE);
+  const [attendance, setAttendance] = useState<StaffAttendanceItem[]>(INITIAL_STAFF_ATTENDANCE);
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequestItem[]>(INITIAL_LEAVE_REQUESTS);
-  const [holidays] = useState<HolidayItem[]>(INITIAL_HOLIDAYS);
+  const [payroll, setPayroll] = useState<PayrollItem[]>(INITIAL_PAYROLL);
+  const [payslips] = useState<PayslipItem[]>(INITIAL_PAYSLIPS);
+  const [holidays, setHolidays] = useState<HolidayItem[]>(INITIAL_HOLIDAYS);
   const [departments] = useState<DepartmentItem[]>(INITIAL_DEPARTMENTS);
+  const [designations] = useState<DesignationItem[]>(INITIAL_DESIGNATIONS);
 
   // Leave Modal State
   const [showApplyModal, setShowApplyModal] = useState(false);
@@ -44,34 +54,53 @@ export default function HrmScreen() {
   const [leaveDays, setLeaveDays] = useState('1');
   const [leaveReason, setLeaveReason] = useState('');
 
+  // Add Holiday Modal State
+  const [showHolidayModal, setShowHolidayModal] = useState(false);
+  const [holidayTitle, setHolidayTitle] = useState('');
+  const [holidayDate, setHolidayDate] = useState('');
+  const [holidayDays, setHolidayDays] = useState('1');
+
   const tabs = useMemo(
     () => [
-      { id: 'attendance', label: 'Staff Attendance', badge: attendance.length },
-      { id: 'leaves', label: 'Leave Requests', badge: leaveRequests.filter((l) => l.status === 'Pending').length },
+      { id: 'attendance', label: 'Attendance', badge: attendance.length },
+      { id: 'leaves', label: 'Leaves', badge: leaveRequests.filter((l) => l.status === 'Pending').length },
+      { id: 'payroll', label: 'Payroll', badge: payroll.length },
       { id: 'holidays', label: 'Holidays', badge: holidays.length },
       { id: 'departments', label: 'Departments', badge: departments.length },
+      { id: 'designations', label: 'Designations', badge: designations.length },
     ],
-    [attendance.length, leaveRequests, holidays.length, departments.length]
+    [attendance.length, leaveRequests, payroll.length, holidays.length, departments.length, designations.length]
   );
 
   // Filtered queries
   const filteredAttendance = useMemo(() => {
-    return attendance.filter(
-      (a) =>
+    return attendance.filter((a) => {
+      const matchesSearch =
         a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         a.staffId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.department.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [attendance, searchQuery]);
+        a.department.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === 'All' || a.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [attendance, searchQuery, statusFilter]);
 
   const filteredLeaves = useMemo(() => {
     return leaveRequests.filter(
       (l) =>
         l.applicantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.leaveType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.status.toLowerCase().includes(searchQuery.toLowerCase())
+        l.applicantRole.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        l.leaveType.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [leaveRequests, searchQuery]);
+
+  const filteredPayroll = useMemo(() => {
+    return payroll.filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.department.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [payroll, searchQuery]);
 
   const filteredHolidays = useMemo(() => {
     return holidays.filter(
@@ -81,52 +110,76 @@ export default function HrmScreen() {
     );
   }, [holidays, searchQuery]);
 
-  const filteredDepartments = useMemo(() => {
-    return departments.filter(
-      (d) =>
-        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.headOfDept.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [departments, searchQuery]);
-
   // Actions
-  const handleLeaveDecision = (id: string, decision: 'Approved' | 'Rejected') => {
-    setLeaveRequests(
-      leaveRequests.map((l) => (l.id === id ? { ...l, status: decision } : l))
+  const handleToggleAttendanceStatus = (id: string) => {
+    setAttendance(
+      attendance.map((a) => {
+        if (a.id !== id) return a;
+        const nextStatus: StaffAttendanceItem['status'] =
+          a.status === 'Present' ? 'On Leave' : a.status === 'On Leave' ? 'Absent' : 'Present';
+        return { ...a, status: nextStatus };
+      })
     );
-    Alert.alert('Status Updated', `Leave request has been marked as ${decision}.`);
+  };
+
+  const handleUpdateLeaveStatus = (id: string, newStatus: 'Approved' | 'Rejected') => {
+    setLeaveRequests(
+      leaveRequests.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
+    );
+    Alert.alert('Status Updated', `Leave application has been marked as ${newStatus}.`);
   };
 
   const handleApplyLeave = () => {
-    if (!applicantName.trim() || !leaveReason.trim()) {
-      Alert.alert('Validation Error', 'Please enter your name and reason for leave.');
+    if (!applicantName.trim()) {
+      Alert.alert('Required Field', 'Please enter your staff name.');
       return;
     }
 
-    const newLeave: LeaveRequestItem = {
+    const newReq: LeaveRequestItem = {
       id: `lv-${Date.now()}`,
       applicantName,
-      applicantRole: 'Faculty Staff',
+      applicantRole: 'Staff Member',
       leaveType,
-      fromDate: 'Tomorrow',
-      toDate: 'Tomorrow',
-      days: parseInt(leaveDays, 10) || 1,
-      reason: leaveReason,
+      fromDate: 'Upcoming',
+      toDate: 'Upcoming',
+      days: parseInt(leaveDays) || 1,
+      reason: leaveReason || 'Personal commitments.',
       status: 'Pending',
       appliedOn: 'Today',
     };
 
-    setLeaveRequests([newLeave, ...leaveRequests]);
-    Alert.alert('Submitted', 'Your leave request has been submitted for approval.');
+    setLeaveRequests([newReq, ...leaveRequests]);
+    Alert.alert('Application Submitted', 'Your leave request has been sent for principal approval.');
     setApplicantName('');
     setLeaveReason('');
-    setLeaveDays('1');
     setShowApplyModal(false);
+  };
+
+  const handleAddHoliday = () => {
+    if (!holidayTitle.trim()) {
+      Alert.alert('Required Field', 'Please enter holiday title.');
+      return;
+    }
+
+    const newHol: HolidayItem = {
+      id: `hol-${Date.now()}`,
+      title: holidayTitle,
+      date: holidayDate || 'Upcoming Date',
+      dayOfWeek: 'Monday',
+      type: 'School Holiday',
+      durationDays: parseInt(holidayDays) || 1,
+    };
+
+    setHolidays([...holidays, newHol]);
+    Alert.alert('Holiday Registered', `${holidayTitle} added to school calendar.`);
+    setHolidayTitle('');
+    setHolidayDate('');
+    setShowHolidayModal(false);
   };
 
   return (
     <View className="flex-1 bg-[#f4f6fb]">
-      {/* Submodule Tab Bar */}
+      {/* Tab Bar */}
       <TabNavigation
         tabs={tabs}
         activeTab={activeTab}
@@ -140,23 +193,26 @@ export default function HrmScreen() {
       <View className="bg-white px-4 pt-3 pb-3 border-b border-slate-200">
         <View className="flex-row items-center justify-between mb-2.5">
           <View>
-            <Text className="text-base font-bold text-slate-900 capitalize">
+            <Text className="text-base font-bold text-slate-900">
               Human Resource Management
             </Text>
             <Text className="text-xs text-slate-500">
-              Staff attendance, leave approvals, holidays & departments
+              Faculty attendance, leaves, payroll & staff departments
             </Text>
           </View>
 
-          {activeTab === 'leaves' && (
-            <Pressable
-              onPress={() => setShowApplyModal(true)}
-              className="flex-row items-center rounded-xl bg-[#3D5EE1] px-3 py-2 shadow-sm shadow-[#3D5EE1]/30"
-            >
-              <Feather name="plus" size={15} color="#ffffff" />
-              <Text className="ml-1 text-xs font-bold text-white">Apply Leave</Text>
-            </Pressable>
-          )}
+          <Pressable
+            onPress={() => {
+              if (activeTab === 'holidays') setShowHolidayModal(true);
+              else setShowApplyModal(true);
+            }}
+            className="flex-row items-center rounded-xl bg-[#3D5EE1] px-3 py-2 shadow-sm shadow-[#3D5EE1]/30"
+          >
+            <Feather name="plus" size={15} color="#ffffff" />
+            <Text className="ml-1 text-xs font-bold text-white">
+              {activeTab === 'holidays' ? 'New Holiday' : 'Apply Leave'}
+            </Text>
+          </Pressable>
         </View>
 
         <SearchBar
@@ -164,63 +220,76 @@ export default function HrmScreen() {
           onChangeText={setSearchQuery}
           placeholder={`Search ${activeTab}…`}
         />
+
+        {/* Status Filter for Attendance */}
+        {activeTab === 'attendance' && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-2.5">
+            {['All', 'Present', 'Late', 'On Leave', 'Absent'].map((status) => (
+              <Pressable
+                key={status}
+                onPress={() => setStatusFilter(status)}
+                className={`mr-2 rounded-xl px-3 py-1.5 ${
+                  statusFilter === status
+                    ? 'bg-[#3D5EE1]'
+                    : 'bg-slate-100 border border-slate-200'
+                }`}
+              >
+                <Text
+                  className={`text-xs font-semibold ${
+                    statusFilter === status ? 'text-white' : 'text-slate-700'
+                  }`}
+                >
+                  {status}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
       </View>
 
-      {/* Content Area */}
+      {/* Main Content Area */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="p-4 pb-12"
+        contentContainerClassName="p-4 pb-14"
       >
-        {/* STAFF ATTENDANCE */}
+        {/* ATTENDANCE TAB */}
         {activeTab === 'attendance' && (
           <View className="gap-y-3">
-            {/* Quick KPI stats */}
-            <View className="flex-row gap-x-2">
-              <View className="flex-1 rounded-2xl border border-slate-200 bg-white p-3 items-center">
-                <Text className="text-xs text-slate-500">Present</Text>
-                <Text className="mt-1 text-lg font-bold text-emerald-600">
-                  {attendance.filter((a) => a.status === 'Present').length}
-                </Text>
-              </View>
-              <View className="flex-1 rounded-2xl border border-slate-200 bg-white p-3 items-center">
-                <Text className="text-xs text-slate-500">Late</Text>
-                <Text className="mt-1 text-lg font-bold text-amber-600">
-                  {attendance.filter((a) => a.status === 'Late').length}
-                </Text>
-              </View>
-              <View className="flex-1 rounded-2xl border border-slate-200 bg-white p-3 items-center">
-                <Text className="text-xs text-slate-500">On Leave</Text>
-                <Text className="mt-1 text-lg font-bold text-blue-600">
-                  {attendance.filter((a) => a.status === 'On Leave').length}
-                </Text>
-              </View>
-            </View>
-
-            {filteredAttendance.map((att) => (
+            {filteredAttendance.map((item) => (
               <View
-                key={att.id}
+                key={item.id}
                 className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
               >
                 <View className="flex-row items-start justify-between">
-                  <View className="flex-1">
-                    <Text className="text-sm font-bold text-slate-900">{att.name}</Text>
-                    <Text className="text-xs text-slate-500">
-                      ID: {att.staffId} · {att.department}
-                    </Text>
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <Text className="text-xs font-bold text-[#3D5EE1]">{item.staffId}</Text>
+                      <StatusBadge status={item.status} />
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{item.name}</Text>
+                    <Text className="text-xs text-slate-500">{item.department}</Text>
                   </View>
-                  <StatusBadge status={att.status} />
+                  <Text className="text-xs font-semibold text-slate-400">{item.date}</Text>
                 </View>
 
                 <View className="mt-3 flex-row items-center justify-between rounded-xl bg-slate-50 p-2.5">
                   <View className="flex-row items-center">
-                    <Feather name="log-in" size={13} color="#059669" />
-                    <Text className="ml-1.5 text-xs text-slate-600">In: {att.checkInTime}</Text>
+                    <Feather name="log-in" size={13} color="#0ca678" />
+                    <Text className="ml-1.5 text-xs text-slate-700">Check In: {item.checkInTime}</Text>
                   </View>
                   <View className="flex-row items-center">
-                    <Feather name="log-out" size={13} color="#dc2626" />
-                    <Text className="ml-1.5 text-xs text-slate-600">Out: {att.checkOutTime}</Text>
+                    <Feather name="log-out" size={13} color="#64748b" />
+                    <Text className="ml-1.5 text-xs text-slate-700">Check Out: {item.checkOutTime}</Text>
                   </View>
-                  <Text className="text-[11px] text-slate-400">{att.date}</Text>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-end border-t border-slate-100 pt-2.5">
+                  <Pressable
+                    onPress={() => handleToggleAttendanceStatus(item.id)}
+                    className="rounded-lg bg-slate-100 px-3 py-1.5"
+                  >
+                    <Text className="text-xs font-semibold text-[#3D5EE1]">Cycle Status</Text>
+                  </Pressable>
                 </View>
               </View>
             ))}
@@ -230,50 +299,142 @@ export default function HrmScreen() {
         {/* LEAVE REQUESTS */}
         {activeTab === 'leaves' && (
           <View className="gap-y-3">
-            {filteredLeaves.map((lv) => (
+            {filteredLeaves.map((req) => (
               <View
-                key={lv.id}
+                key={req.id}
                 className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
               >
                 <View className="flex-row items-start justify-between">
-                  <View className="flex-1">
-                    <Text className="text-sm font-bold text-slate-900">{lv.applicantName}</Text>
-                    <Text className="text-xs text-slate-500">
-                      {lv.applicantRole} · Applied: {lv.appliedOn}
-                    </Text>
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <View className="rounded-md bg-indigo-50 px-2 py-0.5 border border-indigo-200">
+                        <Text className="text-[10px] font-bold text-indigo-700">{req.leaveType}</Text>
+                      </View>
+                      <StatusBadge status={req.status} />
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{req.applicantName}</Text>
+                    <Text className="text-xs text-slate-500">{req.applicantRole}</Text>
                   </View>
-                  <StatusBadge status={lv.status} />
+                  <View className="rounded-lg bg-slate-100 px-2.5 py-1">
+                    <Text className="text-xs font-bold text-slate-700">{req.days} Day(s)</Text>
+                  </View>
                 </View>
 
                 <View className="mt-2.5 rounded-xl bg-slate-50 p-2.5">
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-xs font-semibold text-[#3D5EE1]">{lv.leaveType}</Text>
-                    <Text className="text-xs font-bold text-slate-800">{lv.days} Day(s)</Text>
-                  </View>
-                  <Text className="mt-1 text-xs text-slate-500">
-                    Period: {lv.fromDate} → {lv.toDate}
+                  <Text className="text-xs text-slate-700 leading-relaxed italic">
+                    &ldquo;{req.reason}&rdquo;
                   </Text>
-                  <Text className="mt-1.5 text-xs text-slate-700 italic">
-                    &ldquo;{lv.reason}&rdquo;
+                  <Text className="text-[11px] text-slate-400 mt-1.5">
+                    Period: {req.fromDate} → {req.toDate} · Applied: {req.appliedOn}
                   </Text>
                 </View>
 
-                {lv.status === 'Pending' && (
+                {req.status === 'Pending' && (
                   <View className="mt-3 flex-row items-center justify-end gap-x-2 border-t border-slate-100 pt-2.5">
                     <Pressable
-                      onPress={() => handleLeaveDecision(lv.id, 'Approved')}
-                      className="rounded-xl bg-emerald-600 px-4 py-2 shadow-sm shadow-emerald-600/30"
+                      onPress={() => handleUpdateLeaveStatus(req.id, 'Rejected')}
+                      className="rounded-lg bg-rose-50 px-3 py-1.5 border border-rose-200"
+                    >
+                      <Text className="text-xs font-bold text-rose-700">Reject</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => handleUpdateLeaveStatus(req.id, 'Approved')}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5"
                     >
                       <Text className="text-xs font-bold text-white">Approve</Text>
                     </Pressable>
-                    <Pressable
-                      onPress={() => handleLeaveDecision(lv.id, 'Rejected')}
-                      className="rounded-xl bg-red-50 px-4 py-2 border border-red-200"
-                    >
-                      <Text className="text-xs font-bold text-red-600">Reject</Text>
-                    </Pressable>
                   </View>
                 )}
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* PAYROLL & SALARIES */}
+        {activeTab === 'payroll' && (
+          <View className="gap-y-3">
+            <View className="rounded-2xl bg-indigo-50/60 p-4 border border-indigo-100">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1 pr-2">
+                  <Text className="text-sm font-bold text-indigo-900">
+                    Staff Payroll & Disbursement Summary
+                  </Text>
+                  <Text className="text-xs text-indigo-700 mt-0.5">
+                    Monthly automated salary structures, allowances & statutory deduction records.
+                  </Text>
+                </View>
+                <View className="rounded-lg bg-indigo-100 px-2 py-1">
+                  <Text className="text-[10px] font-bold text-indigo-800">{payslips.length} Payslips</Text>
+                </View>
+              </View>
+            </View>
+
+            {filteredPayroll.map((item) => (
+              <View
+                key={item.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <Text className="text-xs font-bold text-[#3D5EE1]">{item.employeeId}</Text>
+                      <StatusBadge status={item.status} />
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{item.name}</Text>
+                    <Text className="text-xs text-slate-500">{item.role}</Text>
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-base font-bold text-emerald-600">
+                      ${item.netSalary.toLocaleString()}
+                    </Text>
+                    <Text className="text-[10px] text-slate-400">Net Take-Home</Text>
+                  </View>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-between rounded-xl bg-slate-50 p-2.5">
+                  <View>
+                    <Text className="text-[10px] text-slate-400">Basic Pay</Text>
+                    <Text className="text-xs font-bold text-slate-800">${item.basicSalary}</Text>
+                  </View>
+                  <View>
+                    <Text className="text-[10px] text-slate-400">Allowances</Text>
+                    <Text className="text-xs font-bold text-emerald-600">+${item.allowances}</Text>
+                  </View>
+                  <View>
+                    <Text className="text-[10px] text-slate-400">Deductions</Text>
+                    <Text className="text-xs font-bold text-rose-600">-${item.deductions}</Text>
+                  </View>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
+                  <Text className="text-[11px] text-slate-400">Date: {item.paymentDate}</Text>
+                  <View className="flex-row gap-x-2">
+                    {item.status !== 'Paid' && (
+                      <Pressable
+                        onPress={() => {
+                          setPayroll(
+                            payroll.map((p) =>
+                              p.id === item.id ? { ...p, status: 'Paid', paymentDate: 'Today' } : p
+                            )
+                          );
+                          Alert.alert('Payment Disbursed', `Salary of $${item.netSalary} disbursed to ${item.name}.`);
+                        }}
+                        className="rounded-lg bg-emerald-600 px-2.5 py-1"
+                      >
+                        <Text className="text-xs font-bold text-white">Disburse</Text>
+                      </Pressable>
+                    )}
+                    <Pressable
+                      onPress={() =>
+                        Alert.alert('Payslip Generated', `Downloading official PDF payslip for ${item.name}.`)
+                      }
+                      className="flex-row items-center rounded-lg bg-slate-100 px-2.5 py-1"
+                    >
+                      <Feather name="file-text" size={13} color="#3D5EE1" />
+                      <Text className="ml-1 text-xs font-bold text-[#3D5EE1]">Payslip</Text>
+                    </Pressable>
+                  </View>
+                </View>
               </View>
             ))}
           </View>
@@ -287,26 +448,22 @@ export default function HrmScreen() {
                 key={hol.id}
                 className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
               >
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-1">
-                    <Text className="text-sm font-bold text-slate-900">{hol.title}</Text>
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <View className="rounded-md bg-amber-50 px-2 py-0.5 border border-amber-200">
+                        <Text className="text-[10px] font-bold text-amber-700">{hol.type}</Text>
+                      </View>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{hol.title}</Text>
                     <Text className="text-xs text-slate-500">
-                      {hol.dayOfWeek} · {hol.date}
+                      {hol.dayOfWeek} · {hol.durationDays} Day(s) Break
                     </Text>
                   </View>
-                  <View className="rounded-full bg-blue-50 px-2.5 py-1 border border-blue-200">
-                    <Text className="text-[10px] font-bold text-blue-700">{hol.type}</Text>
+                  <View className="rounded-xl bg-slate-100 px-3 py-2 items-center">
+                    <Feather name="calendar" size={14} color="#3D5EE1" />
+                    <Text className="text-xs font-bold text-slate-800 mt-1">{hol.date}</Text>
                   </View>
-                </View>
-
-                <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
-                  <View className="flex-row items-center">
-                    <Feather name="calendar" size={13} color="#64748b" />
-                    <Text className="ml-1.5 text-xs text-slate-600">
-                      Duration: {hol.durationDays} Day(s)
-                    </Text>
-                  </View>
-                  <Text className="text-xs font-bold text-emerald-600">Upcoming Holiday</Text>
                 </View>
               </View>
             ))}
@@ -316,31 +473,51 @@ export default function HrmScreen() {
         {/* DEPARTMENTS */}
         {activeTab === 'departments' && (
           <View className="gap-y-3">
-            {filteredDepartments.map((dep) => (
+            {departments.map((dept) => (
               <View
-                key={dep.id}
+                key={dept.id}
                 className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
               >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1">
-                    <Text className="text-sm font-bold text-slate-900">{dep.name}</Text>
+                    <Text className="text-base font-bold text-slate-900">{dept.name}</Text>
                     <Text className="text-xs text-slate-500">
-                      Head: <Text className="font-semibold text-slate-800">{dep.headOfDept}</Text>
+                      Head of Dept: <Text className="font-semibold text-slate-800">{dept.headOfDept}</Text>
                     </Text>
                   </View>
-                  <View className="rounded-lg bg-emerald-50 px-2.5 py-1 border border-emerald-200">
-                    <Text className="text-xs font-bold text-emerald-700">{dep.budgetAllocated}</Text>
+                  <View className="rounded-lg bg-blue-50 px-2.5 py-1 border border-blue-200">
+                    <Text className="text-xs font-bold text-[#3D5EE1]">{dept.staffCount} Staff</Text>
                   </View>
                 </View>
 
                 <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
-                  <View className="flex-row items-center">
-                    <Feather name="users" size={13} color="#64748b" />
-                    <Text className="ml-1.5 text-xs text-slate-600">
-                      {dep.staffCount} Staff Members
-                    </Text>
+                  <Text className="text-xs text-slate-500">Annual Department Budget</Text>
+                  <Text className="text-xs font-bold text-slate-900">{dept.budgetAllocated}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* DESIGNATIONS */}
+        {activeTab === 'designations' && (
+          <View className="gap-y-3">
+            {designations.map((des) => (
+              <View
+                key={des.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1">
+                    <View className="rounded-md bg-slate-100 px-2 py-0.5 self-start mb-1">
+                      <Text className="text-[10px] font-semibold text-slate-600">{des.level} Level</Text>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{des.title}</Text>
+                    <Text className="text-xs text-slate-500">{des.department}</Text>
                   </View>
-                  <Text className="text-xs text-slate-400">Department Active</Text>
+                  <View className="rounded-lg bg-indigo-50 px-2.5 py-1 border border-indigo-200">
+                    <Text className="text-xs font-bold text-indigo-700">{des.totalHolders} Active</Text>
+                  </View>
                 </View>
               </View>
             ))}
@@ -358,7 +535,7 @@ export default function HrmScreen() {
         <View className="flex-1 justify-end bg-black/50">
           <View className="rounded-t-3xl bg-white p-5 pb-8">
             <View className="flex-row items-center justify-between border-b border-slate-100 pb-3">
-              <Text className="text-base font-bold text-slate-900">Apply for Leave</Text>
+              <Text className="text-base font-bold text-slate-900">Apply for Staff Leave</Text>
               <Pressable onPress={() => setShowApplyModal(false)} hitSlop={10}>
                 <Feather name="x" size={20} color="#64748b" />
               </Pressable>
@@ -366,7 +543,7 @@ export default function HrmScreen() {
 
             <View className="mt-4 gap-y-3">
               <View>
-                <Text className="text-xs font-semibold text-slate-700 mb-1">Applicant Name *</Text>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Staff Member Name *</Text>
                 <TextInput
                   value={applicantName}
                   onChangeText={setApplicantName}
@@ -377,33 +554,31 @@ export default function HrmScreen() {
 
               <View>
                 <Text className="text-xs font-semibold text-slate-700 mb-1">Leave Type</Text>
-                <View className="flex-row gap-x-2">
-                  {(['Casual Leave', 'Sick Leave', 'Emergency Leave'] as LeaveRequestItem['leaveType'][]).map(
-                    (lt) => (
-                      <Pressable
-                        key={lt}
-                        onPress={() => setLeaveType(lt)}
-                        className={`flex-1 items-center rounded-xl py-2 border ${
-                          leaveType === lt
-                            ? 'bg-[#3D5EE1] border-[#3D5EE1]'
-                            : 'bg-slate-50 border-slate-200'
+                <View className="flex-row gap-2">
+                  {(['Casual Leave', 'Sick Leave', 'Emergency Leave'] as const).map((t) => (
+                    <Pressable
+                      key={t}
+                      onPress={() => setLeaveType(t)}
+                      className={`rounded-xl px-2.5 py-2 border ${
+                        leaveType === t
+                          ? 'bg-[#3D5EE1] border-[#3D5EE1]'
+                          : 'bg-slate-50 border-slate-200'
+                      }`}
+                    >
+                      <Text
+                        className={`text-[11px] font-bold ${
+                          leaveType === t ? 'text-white' : 'text-slate-700'
                         }`}
                       >
-                        <Text
-                          className={`text-[11px] font-semibold ${
-                            leaveType === lt ? 'text-white' : 'text-slate-700'
-                          }`}
-                        >
-                          {lt.replace(' Leave', '')}
-                        </Text>
-                      </Pressable>
-                    )
-                  )}
+                        {t}
+                      </Text>
+                    </Pressable>
+                  ))}
                 </View>
               </View>
 
               <View>
-                <Text className="text-xs font-semibold text-slate-700 mb-1">Number of Days</Text>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Duration (Days)</Text>
                 <TextInput
                   value={leaveDays}
                   onChangeText={setLeaveDays}
@@ -414,14 +589,14 @@ export default function HrmScreen() {
               </View>
 
               <View>
-                <Text className="text-xs font-semibold text-slate-700 mb-1">Reason for Leave *</Text>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Reason *</Text>
                 <TextInput
                   value={leaveReason}
                   onChangeText={setLeaveReason}
-                  placeholder="Brief explanation..."
+                  placeholder="Provide reason for absence…"
                   multiline
                   numberOfLines={3}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 text-top min-h-[70px]"
                 />
               </View>
             </View>
@@ -437,7 +612,74 @@ export default function HrmScreen() {
                 onPress={handleApplyLeave}
                 className="flex-1 items-center rounded-xl bg-[#3D5EE1] py-3 shadow-md shadow-[#3D5EE1]/30"
               >
-                <Text className="text-sm font-bold text-white">Submit Request</Text>
+                <Text className="text-sm font-bold text-white">Submit Application</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Add Holiday Modal */}
+      <Modal
+        visible={showHolidayModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowHolidayModal(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="rounded-t-3xl bg-white p-5 pb-8">
+            <View className="flex-row items-center justify-between border-b border-slate-100 pb-3">
+              <Text className="text-base font-bold text-slate-900">Add Academic Holiday</Text>
+              <Pressable onPress={() => setShowHolidayModal(false)} hitSlop={10}>
+                <Feather name="x" size={20} color="#64748b" />
+              </Pressable>
+            </View>
+
+            <View className="mt-4 gap-y-3">
+              <View>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Holiday Title *</Text>
+                <TextInput
+                  value={holidayTitle}
+                  onChangeText={setHolidayTitle}
+                  placeholder="e.g. Founders Day Celebration"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900"
+                />
+              </View>
+
+              <View>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Holiday Date *</Text>
+                <TextInput
+                  value={holidayDate}
+                  onChangeText={setHolidayDate}
+                  placeholder="e.g. 24 Feb 2027"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900"
+                />
+              </View>
+
+              <View>
+                <Text className="text-xs font-semibold text-slate-700 mb-1">Number of Days</Text>
+                <TextInput
+                  value={holidayDays}
+                  onChangeText={setHolidayDays}
+                  keyboardType="numeric"
+                  placeholder="1"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900"
+                />
+              </View>
+            </View>
+
+            <View className="mt-6 flex-row gap-x-3">
+              <Pressable
+                onPress={() => setShowHolidayModal(false)}
+                className="flex-1 items-center rounded-xl bg-slate-100 py-3"
+              >
+                <Text className="text-sm font-semibold text-slate-700">Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleAddHoliday}
+                className="flex-1 items-center rounded-xl bg-[#3D5EE1] py-3 shadow-md shadow-[#3D5EE1]/30"
+              >
+                <Text className="text-sm font-bold text-white">Save Holiday</Text>
               </Pressable>
             </View>
           </View>

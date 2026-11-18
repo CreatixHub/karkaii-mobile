@@ -1,7 +1,10 @@
 import type {
   DepartmentItem,
+  DesignationItem,
   HolidayItem,
   LeaveRequestItem,
+  PayrollItem,
+  PayslipItem,
   StaffAttendanceItem,
 } from '@/types/modules';
 
@@ -179,3 +182,130 @@ export const INITIAL_DEPARTMENTS: DepartmentItem[] = [
     budgetAllocated: '$34,000',
   },
 ];
+
+export const INITIAL_PAYROLL: PayrollItem[] = [
+  {
+    id: 'pr-1',
+    employeeId: 'EMP-T-001',
+    name: 'Sarah Mitchell',
+    role: 'Senior Faculty / HOD Physics',
+    department: 'Physics & Natural Sciences',
+    basicSalary: 4500,
+    allowances: 850,
+    deductions: 420,
+    netSalary: 4930,
+    status: 'Paid',
+    paymentDate: '01 Nov 2026',
+  },
+  {
+    id: 'pr-2',
+    employeeId: 'EMP-T-002',
+    name: 'Marcus Vance',
+    role: 'Lead Mathematics Educator',
+    department: 'Mathematics & Computing',
+    basicSalary: 4200,
+    allowances: 750,
+    deductions: 380,
+    netSalary: 4570,
+    status: 'Paid',
+    paymentDate: '01 Nov 2026',
+  },
+  {
+    id: 'pr-3',
+    employeeId: 'EMP-S-001',
+    name: 'Arthur Pendelton',
+    role: 'Chief Bursar & Accountant',
+    department: 'Finance & Administration',
+    basicSalary: 4800,
+    allowances: 900,
+    deductions: 450,
+    netSalary: 5250,
+    status: 'Paid',
+    paymentDate: '01 Nov 2026',
+  },
+  {
+    id: 'pr-4',
+    employeeId: 'EMP-T-003',
+    name: 'Elena Rostova',
+    role: 'Senior Languages Instructor',
+    department: 'Languages & Humanities',
+    basicSalary: 3900,
+    allowances: 650,
+    deductions: 320,
+    netSalary: 4230,
+    status: 'Processing',
+    paymentDate: 'Pending Cycle',
+  },
+];
+
+export const INITIAL_PAYSLIPS: PayslipItem[] = [
+  {
+    id: 'ps-1',
+    payslipNumber: 'PS-2026-10-001',
+    employeeName: 'Sarah Mitchell',
+    month: 'October',
+    year: 2026,
+    grossPay: 5350,
+    deductions: 420,
+    netPay: 4930,
+  },
+  {
+    id: 'ps-2',
+    payslipNumber: 'PS-2026-10-002',
+    employeeName: 'Marcus Vance',
+    month: 'October',
+    year: 2026,
+    grossPay: 4950,
+    deductions: 380,
+    netPay: 4570,
+  },
+  {
+    id: 'ps-3',
+    payslipNumber: 'PS-2026-10-003',
+    employeeName: 'Arthur Pendelton',
+    month: 'October',
+    year: 2026,
+    grossPay: 5700,
+    deductions: 450,
+    netPay: 5250,
+  },
+];
+
+export const INITIAL_DESIGNATIONS: DesignationItem[] = [
+  {
+    id: 'des-1',
+    title: 'Head of Department (HOD)',
+    department: 'Academic Faculty',
+    totalHolders: 5,
+    level: 'Executive',
+  },
+  {
+    id: 'des-2',
+    title: 'Senior Secondary Lecturer',
+    department: 'Academic Faculty',
+    totalHolders: 22,
+    level: 'Senior',
+  },
+  {
+    id: 'des-3',
+    title: 'Assistant Teacher / Mentor',
+    department: 'Academic Faculty',
+    totalHolders: 18,
+    level: 'Mid',
+  },
+  {
+    id: 'des-4',
+    title: 'School Bursar / Finance Head',
+    department: 'Administrative Staff',
+    totalHolders: 2,
+    level: 'Executive',
+  },
+  {
+    id: 'des-5',
+    title: 'Fleet & Safety Coordinator',
+    department: 'Campus Operations',
+    totalHolders: 4,
+    level: 'Operational',
+  },
+];
+

@@ -8,8 +8,11 @@ import {
   View,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import TabNavigation from '@/components/common/TabNavigation';
 import SearchBar from '@/components/common/SearchBar';
 import { REPORTS, ReportItem } from '@/data/reports';
+
+type ReportsTab = 'analytics' | 'strength' | 'certificates' | 'ai';
 
 interface ReportDetailData {
   primaryMetricLabel: string;
@@ -116,10 +119,87 @@ const REPORT_MOCK_DETAILS: Record<string, ReportDetailData> = {
   },
 };
 
+const SCHOOL_STRENGTH_DATA = [
+  { grade: 'Grade XII', boys: 260, girls: 252, total: 512, capacity: 550 },
+  { grade: 'Grade XI', boys: 280, girls: 260, total: 540, capacity: 550 },
+  { grade: 'Grade X', boys: 390, girls: 358, total: 748, capacity: 800 },
+  { grade: 'Grade IX', boys: 340, girls: 334, total: 674, capacity: 700 },
+  { grade: 'Grade VIII', boys: 310, girls: 295, total: 605, capacity: 650 },
+  { grade: 'Primary (I-VII)', boys: 290, girls: 285, total: 575, capacity: 600 },
+];
+
+const CERTIFICATE_TYPES = [
+  {
+    id: 'cert-1',
+    title: 'Bonafide Certificate',
+    description: 'Official student bonafide and enrollment verification letter.',
+    icon: 'award',
+    color: '#3D5EE1',
+    issuedCount: 142,
+  },
+  {
+    id: 'cert-2',
+    title: 'Transfer Certificate (TC)',
+    description: 'Formal school leaving and character conduct certificate.',
+    icon: 'file-text',
+    color: '#0ca678',
+    issuedCount: 28,
+  },
+  {
+    id: 'cert-3',
+    title: 'Digital Student ID Card',
+    description: 'Barcode-enabled printable student identity credential card.',
+    icon: 'user-check',
+    color: '#f39c12',
+    issuedCount: 3654,
+  },
+];
+
+const AI_INSIGHTS_DATA = [
+  {
+    id: 'ai-1',
+    title: 'AI Attendance Risk Warning',
+    metric: '18 Students at Risk',
+    severity: 'High Priority',
+    description: 'Neural prediction identified 18 students likely to fall below the mandatory 75% attendance threshold before term finals.',
+    recommendation: 'Trigger automated parental advisory notification and schedule academic counseling.',
+    color: '#dc2626',
+  },
+  {
+    id: 'ai-2',
+    title: 'AI Fee Collection Forecasting',
+    metric: '92.4% Projected Realization',
+    severity: 'Positive Forecast',
+    description: 'Machine learning cashflow model predicts $312,000 of total $338,000 dues will be settled by 05 December.',
+    recommendation: 'Target WhatsApp reminders to the remaining 142 unpaid accounts on 20 November.',
+    color: '#0ca678',
+  },
+  {
+    id: 'ai-3',
+    title: 'STEM Curriculum Acceleration Alert',
+    metric: '3 Weeks Ahead of Schedule',
+    severity: 'Curriculum Optimization',
+    description: 'Senior Secondary Physics and Computer Science pacing is outpacing state requirements with 96% comprehension.',
+    recommendation: 'Introduce advanced Olympiad and competitive entrance test prep modules.',
+    color: '#3D5EE1',
+  },
+];
+
 export default function ReportsScreen() {
+  const [activeTab, setActiveTab] = useState<ReportsTab>('analytics');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTerm, setSelectedTerm] = useState('Term 1 (2026-27)');
   const [activeReport, setActiveReport] = useState<ReportItem | null>(null);
+
+  const tabs = useMemo(
+    () => [
+      { id: 'analytics', label: 'Analytics Reports', badge: REPORTS.length },
+      { id: 'strength', label: 'School Strength' },
+      { id: 'certificates', label: 'Certificates & ID' },
+      { id: 'ai', label: 'AI Predictive Insights' },
+    ],
+    []
+  );
 
   const filteredReports = useMemo(() => {
     return REPORTS.filter(
@@ -129,121 +209,302 @@ export default function ReportsScreen() {
     );
   }, [searchQuery]);
 
-  const detailData = activeReport ? REPORT_MOCK_DETAILS[activeReport.key] || REPORT_MOCK_DETAILS.attendance : null;
+  const detailData = activeReport
+    ? REPORT_MOCK_DETAILS[activeReport.key] || REPORT_MOCK_DETAILS.attendance
+    : null;
 
   const handleExport = (format: 'PDF' | 'Excel') => {
     Alert.alert(
       'Export Report',
-      `${activeReport?.title} (${selectedTerm}) is being exported as ${format}. The file will be saved to your device.`,
+      `${activeReport?.title} (${selectedTerm}) is being generated as ${format}. Saved locally to device storage.`,
       [{ text: 'OK' }]
     );
   };
 
   return (
     <View className="flex-1 bg-[#f4f6fb]">
-      {/* Header & Term Selector */}
+      {/* Tab Bar */}
+      <TabNavigation
+        tabs={tabs}
+        activeTab={activeTab}
+        onSelectTab={(tabId) => {
+          setActiveTab(tabId as ReportsTab);
+          setSearchQuery('');
+        }}
+      />
+
+      {/* Header & Search */}
       <View className="bg-white px-4 pt-3 pb-3 border-b border-slate-200">
         <View className="flex-row items-center justify-between mb-2.5">
           <View>
-            <Text className="text-base font-bold text-slate-900">Reports & Analytics</Text>
+            <Text className="text-base font-bold text-slate-900">Reports & Insights</Text>
             <Text className="text-xs text-slate-500">
-              Audits, attendance, academic progress & financial statements
+              Audits, attendance, academic progress, certificates & AI forecasting
             </Text>
           </View>
+
+          <Pressable
+            onPress={() =>
+              setSelectedTerm((prev) =>
+                prev === 'Term 1 (2026-27)' ? 'Term 2 (2026-27)' : 'Term 1 (2026-27)'
+              )
+            }
+            className="rounded-full bg-slate-100 border border-slate-200 px-2.5 py-1 flex-row items-center active:bg-slate-200"
+          >
+            <Feather name="calendar" size={11} color="#3D5EE1" />
+            <Text className="ml-1 text-[11px] font-semibold text-slate-700">{selectedTerm}</Text>
+          </Pressable>
         </View>
 
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search available reports…"
-        />
-
-        {/* Term Selector Pills */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-2.5">
-          {['Term 1 (2026-27)', 'Term 2 (2026-27)', 'Full AY 2026-27', 'AY 2025-26'].map((term) => (
-            <Pressable
-              key={term}
-              onPress={() => setSelectedTerm(term)}
-              className={`mr-2 rounded-full px-3 py-1 ${
-                selectedTerm === term
-                  ? 'bg-[#3D5EE1]'
-                  : 'bg-slate-100 border border-slate-200'
-              }`}
-            >
-              <Text
-                className={`text-[11px] font-semibold ${
-                  selectedTerm === term ? 'text-white' : 'text-slate-600'
-                }`}
-              >
-                {term}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        {activeTab === 'analytics' && (
+          <SearchBar
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search reports by title or domain…"
+          />
+        )}
       </View>
 
-      {/* Reports Listing */}
+      {/* Main Content Area */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="p-4 pb-12"
+        contentContainerClassName="p-4 pb-14"
       >
-        <View className="gap-y-3">
-          {filteredReports.map((report) => (
-            <Pressable
-              key={report.key}
-              onPress={() => setActiveReport(report)}
-              className="flex-row items-center rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5 active:bg-slate-50"
-            >
-              <View
-                className="h-11 w-11 items-center justify-center rounded-xl"
-                style={{ backgroundColor: `${report.tint}1A` }}
+        {/* CORE ANALYTICS REPORTS */}
+        {activeTab === 'analytics' && (
+          <View className="gap-y-3">
+            {filteredReports.map((report) => (
+              <Pressable
+                key={report.key}
+                onPress={() => setActiveReport(report)}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5 active:bg-slate-50"
               >
-                <Feather name={report.icon as any} size={20} color={report.tint} />
-              </View>
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-row items-center flex-1 pr-2">
+                    <View
+                      className="h-10 w-10 items-center justify-center rounded-xl"
+                      style={{ backgroundColor: `${report.tint}1A` }}
+                    >
+                      <Feather name={report.icon as any} size={18} color={report.tint} />
+                    </View>
+                    <View className="ml-3 flex-1">
+                      <Text className="text-base font-bold text-slate-900">{report.title}</Text>
+                      <Text className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                        {report.description}
+                      </Text>
+                    </View>
+                  </View>
+                  <Feather name="chevron-right" size={16} color="#94a3b8" />
+                </View>
 
-              <View className="ml-3.5 flex-1 pr-2">
-                <Text className="text-sm font-bold text-slate-900">{report.title}</Text>
-                <Text className="mt-0.5 text-xs text-slate-500" numberOfLines={2}>
-                  {report.description}
+                <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
+                  <Text className="text-[11px] text-slate-400">Available in PDF & Excel</Text>
+                  <Text className="text-xs font-bold text-[#3D5EE1]">Inspect Analytics →</Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        )}
+
+        {/* SCHOOL STRENGTH REPORT */}
+        {activeTab === 'strength' && (
+          <View className="gap-y-3">
+            <View className="rounded-2xl bg-indigo-50/60 p-4 border border-indigo-100">
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className="text-sm font-bold text-indigo-900">Total Enrolled Strength</Text>
+                  <Text className="text-xs text-indigo-700 mt-0.5">3,654 Students (91.3% Capacity)</Text>
+                </View>
+                <View className="items-end">
+                  <Text className="text-xs font-bold text-indigo-900">Boys: 1,870</Text>
+                  <Text className="text-xs font-bold text-indigo-900">Girls: 1,784</Text>
+                </View>
+              </View>
+            </View>
+
+            {SCHOOL_STRENGTH_DATA.map((st) => {
+              const occupancy = Math.round((st.total / st.capacity) * 100);
+              return (
+                <View
+                  key={st.grade}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-base font-bold text-slate-900">{st.grade}</Text>
+                    <Text className="text-xs font-bold text-slate-800">
+                      {st.total} / {st.capacity} ({occupancy}%)
+                    </Text>
+                  </View>
+
+                  <View className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <View
+                      className="h-full rounded-full bg-[#3D5EE1]"
+                      style={{ width: `${occupancy}%` }}
+                    />
+                  </View>
+
+                  <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2">
+                    <Text className="text-xs text-slate-600">
+                      Boys: <Text className="font-bold text-blue-600">{st.boys}</Text>
+                    </Text>
+                    <Text className="text-xs text-slate-600">
+                      Girls: <Text className="font-bold text-pink-600">{st.girls}</Text>
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* CERTIFICATES & ID CARDS */}
+        {activeTab === 'certificates' && (
+          <View className="gap-y-3">
+            {CERTIFICATE_TYPES.map((cert) => (
+              <View
+                key={cert.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-row items-center flex-1 pr-2">
+                    <View
+                      className="h-10 w-10 items-center justify-center rounded-xl"
+                      style={{ backgroundColor: `${cert.color}1A` }}
+                    >
+                      <Feather name={cert.icon as any} size={18} color={cert.color} />
+                    </View>
+                    <View className="ml-3 flex-1">
+                      <Text className="text-base font-bold text-slate-900">{cert.title}</Text>
+                      <Text className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                        {cert.description}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-between border-t border-slate-100 pt-2.5">
+                  <Text className="text-xs text-slate-500">
+                    Issued This Term: <Text className="font-bold text-slate-800">{cert.issuedCount}</Text>
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      Alert.alert(
+                        'Generate Document',
+                        `Opening generator for ${cert.title}. PDF template loaded.`
+                      )
+                    }
+                    className="flex-row items-center rounded-lg bg-blue-50 px-2.5 py-1 border border-blue-200"
+                  >
+                    <Feather name="printer" size={13} color="#3D5EE1" />
+                    <Text className="ml-1 text-xs font-bold text-[#3D5EE1]">Generate</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+
+            {/* Visual Digital ID Card Preview */}
+            <View className="mt-2 rounded-2xl bg-[#1b2240] p-4 text-white shadow-md">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs font-bold uppercase tracking-wider text-white/80">
+                  Oxford International School
                 </Text>
+                <Text className="text-[10px] font-mono text-emerald-400">STUDENT ID</Text>
               </View>
 
-              <View className="items-center justify-center rounded-full bg-slate-100 p-1.5">
-                <Feather name="chevron-right" size={16} color="#64748b" />
+              <View className="mt-3 flex-row items-center">
+                <View className="h-14 w-14 rounded-full bg-white/20 items-center justify-center border-2 border-white/40">
+                  <Text className="text-lg font-bold text-white">EC</Text>
+                </View>
+                <View className="ml-3">
+                  <Text className="text-base font-bold text-white">Emily Carter</Text>
+                  <Text className="text-xs text-white/70">Grade XII-A · Roll #101</Text>
+                  <Text className="text-[10px] font-mono text-white/50">ID: ADM-2026-001</Text>
+                </View>
               </View>
-            </Pressable>
-          ))}
-        </View>
+
+              <View className="mt-3 pt-2.5 border-t border-white/10 flex-row items-center justify-between">
+                <Text className="text-[10px] text-white/60">Valid Thru: 30 Jun 2027</Text>
+                <Text className="text-[10px] font-mono text-white/80">||||| | ||||| || |||</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* AI PREDICTIVE INSIGHTS */}
+        {activeTab === 'ai' && (
+          <View className="gap-y-3">
+            {AI_INSIGHTS_DATA.map((ai) => (
+              <View
+                key={ai.id}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-black/5"
+              >
+                <View className="flex-row items-start justify-between">
+                  <View className="flex-1 pr-2">
+                    <View className="flex-row items-center gap-1.5 mb-1">
+                      <View className="rounded-md bg-purple-50 px-2 py-0.5 border border-purple-200">
+                        <Text className="text-[10px] font-bold text-purple-700">AI Intelligence</Text>
+                      </View>
+                      <View className="rounded-md bg-slate-100 px-2 py-0.5">
+                        <Text className="text-[10px] font-semibold text-slate-600">{ai.severity}</Text>
+                      </View>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900">{ai.title}</Text>
+                    <Text className="text-xs font-bold text-[#3D5EE1] mt-0.5">{ai.metric}</Text>
+                  </View>
+                </View>
+
+                <Text className="mt-2 text-xs text-slate-600 leading-relaxed">
+                  {ai.description}
+                </Text>
+
+                <View className="mt-3 rounded-xl bg-slate-50 p-2.5 border-l-2 border-[#3D5EE1]">
+                  <Text className="text-[11px] font-bold text-slate-800">Action Recommendation</Text>
+                  <Text className="text-xs text-slate-600 mt-0.5">{ai.recommendation}</Text>
+                </View>
+
+                <View className="mt-3 flex-row items-center justify-end border-t border-slate-100 pt-2.5">
+                  <Pressable
+                    onPress={() =>
+                      Alert.alert(
+                        'AI Action Triggered',
+                        `Automated workflow executed for ${ai.title}.`
+                      )
+                    }
+                    className="rounded-lg bg-[#3D5EE1] px-3 py-1.5"
+                  >
+                    <Text className="text-xs font-bold text-white">Execute Action</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
-      {/* Report Drill-down Detail Modal */}
+      {/* Report Detail Modal */}
       <Modal
-        visible={!!activeReport}
+        visible={Boolean(activeReport)}
         animationType="slide"
         transparent={true}
         onRequestClose={() => setActiveReport(null)}
       >
         <View className="flex-1 justify-end bg-black/50">
-          <View className="max-h-[85%] rounded-t-3xl bg-white p-5 pb-8">
+          <View className="rounded-t-3xl bg-white p-5 pb-8 max-h-[85%]">
             {activeReport && detailData && (
               <>
                 <View className="flex-row items-center justify-between border-b border-slate-100 pb-3">
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center flex-1 pr-2">
                     <View
-                      className="h-8 w-8 items-center justify-center rounded-lg mr-2.5"
+                      className="h-9 w-9 items-center justify-center rounded-xl"
                       style={{ backgroundColor: `${activeReport.tint}1A` }}
                     >
-                      <Feather
-                        name={activeReport.icon as any}
-                        size={16}
-                        color={activeReport.tint}
-                      />
+                      <Feather name={activeReport.icon as any} size={18} color={activeReport.tint} />
                     </View>
-                    <View>
+                    <View className="ml-2.5 flex-1">
                       <Text className="text-base font-bold text-slate-900">
                         {activeReport.title}
                       </Text>
-                      <Text className="text-[11px] text-slate-500">{selectedTerm}</Text>
+                      <Text className="text-xs text-slate-500">{selectedTerm}</Text>
                     </View>
                   </View>
                   <Pressable onPress={() => setActiveReport(null)} hitSlop={10}>
@@ -251,77 +512,61 @@ export default function ReportsScreen() {
                   </Pressable>
                 </View>
 
-                <ScrollView showsVerticalScrollIndicator={false} className="mt-4">
+                <ScrollView className="mt-4" showsVerticalScrollIndicator={false}>
                   {/* Primary KPI Card */}
-                  <View className="rounded-2xl bg-gradient-to-br bg-slate-900 p-4">
-                    <Text className="text-xs font-medium text-slate-300">
+                  <View className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                    <Text className="text-xs text-slate-500 font-medium">
                       {detailData.primaryMetricLabel}
                     </Text>
-                    <Text className="mt-1 text-2xl font-extrabold text-white">
+                    <Text className="text-2xl font-bold text-slate-900 mt-1">
                       {detailData.primaryMetricValue}
                     </Text>
-                    <View className="mt-2 flex-row items-center">
-                      <Feather name="trending-up" size={13} color="#34d399" />
-                      <Text className="ml-1 text-xs font-semibold text-emerald-400">
-                        {detailData.trendText}
-                      </Text>
-                    </View>
+                    <Text className="text-xs font-semibold text-emerald-600 mt-1">
+                      {detailData.trendText}
+                    </Text>
                   </View>
 
                   {/* Breakdown Bars */}
-                  <View className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                    <Text className="text-xs font-bold text-slate-900 mb-3">
-                      Segment Breakdown
+                  <View className="mt-4 gap-y-3">
+                    <Text className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Cohort Distribution
                     </Text>
-                    <View className="gap-y-3">
-                      {detailData.breakdown.map((item) => (
-                        <View key={item.label}>
-                          <View className="flex-row items-center justify-between mb-1">
-                            <Text className="text-xs text-slate-600">{item.label}</Text>
-                            <Text className="text-xs font-bold text-slate-800">
-                              {item.value}
-                            </Text>
-                          </View>
-                          <View className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                            <View
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${item.percent}%`,
-                                backgroundColor: activeReport.tint,
-                              }}
-                            />
-                          </View>
+                    {detailData.breakdown.map((item) => (
+                      <View key={item.label}>
+                        <View className="flex-row items-center justify-between text-xs mb-1">
+                          <Text className="text-xs font-medium text-slate-700">{item.label}</Text>
+                          <Text className="text-xs font-bold text-slate-900">{item.value}</Text>
                         </View>
-                      ))}
-                    </View>
+                        <View className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                          <View
+                            className="h-full rounded-full bg-[#3D5EE1]"
+                            style={{ width: `${item.percent}%` }}
+                          />
+                        </View>
+                      </View>
+                    ))}
                   </View>
 
                   {/* Summary Note */}
-                  <View className="mt-3 rounded-xl bg-blue-50 p-3 border border-blue-200">
-                    <Text className="text-xs text-blue-900 font-medium">
-                      Note: {detailData.summaryNote}
+                  <View className="mt-4 rounded-xl bg-blue-50/60 p-3 border border-blue-100">
+                    <Text className="text-xs text-blue-900 leading-relaxed font-medium">
+                      {detailData.summaryNote}
                     </Text>
                   </View>
 
-                  {/* Export Action Buttons */}
-                  <View className="mt-5 flex-row gap-x-3">
+                  {/* Export Buttons */}
+                  <View className="mt-6 flex-row gap-x-3">
                     <Pressable
                       onPress={() => handleExport('PDF')}
-                      className="flex-1 flex-row items-center justify-center rounded-xl bg-slate-100 py-3"
+                      className="flex-1 items-center rounded-xl bg-slate-100 py-3"
                     >
-                      <Feather name="file-text" size={15} color="#334155" />
-                      <Text className="ml-1.5 text-xs font-bold text-slate-700">
-                        Export PDF
-                      </Text>
+                      <Text className="text-sm font-semibold text-slate-800">Export PDF</Text>
                     </Pressable>
                     <Pressable
                       onPress={() => handleExport('Excel')}
-                      className="flex-1 flex-row items-center justify-center rounded-xl bg-[#3D5EE1] py-3 shadow-sm shadow-[#3D5EE1]/30"
+                      className="flex-1 items-center rounded-xl bg-[#3D5EE1] py-3 shadow-md shadow-[#3D5EE1]/30"
                     >
-                      <Feather name="download" size={15} color="#ffffff" />
-                      <Text className="ml-1.5 text-xs font-bold text-white">
-                        Export Excel
-                      </Text>
+                      <Text className="text-sm font-bold text-white">Export Excel</Text>
                     </Pressable>
                   </View>
                 </ScrollView>
