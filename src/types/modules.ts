@@ -147,22 +147,82 @@ export interface DeleteAccountRequestItem {
 export interface ClassItem {
   id: string;
   name: string;
-  numericGrade: number;
-  sections: string[];
+  numeral: string;
+  category: 'Primary' | 'Middle' | 'Secondary' | 'Higher Secondary';
+  sections: string[] | string;
   classTeacher: string;
+  teacherSubject?: string;
+  teacherAvatar?: string;
   totalStudents: number;
   capacity: number;
   roomNo: string;
+  numericGrade?: number;
+  status: 'Active' | 'New' | 'Inactive' | 'Archived';
+  boysCount?: number;
+  girlsCount?: number;
+  subjectsCount?: number;
+}
+
+export interface ClassroomItem {
+  id: string;
+  name: string;
+  roomNo: string;
+  building: string;
+  floor: string;
+  type: 'Lecture Hall' | 'Classroom' | 'Science Lab' | 'Computer Lab' | 'Auditorium';
+  capacity: number;
+  status: 'Available' | 'Occupied' | 'Maintenance' | 'Reserved' | 'Inactive';
+  assignedClass: string;
+  teacher: string;
+  students: number;
+  availableSeats: number;
+  year: string;
+  facilities: string[];
+}
+
+export interface SectionItem {
+  id: string;
+  name: string;
+  className: string;
+  year: string;
+  classTeacher: string;
+  roomNo: string;
+  floor: string;
+  shift: 'Morning' | 'Afternoon' | 'Evening';
+  medium: 'English' | 'Regional';
+  students: number;
+  capacity: number;
+  seatsLeft: number;
+  boys: number;
+  girls: number;
+  status: 'Active' | 'Full' | 'Inactive' | 'Archived';
+  note: string;
 }
 
 export interface SubjectItem {
   id: string;
   code: string;
   name: string;
-  type: 'Theory' | 'Practical' | 'Both';
+  category: 'Core' | 'Elective' | 'Language' | 'Vocational';
+  teacher: string;
+  className: string;
+  section: string;
+  year: string;
   department: string;
-  weeklyHours: number;
+  type: 'Theory' | 'Practical' | 'Both';
+  weeklyHours?: number;
+  periods: number;
   credits: number;
+  units: number;
+  lessons: number;
+  assignments: number;
+  exams: number;
+  resources: number;
+  updated: string;
+  status: 'Active' | 'Published' | 'Draft' | 'Archived';
+  examMarks?: number;
+  internalMarks?: number;
+  passMarks?: number;
 }
 
 export interface TimetableSlot {
@@ -175,20 +235,81 @@ export interface TimetableSlot {
   className: string;
   section: string;
   room: string;
+  duration?: string;
+  tone?: 'primary' | 'success' | 'warning' | 'info' | 'danger' | 'purple';
+}
+
+export interface TeacherTimetableSlot {
+  id: string;
+  day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
+  period: number;
+  time: string;
+  heading: string;
+  subject: string;
+  className: string;
+  section: string;
+  room: string;
+  mode: 'Teaching' | 'Free Period' | 'Exam Duty' | 'Lab Session' | 'Staff Meeting';
+  tone: 'primary' | 'success' | 'warning' | 'info' | 'danger';
+  teacherName: string;
+  notes?: string;
+}
+
+export interface StudyMaterialItem {
+  id: string;
+  title: string;
+  subject: string;
+  grade: string;
+  className?: string;
+  chapter: string;
+  fileType: 'PDF' | 'PPT' | 'DOC' | 'Video' | 'Audio' | 'Link';
+  fileSize: string;
+  uploadDate: string;
+  uploadedBy: string;
+  downloads: number;
+  status: 'Published' | 'Draft' | 'Archived';
+  description?: string;
 }
 
 export interface HomeworkItem {
   id: string;
-  title: string;
+  title?: string;
+  name?: string;
   subject: string;
+  type: 'Assignment' | 'Project' | 'Essay' | 'Problem Set' | 'Lab Report';
+  priority: 'High' | 'Medium' | 'Low';
+  teacher: string;
   className: string;
   section: string;
-  assignedDate: string;
-  dueDate: string;
-  totalSubmissions: number;
-  totalStudents: number;
+  assignedDate?: string;
+  assigned?: string;
+  dueDate?: string;
+  due?: string;
+  duration?: string;
+  totalSubmissions?: number;
+  submitted?: number;
+  totalStudents?: number;
+  total?: number;
+  percent?: number;
+  pending?: number;
+  late?: number;
+  files?: number;
+  status: 'Assigned' | 'In Progress' | 'Completed' | 'Evaluated' | 'Overdue' | 'Draft' | 'Open' | 'Closed';
   description: string;
-  status: 'Open' | 'Evaluated' | 'Closed';
+  maxMarks?: number;
+}
+
+export interface HomeworkGradingItem {
+  homeworkId: string;
+  studentName: string;
+  rollNo: string;
+  submittedDate: string;
+  marksObtained: number;
+  outOf: number;
+  gradeLetter: string;
+  rubricScore: string;
+  remarks: string;
+  feedbackType: 'Appreciation' | 'Improvement' | 'Action Required';
 }
 
 export interface ExamItem {
@@ -497,18 +618,6 @@ export interface DesignationItem {
 }
 
 // --- ACADEMIC EXTENDED ---
-export interface StudyMaterialItem {
-  id: string;
-  title: string;
-  subject: string;
-  grade: string;
-  chapter: string;
-  fileType: 'PDF' | 'DOC' | 'Video';
-  fileSize: string;
-  uploadDate: string;
-  uploadedBy: string;
-}
-
 export interface ExamResultItem {
   id: string;
   studentName: string;
