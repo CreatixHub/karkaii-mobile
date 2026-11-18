@@ -94,6 +94,55 @@ export interface StudentPromotionItem {
   academicYear: string;
 }
 
+export interface StudentAttendanceHistoryItem {
+  id: string;
+  date: string;
+  section: string;
+  subject: string;
+  status: 'Present' | 'Absent' | 'Late' | 'Leave';
+  timeIn: string;
+  timeOut: string;
+  teacher: string;
+  remarks: string;
+}
+
+export interface StudentDocumentItem {
+  id: string;
+  name: string;
+  category: 'Identity' | 'Academic' | 'Medical' | 'Transfer' | 'Other';
+  verificationStatus: 'Verified' | 'Pending' | 'Rejected';
+  isFavourite: boolean;
+  studentName: string;
+  admissionNo: string;
+  size: string;
+  date: string;
+  uploadedBy: string;
+}
+
+export interface TeacherRoutineSlot {
+  id: string;
+  day: string;
+  time: string;
+  period: string;
+  subject: string;
+  grade: string;
+  room: string;
+  duration: string;
+}
+
+export interface DeleteAccountRequestItem {
+  id: string;
+  name: string;
+  userId: string;
+  email: string;
+  userType: 'Student' | 'Teacher' | 'Parent' | 'Employee';
+  department: string;
+  reason: string;
+  requestedDate: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  reviewer: string;
+}
+
 // --- ACADEMIC ---
 export interface ClassItem {
   id: string;
