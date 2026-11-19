@@ -26,7 +26,12 @@ function getGreeting(): string {
 
 export default function DashboardScreen() {
   const { user } = useAuth();
-  const [activeRole, setActiveRole] = useState<DashboardRole>('admin');
+  const userRole = (user?.role || '').toLowerCase();
+  const initialRole: DashboardRole =
+    userRole === 'teacher' || userRole === 'student' || userRole === 'parent'
+      ? (userRole as DashboardRole)
+      : 'admin';
+  const [activeRole, setActiveRole] = useState<DashboardRole>(initialRole);
   const [searchQuery, setSearchQuery] = useState('');
 
   const greeting = useMemo(() => getGreeting(), []);
@@ -114,11 +119,11 @@ export default function DashboardScreen() {
         />
       )}
 
-      {activeRole === 'teacher' && <TeacherDashboardView greeting={greeting} />}
+      {activeRole === 'teacher' && <TeacherDashboardView greeting={greeting} displayName={displayName} />}
 
-      {activeRole === 'student' && <StudentDashboardView greeting={greeting} />}
+      {activeRole === 'student' && <StudentDashboardView greeting={greeting} displayName={displayName} />}
 
-      {activeRole === 'parent' && <ParentDashboardView greeting={greeting} />}
+      {activeRole === 'parent' && <ParentDashboardView greeting={greeting} displayName={displayName} />}
     </ScrollView>
   );
 }

@@ -14,9 +14,10 @@ import { STUDENT_DASHBOARD_DATA } from '@/data/adminDashboardMock';
 
 interface StudentDashboardViewProps {
   greeting: string;
+  displayName?: string;
 }
 
-export default function StudentDashboardView({ greeting }: StudentDashboardViewProps) {
+export default function StudentDashboardView({ greeting, displayName }: StudentDashboardViewProps) {
   const data = STUDENT_DASHBOARD_DATA;
 
   // Local modals
@@ -55,7 +56,7 @@ export default function StudentDashboardView({ greeting }: StudentDashboardViewP
           </View>
           <View className="ml-3.5 flex-1">
             <Text className="text-lg font-bold text-[#202C4B]">
-              {greeting}, {data.profile.name}
+              {greeting}, {displayName || data.profile.name}
             </Text>
             <Text className="mt-0.5 text-xs text-slate-500 font-medium">
               {data.profile.grade} • Roll No. {data.profile.rollNo}

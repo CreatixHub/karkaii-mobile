@@ -14,9 +14,10 @@ import { TEACHER_DASHBOARD_DATA } from '@/data/adminDashboardMock';
 
 interface TeacherDashboardViewProps {
   greeting: string;
+  displayName?: string;
 }
 
-export default function TeacherDashboardView({ greeting }: TeacherDashboardViewProps) {
+export default function TeacherDashboardView({ greeting, displayName }: TeacherDashboardViewProps) {
   const data = TEACHER_DASHBOARD_DATA;
 
   // Modal states
@@ -76,7 +77,7 @@ export default function TeacherDashboardView({ greeting }: TeacherDashboardViewP
           </View>
           <View className="ml-3.5 flex-1">
             <Text className="text-lg font-bold text-[#202C4B]">
-              {greeting}, {data.profile.name}
+              {greeting}, {displayName || data.profile.name}
             </Text>
             <Text className="mt-0.5 text-xs text-slate-500 font-medium">
               {data.profile.designation} • {data.profile.department}

@@ -38,33 +38,94 @@ const DEMO_ORGANIZATIONS: OrganizationInfo[] = [
   { id: '3', slug: 'riverside', name: 'Riverside Academy', status: 'Active' },
 ];
 
-function createMockUser(credentials: LoginCredentials): AuthUser {
-  const role = (credentials.role || 'admin').toLowerCase();
-  const email = credentials.email || `${role}@karkaii.com`;
+function formatDisplayName(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return 'User';
 
-  const roleNames: Record<string, string> = {
-    admin: 'Principal Arthur Wright',
-    teacher: 'Sarah Mitchell (Senior Faculty)',
-    student: 'Emily Carter (Grade XII-A)',
-    parent: 'Robert Carter (Guardian)',
-    accountant: 'Arthur Pendelton (Bursar)',
-    staff: 'Clara Oswald (Operations)',
-    librarian: 'Clara Oswald (Chief Librarian)',
-    receptionist: 'Jane Cooper (Admissions)',
+  let rawName = trimmed;
+  if (trimmed.includes('@')) {
+    rawName = trimmed.split('@')[0];
+  }
+
+  const words = rawName.replace(/[._-]+/g, ' ').trim().split(/\s+/);
+  return words
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function createMockUser(credentials: LoginCredentials): AuthUser {
+  const rawInput = credentials.email?.trim() || '';
+
+  // Determine role
+  let role = (credentials.role || '').toLowerCase();
+  if (!role) {
+    const lowerInput = rawInput.toLowerCase();
+    if (lowerInput.includes('teacher')) role = 'teacher';
+    else if (lowerInput.includes('student')) role = 'student';
+    else if (lowerInput.includes('parent')) role = 'parent';
+    else if (lowerInput.includes('accountant')) role = 'accountant';
+    else if (lowerInput.includes('librarian')) role = 'librarian';
+    else if (lowerInput.includes('staff')) role = 'staff';
+    else role = 'admin';
+  }
+
+  // Exact frontend demo user mapping
+  const demoEmailMap: Record<string, { name: string; role: string }> = {
+    'admin@example.com': { name: 'Kevin Larry', role: 'admin' },
+    'teacher@example.com': { name: 'Teresa Fischer', role: 'teacher' },
+    'student@example.com': { name: 'Janet Daniel', role: 'student' },
+    'parent@example.com': { name: 'Thomas Daniel', role: 'parent' },
   };
 
-  const name = roleNames[role] || (email.split('@')[0].replace(/[._-]/g, ' ') || 'School Staff');
+  let name = '';
+  let email = '';
+  let username = '';
+
+  const matchedDemo = demoEmailMap[rawInput.toLowerCase()];
+  if (matchedDemo) {
+    name = matchedDemo.name;
+    email = rawInput.toLowerCase();
+    username = rawInput.split('@')[0];
+    if (!credentials.role) role = matchedDemo.role;
+  } else if (rawInput) {
+    // Custom user login identifier (e.g. "mesiya", "mesiya@agaramsoft.com", "John Doe")
+    if (rawInput.includes('@')) {
+      email = rawInput.toLowerCase();
+      username = rawInput.split('@')[0];
+      name = formatDisplayName(username);
+    } else {
+      name = formatDisplayName(rawInput);
+      username = rawInput.toLowerCase().replace(/\s+/g, '.');
+      email = `${username}@karkaii-school.org`;
+    }
+  } else {
+    // Blank input fallback by role (matching frontend fixtures)
+    const fallbackByRole: Record<string, { name: string; email: string }> = {
+      admin: { name: 'Kevin Larry', email: 'admin@example.com' },
+      teacher: { name: 'Teresa Fischer', email: 'teacher@example.com' },
+      student: { name: 'Janet Daniel', email: 'student@example.com' },
+      parent: { name: 'Thomas Daniel', email: 'parent@example.com' },
+      accountant: { name: 'Arthur Pendelton', email: 'accountant@karkaii.com' },
+      librarian: { name: 'Clara Oswald', email: 'librarian@karkaii.com' },
+      staff: { name: 'Campus Operations', email: 'staff@karkaii.com' },
+    };
+    const fb = fallbackByRole[role] || { name: 'Kevin Larry', email: 'admin@example.com' };
+    name = fb.name;
+    email = fb.email;
+    username = fb.email.split('@')[0];
+  }
 
   return {
     id: `usr-${Date.now()}`,
-    username: email.split('@')[0],
-    name: name.charAt(0).toUpperCase() + name.slice(1),
-    email: email,
+    username,
+    name,
+    email,
     role: role as any,
     permissions: ['all'],
     avatar: null,
     avatarUrl: null,
-    phone: '+44 1865 270000',
+    phone: '+91 98450 12345',
     organization: DEMO_ORGANIZATIONS[0],
     organizations: DEMO_ORGANIZATIONS,
     status: 'Active',

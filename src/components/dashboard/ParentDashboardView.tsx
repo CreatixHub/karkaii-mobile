@@ -13,9 +13,10 @@ import { PARENT_DASHBOARD_DATA } from '@/data/adminDashboardMock';
 
 interface ParentDashboardViewProps {
   greeting: string;
+  displayName?: string;
 }
 
-export default function ParentDashboardView({ greeting }: ParentDashboardViewProps) {
+export default function ParentDashboardView({ greeting, displayName }: ParentDashboardViewProps) {
   const [activeChildKey, setActiveChildKey] = useState<'Emma' | 'Lucas'>('Emma');
 
   // Modals
@@ -69,7 +70,7 @@ export default function ParentDashboardView({ greeting }: ParentDashboardViewPro
             </View>
             <View className="ml-3.5 flex-1">
               <Text className="text-lg font-bold text-[#202C4B]">
-                {greeting}, {PARENT_DASHBOARD_DATA.children.Emma.name.split(' ')[0]}&apos;s Parent
+                {greeting}, {displayName || `${PARENT_DASHBOARD_DATA.children.Emma.name.split(' ')[0]}'s Parent`}
               </Text>
               <Text className="mt-0.5 text-xs text-slate-500 font-medium">
                 Parent Portal • 2 Wards Enrolled

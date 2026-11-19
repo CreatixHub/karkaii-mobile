@@ -58,21 +58,25 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           ) : null}
         </View>
 
-        <View className="mt-2.5 flex-row items-center">
-          <View className="h-8 w-8 items-center justify-center rounded-full bg-[#3D5EE1]">
-            <Text className="text-xs font-semibold text-white">
+        <Pressable
+          onPress={() => navigation.navigate('profile')}
+          className="mt-2.5 flex-row items-center p-2 rounded-xl bg-slate-50 border border-slate-100 active:bg-slate-100"
+        >
+          <View className="h-9 w-9 items-center justify-center rounded-full bg-[#3D5EE1]">
+            <Text className="text-sm font-bold text-white">
               {userName.charAt(0).toUpperCase()}
             </Text>
           </View>
           <View className="ml-2.5 flex-1">
-            <Text className="text-xs font-semibold text-slate-800" numberOfLines={1}>
+            <Text className="text-xs font-bold text-slate-800" numberOfLines={1}>
               {userName}
             </Text>
-            <Text className="text-[10px] font-medium text-slate-400">
-              {userRole}
+            <Text className="text-[10px] font-medium text-indigo-600">
+              {userRole} · View Profile
             </Text>
           </View>
-        </View>
+          <Feather name="chevron-right" size={14} color="#94a3b8" />
+        </Pressable>
       </View>
 
       <View className="h-px bg-slate-100" />
@@ -108,6 +112,26 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             </Pressable>
           );
         })}
+
+        <Pressable
+          onPress={() => navigation.navigate('profile')}
+          className={`mb-1 flex-row items-center rounded-xl px-3 py-2.5 ${
+            activeRouteName === 'profile' ? 'bg-[#3D5EE11A]' : ''
+          }`}
+        >
+          <Feather
+            name="user"
+            size={18}
+            color={activeRouteName === 'profile' ? '#3D5EE1' : '#6A7287'}
+          />
+          <Text
+            className={`ml-3 text-sm ${
+              activeRouteName === 'profile' ? 'font-semibold text-[#3D5EE1]' : 'text-slate-600'
+            }`}
+          >
+            My Profile
+          </Text>
+        </Pressable>
       </View>
 
       {/* Sign Out Button & Version Footer */}
