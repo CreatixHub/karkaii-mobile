@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { tokenStorage } from '@/services/tokenStorage';
+import { tokenStorage } from '@/services/api/tokenStorage';
 import type { AuthUser, LoginCredentials, OrganizationInfo } from '@/types/auth';
 
 interface AuthContextType {

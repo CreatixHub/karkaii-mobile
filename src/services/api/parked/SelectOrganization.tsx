@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/services/api/useRealAuth';
 import type { OrganizationInfo } from '@/types/auth';
 
 export default function SelectOrganizationScreen() {

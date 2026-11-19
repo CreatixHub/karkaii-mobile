@@ -1,32 +1,29 @@
 import '../global.css';
 
-import React, { useEffect } from 'react';
-import { Stack, router, useRootNavigationState, useSegments } from 'expo-router';
+import React from 'react';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AuthProvider } from '@/context/AuthContext';
-import { useAuth } from '@/hooks/useAuth';
+import { AuthProvider, useAuth } from '@/core/auth/AuthProvider';
+import { DataProvider } from '@/core/DataProvider';
+import { ToastProvider } from '@/ui/Toast';
 
-function AuthStateGate() {
+function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
-  const segments = useSegments();
-  const navigationState = useRootNavigationState();
+  if (isLoading) return null;
 
-  useEffect(() => {
-    if (isLoading || !navigationState?.key) return;
-
-    const firstSegment = (segments as string[])[0];
-    const inAuthGroup = firstSegment === '(auth)';
-
-    if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      router.replace('/(app)');
-    }
-  }, [isAuthenticated, isLoading, segments, navigationState?.key]);
-
-  return null;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Protected guard={!isAuthenticated} redirectTo="/(app)">
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+      <Stack.Protected guard={isAuthenticated} redirectTo="/(auth)/login">
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
@@ -34,14 +31,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style="dark" />
-        <AuthProvider>
-          <AuthStateGate />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack>
-        </AuthProvider>
+        <DataProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <RootNavigator />
+            </ToastProvider>
+          </AuthProvider>
+        </DataProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

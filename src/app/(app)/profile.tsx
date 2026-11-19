@@ -1,175 +1,57 @@
 import React from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { ROLES, roleLabel } from '@/core/auth/access';
+import { resetAllData } from '@/core/store/store';
 import { useAuth } from '@/hooks/useAuth';
+import { Button, Card, KeyValue } from '@/ui/basics';
+import { useToast } from '@/ui/Toast';
 
 export default function ProfileScreen() {
-  const { user, organizations, logout } = useAuth();
+  const { user, role, logout, loginAs, canManage } = useAuth();
+  const toast = useToast();
 
-  const displayName = user?.name || 'School Staff';
-  const roleLabel = (user?.role || 'admin').toUpperCase();
-  const email = user?.email || 'user@karkaii-school.org';
-  const username = user?.username || 'user';
-  const phone = user?.phone || '+91 98450 12345';
-  const schoolName = user?.organization?.name || 'Karkaii International Academy';
-
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out from your school account?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/(auth)/login');
-          },
-        },
-      ]
-    );
-  };
+  const reset = () =>
+    Alert.alert('Reset demo data?', 'All records you added, edited or deleted will be restored to the original sample data.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Reset', style: 'destructive', onPress: () => { resetAllData(); toast('Demo data restored'); } },
+    ]);
 
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50"
-      contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Profile Header Hero Card */}
-      <View className="rounded-3xl bg-white p-6 border border-slate-200 shadow-sm mb-4 items-center">
-        <View className="relative mb-3">
-          <View className="h-20 w-20 rounded-full bg-indigo-600 items-center justify-center border-4 border-indigo-100 shadow-sm">
-            <Text className="text-3xl font-extrabold text-white">
-              {displayName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <View className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-emerald-500 border-2 border-white items-center justify-center">
-            <Feather name="check" size={10} color="#fff" />
-          </View>
+    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerClassName="p-4 pb-12">
+      <View className="mb-4 items-center rounded-2xl border border-slate-100 bg-white p-5">
+        <View className="h-16 w-16 items-center justify-center rounded-full bg-[#3D5EE1]">
+          <Text className="text-2xl font-bold text-white">{(user?.name ?? '?').charAt(0).toUpperCase()}</Text>
         </View>
-
-        <Text className="text-xl font-bold text-slate-800 text-center">{displayName}</Text>
-        <Text className="text-xs text-slate-500 mt-0.5">{email}</Text>
-
-        <View className="mt-3 flex-row items-center gap-x-2">
-          <View className="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1">
-            <Text className="text-xs font-bold text-indigo-700">{roleLabel}</Text>
-          </View>
-          <View className="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 flex-row items-center">
-            <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
-            <Text className="text-xs font-bold text-emerald-700">Active</Text>
-          </View>
-        </View>
-
-        <View className="mt-4 w-full pt-3 border-t border-slate-100 flex-row items-center justify-center">
-          <Feather name="shield" size={13} color="#6366f1" />
-          <Text className="text-xs font-medium text-slate-600 ml-1.5">{schoolName}</Text>
+        <Text className="mt-3 text-lg font-bold text-[#1b2240]">{user?.name}</Text>
+        <Text className="text-xs text-slate-500">{user?.title}</Text>
+        <View className="mt-2 flex-row items-center rounded-full bg-[#E9EDFC] px-3 py-1">
+          <Feather name={canManage ? 'edit-3' : 'eye'} size={11} color="#3D5EE1" />
+          <Text className="ml-1.5 text-[11px] font-bold text-[#3D5EE1]">{roleLabel(role)} · {canManage ? 'can manage data' : 'view only'}</Text>
         </View>
       </View>
 
-      {/* Account Details Card */}
-      <View className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm mb-4">
-        <Text className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-          Personal Information
-        </Text>
+      <Card style={{ marginBottom: 16 }}>
+        <KeyValue label="Email" value={user?.email} />
+        <KeyValue label="Phone" value={user?.phone} />
+        <KeyValue label="School" value={user?.school} />
+        <KeyValue label="Role" value={roleLabel(role)} />
+      </Card>
 
-        <View className="space-y-3">
-          <View className="flex-row items-center justify-between py-2 border-b border-slate-100">
-            <View className="flex-row items-center">
-              <Feather name="user" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Display Name</Text>
-            </View>
-            <Text className="text-xs font-semibold text-slate-800">{displayName}</Text>
-          </View>
-
-          <View className="flex-row items-center justify-between py-2 border-b border-slate-100">
-            <View className="flex-row items-center">
-              <Feather name="at-sign" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Username</Text>
-            </View>
-            <Text className="text-xs font-semibold text-slate-800">@{username}</Text>
-          </View>
-
-          <View className="flex-row items-center justify-between py-2 border-b border-slate-100">
-            <View className="flex-row items-center">
-              <Feather name="mail" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Email Address</Text>
-            </View>
-            <Text className="text-xs font-semibold text-slate-800">{email}</Text>
-          </View>
-
-          <View className="flex-row items-center justify-between py-2">
-            <View className="flex-row items-center">
-              <Feather name="phone" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Phone Contact</Text>
-            </View>
-            <Text className="text-xs font-semibold text-slate-800">{phone}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Campus Organization & Security */}
-      <View className="rounded-2xl bg-white p-4 border border-slate-200 shadow-sm mb-4">
-        <Text className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-          Campus Organization & Security
-        </Text>
-
-        <View className="space-y-3">
-          <View className="flex-row items-center justify-between py-2 border-b border-slate-100">
-            <View className="flex-row items-center">
-              <Feather name="book" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">School Campus</Text>
-            </View>
-            <Text className="text-xs font-semibold text-slate-800">{schoolName}</Text>
-          </View>
-
-          <View className="flex-row items-center justify-between py-2 border-b border-slate-100">
-            <View className="flex-row items-center">
-              <Feather name="calendar" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Academic Session</Text>
-            </View>
-            <Text className="text-xs font-semibold text-indigo-700">AY 2026–2027</Text>
-          </View>
-
-          <View className="flex-row items-center justify-between py-2">
-            <View className="flex-row items-center">
-              <Feather name="lock" size={15} color="#64748b" />
-              <Text className="text-xs text-slate-500 ml-2.5">Session Security</Text>
-            </View>
-            <Text className="text-xs font-semibold text-emerald-600">Local Encrypted</Text>
-          </View>
-        </View>
-
-        {organizations && organizations.length > 1 && (
-          <Pressable
-            onPress={() => router.push('/(auth)/select-organization')}
-            className="mt-3 flex-row items-center justify-center bg-slate-50 border border-slate-200 py-2.5 rounded-xl active:bg-slate-100"
-          >
-            <Feather name="refresh-cw" size={13} color="#475569" />
-            <Text className="text-xs font-semibold text-slate-700 ml-1.5">
-              Switch Campus ({organizations.length} Available)
-            </Text>
+      <Text className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">Switch demo role</Text>
+      <View className="mb-5 flex-row flex-wrap gap-2">
+        {ROLES.map((r) => (
+          <Pressable key={r.key} onPress={() => loginAs(r.key)} className={`rounded-full border px-3 py-1.5 ${r.key === role ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}>
+            <Text className={`text-xs font-bold ${r.key === role ? 'text-white' : 'text-slate-600'}`}>{r.label}</Text>
           </Pressable>
-        )}
+        ))}
       </View>
+      <Text className="-mt-3 mb-5 text-[11px] text-slate-400">{ROLES.find((r) => r.key === role)?.blurb}</Text>
 
-      {/* Sign Out Action Button */}
-      <Pressable
-        onPress={handleSignOut}
-        className="flex-row items-center justify-center bg-rose-50 border border-rose-200 py-3.5 rounded-2xl active:bg-rose-100"
-      >
-        <Feather name="log-out" size={16} color="#e11d48" />
-        <Text className="text-xs font-bold text-rose-700 ml-2">Sign Out of Account</Text>
-      </Pressable>
+      <View className="gap-3">
+        <Button label="Reset demo data" icon="refresh-ccw" variant="secondary" onPress={reset} />
+        <Button label="Sign out" icon="log-out" variant="danger" onPress={() => logout()} />
+      </View>
     </ScrollView>
   );
 }

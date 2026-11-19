@@ -1,10 +1,2 @@
-import { useContext } from 'react';
-import { AuthContext } from '@/context/AuthContext';
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
+// The app runs on mock auth for now. The real (API-backed) provider is parked in src/services/api/.
+export { useAuth } from '@/core/auth/AuthProvider';
