@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -17,26 +16,9 @@ import { router } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { tokenStorage } from '@/services/tokenStorage';
 
-const ROLES = [
-  { value: '', label: 'My main role (automatic)' },
-  { value: 'admin', label: 'Admin' },
-  { value: 'teacher', label: 'Teacher' },
-  { value: 'student', label: 'Student' },
-  { value: 'parent', label: 'Parent' },
-  { value: 'accountant', label: 'Accountant' },
-  { value: 'receptionist', label: 'Receptionist' },
-  { value: 'librarian', label: 'Librarian' },
-  { value: 'warden', label: 'Warden' },
-  { value: 'transport_manager', label: 'Transport manager' },
-  { value: 'nurse', label: 'Nurse' },
-  { value: 'security', label: 'Security' },
-];
-
 export default function LoginScreen() {
   const { login, isLoggingIn, error, clearError } = useAuth();
 
-  const [selectedRole, setSelectedRole] = useState('');
-  const [isRolePickerOpen, setIsRolePickerOpen] = useState(false);
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -96,7 +78,6 @@ export default function LoginScreen() {
       await login({
         email: identifier.trim(),
         password,
-        role: selectedRole || undefined,
         rememberMe,
       });
 
@@ -106,9 +87,6 @@ export default function LoginScreen() {
       // Error is caught and surfaced in context
     }
   };
-
-  const currentRoleLabel =
-    ROLES.find((r) => r.value === selectedRole)?.label || 'My main role (automatic)';
 
   return (
     <SafeAreaView className="flex-1 bg-[#f4f6fb]">
@@ -150,20 +128,6 @@ export default function LoginScreen() {
                 </Text>
               </View>
             ) : null}
-
-            {/* Sign in as (Role Selector) */}
-            <View className="mb-4">
-              <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">Sign in as</Text>
-              <Pressable
-                onPress={() => setIsRolePickerOpen(true)}
-                className="flex-row items-center justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-3 active:bg-slate-50"
-              >
-                <Text className="text-sm text-[#202C4B]" numberOfLines={1}>
-                  {currentRoleLabel}
-                </Text>
-                <Feather name="chevron-down" size={16} color="#6A7287" />
-              </Pressable>
-            </View>
 
             {/* Email or Phone Number Field */}
             <View className="mb-4">
@@ -272,48 +236,10 @@ export default function LoginScreen() {
               )}
             </Pressable>
 
-            {/* Quick Demo Role Logins */}
-            <View className="mt-5 border-t border-slate-100 pt-4">
-              <Text className="text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">
-                Quick Demo Access (Static Data Mode)
-              </Text>
-              <View className="flex-row flex-wrap justify-between gap-2">
-                {[
-                  { role: 'admin', label: 'Admin', icon: 'shield', color: '#3D5EE1' },
-                  { role: 'teacher', label: 'Teacher', icon: 'user', color: '#0ca678' },
-                  { role: 'student', label: 'Student', icon: 'book', color: '#f39c12' },
-                  { role: 'parent', label: 'Parent', icon: 'heart', color: '#e83e8c' },
-                ].map((demo) => (
-                  <Pressable
-                    key={demo.role}
-                    onPress={async () => {
-                      try {
-                        await login({
-                          email: `${demo.role}@karkaii.com`,
-                          password: 'password123',
-                          role: demo.role,
-                          rememberMe: true,
-                        });
-                        router.replace('/(app)');
-                      } catch (e) {
-                        console.warn(e);
-                      }
-                    }}
-                    className="flex-1 min-w-[45%] flex-row items-center justify-center rounded-xl bg-slate-50 border border-slate-200 py-2.5 px-2 active:bg-slate-100"
-                  >
-                    <Feather name={demo.icon as any} size={13} color={demo.color} />
-                    <Text className="ml-1.5 text-xs font-semibold text-slate-700">
-                      {demo.label}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Sign Up Link */}
+            {/* Campus Organization Explorer Link */}
             <View className="mt-5 items-center">
               <Text className="text-xs text-slate-600">
-                Don’t have an account?{' '}
+                School or Campus Administrator?{' '}
                 <Text
                   onPress={() => router.push('/(auth)/select-organization')}
                   className="font-bold text-[#3D5EE1]"
@@ -332,60 +258,6 @@ export default function LoginScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* Role Selection Modal */}
-      <Modal
-        visible={isRolePickerOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsRolePickerOpen(false)}
-      >
-        <Pressable
-          onPress={() => setIsRolePickerOpen(false)}
-          className="flex-1 justify-end bg-black/40"
-        >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            className="rounded-t-3xl bg-white p-5 max-h-[70%]"
-          >
-            <View className="flex-row items-center justify-between pb-3 border-b border-slate-100">
-              <Text className="text-base font-bold text-[#202C4B]">Sign in as</Text>
-              <Pressable onPress={() => setIsRolePickerOpen(false)} hitSlop={10}>
-                <Feather name="x" size={20} color="#64748b" />
-              </Pressable>
-            </View>
-
-            <ScrollView className="mt-2" showsVerticalScrollIndicator={false}>
-              {ROLES.map((role) => {
-                const isSelected = selectedRole === role.value;
-                return (
-                  <Pressable
-                    key={role.value || 'auto'}
-                    onPress={() => {
-                      setSelectedRole(role.value);
-                      setIsRolePickerOpen(false);
-                    }}
-                    className={`flex-row items-center justify-between py-3 px-3 rounded-xl mb-1 ${
-                      isSelected ? 'bg-[#3D5EE1]/10' : 'active:bg-slate-50'
-                    }`}
-                  >
-                    <Text
-                      className={`text-sm ${
-                        isSelected ? 'font-bold text-[#3D5EE1]' : 'text-slate-700'
-                      }`}
-                    >
-                      {role.label}
-                    </Text>
-                    {isSelected ? (
-                      <Feather name="check" size={16} color="#3D5EE1" />
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </SafeAreaView>
   );
 }

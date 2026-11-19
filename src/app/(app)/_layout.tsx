@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import DrawerContent from '@/components/DrawerContent';
 import { MENU_ITEMS } from '@/data/menu';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,6 +27,12 @@ function HeaderProfileButton() {
 }
 
 export default function AppDrawerLayout() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (!isLoading && !isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
   return (
     <Drawer
       drawerContent={(props) => <DrawerContent {...props} />}
