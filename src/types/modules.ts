@@ -605,54 +605,261 @@ export interface ExpenseCategoryItem {
   status: 'Active' | 'Inactive';
 }
 
-// --- CAMPUS OPERATIONS ---
+// --- CAMPUS OPERATIONS (BATCH 6: 13 PRIMARY SUBMODULES) ---
 export interface TransportRouteItem {
   id: string;
-  routeNumber: string;
-  routeName: string;
-  startPoint: string;
-  endPoint: string;
-  pickupStopsCount: number;
-  assignedVehicle: string;
-  driverName: string;
+  code: string;
+  name: string;
+  routeNumber?: string;
+  routeName?: string;
+  startPoint?: string;
+  endPoint?: string;
+  distanceKm: number;
+  boardingPoint: string;
+  destination: string;
+  vehicle: string;
+  vehicleType: string;
+  assignedVehicle?: string;
+  driver: string;
+  driverName?: string;
   driverPhone: string;
-  studentCount: number;
-  status: 'On Route' | 'Completed' | 'Idle';
+  shift: 'Morning' | 'Afternoon';
+  duration: string;
+  pickup: string;
+  drop: string;
+  stops: number;
+  pickupStopsCount?: number;
+  students: number;
+  studentCount?: number;
+  fee: number;
+  academicYear?: string;
+  status: 'Active' | 'In Service' | 'Scheduled' | 'Maintenance' | 'Suspended' | 'On Route' | 'Completed' | 'Idle' | string;
+}
+
+export interface PickupPointItem {
+  id: string;
+  code: string;
+  name: string;
+  route: string;
+  area: string;
+  zone: string;
+  address: string;
+  landmark: string;
+  boarding: string;
+  drop: string;
+  distance: number;
+  vehicle: string;
+  driver: string;
+  driverPhone: string;
+  students: number;
+  fee: number;
+  status: 'Active' | 'Available' | 'Temporarily Closed' | 'Inactive' | string;
 }
 
 export interface VehicleItem {
   id: string;
+  number: string;
   registrationNo: string;
-  vehicleType: 'School Bus' | 'Van' | 'Mini Bus';
-  seatingCapacity: number;
-  fuelType: 'Diesel' | 'EV' | 'CNG';
+  model: string;
+  type: 'School Bus' | 'Mini Bus' | 'Van' | string;
+  vehicleType?: string;
+  route: string;
   driver: string;
+  fuel: 'Diesel' | 'CNG' | 'Electric' | 'EV' | string;
+  fuelType?: string;
+  seats: number;
+  seatingCapacity?: number;
+  mfgYear: number;
   insuranceExpiry: string;
-  gpsStatus: 'Online' | 'Offline';
-  status: 'Active' | 'In Maintenance';
+  fitnessExpiry?: string;
+  lastService?: string;
+  nextService?: string;
+  gpsStatus?: 'Online' | 'Offline';
+  status: 'Active' | 'Available' | 'On Route' | 'Maintenance' | 'Insurance Expiring' | 'In Maintenance' | string;
+}
+
+export interface DriverItem {
+  id: string;
+  code: string;
+  name: string;
+  phone: string;
+  email: string;
+  licenseNo: string;
+  licenseType: 'Heavy (HMV)' | 'Light (LMV)' | string;
+  issued: string;
+  expires: string;
+  verification: 'Verified' | 'Pending' | 'Expired';
+  vehicle: string;
+  route: string;
+  experience: number;
+  emergency: string;
+  status: 'Active' | 'Available' | 'On Duty' | 'On Leave' | 'License Expiring' | 'Suspended';
+}
+
+export interface VehicleAssignmentItem {
+  id: string;
+  code: string;
+  vehicle: string;
+  vehicleKind: string;
+  vehicleModel: string;
+  driver: string;
+  driverCode: string;
+  routeCode: string;
+  routeName: string;
+  routeType: 'Morning & Evening' | 'Morning Only' | 'Evening Only' | 'Special' | string;
+  capacity: number;
+  students: number;
+  morning: string;
+  evening: string;
+  academicYear: string;
+  status: 'Active' | 'Ending Soon' | 'Driver Pending' | 'Vehicle Pending' | string;
+}
+
+export interface StudentTransportAssignmentItem {
+  id: string;
+  name: string;
+  roll: string;
+  admissionNo: string;
+  className: string;
+  routeCode: string;
+  routeName: string;
+  vehicle: string;
+  driver: string;
+  pickupPoint: string;
+  dropPoint: string;
+  seatNo: string;
+  fee: string;
+  feeNote: string;
+  feeState: 'Paid in full' | 'Partially paid' | 'Overdue' | string;
+  academicYear: string;
+  status: 'Assigned' | 'Awaiting Assignment' | 'Stop Change Requested' | string;
+}
+
+export interface FleetTrackingItem {
+  id: string;
+  name: string;
+  registration: string;
+  state: 'On Trip' | 'Active' | 'Idle' | 'Offline';
+  gps: 'Online' | 'Offline';
+  speed: number;
+  students: number;
+  route: string;
+  driver: string;
+  assistant: string;
+  location: string;
+  nextStop: string;
+  nextStopEta: string;
+  fuel: number;
+  trip: string;
+  branch: string;
+  odometer: string;
+  todayDistance: string;
+  upcomingStops: { name: string; eta: string }[];
+}
+
+export interface RouteScheduleItem {
+  id: string;
+  code: string;
+  name: string;
+  routeType: 'Morning & Evening' | 'Morning Only' | 'Evening Only' | 'Special' | string;
+  vehicle: string;
+  driver: string;
+  morningTime: string;
+  morningStop: string;
+  eveningTime: string;
+  eveningStop: string;
+  stops: number;
+  capacity: number;
+  students: number;
+  corridor: string;
+  academicYear: string;
+  status: 'Active' | 'Scheduled' | 'Draft' | 'Closing' | string;
 }
 
 export interface AssetItem {
   id: string;
   assetCode: string;
   name: string;
-  category: 'IT Equipment' | 'Furniture' | 'Laboratory' | 'Sports' | 'Audio/Visual';
+  model: string;
+  units: number;
+  serial: string;
+  category: 'IT Equipment' | 'Lab Equipment' | 'Furniture' | 'Vehicle' | 'Office Equipment' | 'Sports Equipment' | 'Laboratory' | 'Audio/Visual' | string;
+  department: string;
+  holderLabel: string;
+  assignedTo?: string;
   location: string;
-  assignedTo: string;
+  spot: string;
   purchaseDate: string;
-  condition: 'Excellent' | 'Good' | 'Needs Repair' | 'Damaged';
+  purchaseValue: number;
+  condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Needs Repair' | 'Damaged';
+  status: 'In Use' | 'Under Maintenance' | 'Available' | 'Retired';
+}
+
+export interface AssetAllocationItem {
+  id: string;
+  allocationCode: string;
+  assetId: string;
+  assetName: string;
+  category: string;
+  assigneeName: string;
+  assigneeType: 'Staff' | 'Teacher' | 'Student' | 'Department' | 'Classroom' | string;
+  reference: string;
+  allocatedOn: string;
+  returnDue: string;
+  condition: 'Excellent' | 'Good' | 'Fair' | 'Poor';
+  location: string;
+  status: 'Active' | 'Returned' | 'Pending Return' | 'Overdue Return' | 'Damage Reported';
+}
+
+export interface AssetMaintenanceItem {
+  id: string;
+  serviceCode: string;
+  assetId: string;
+  assetName: string;
+  category: string;
+  serviceType: 'Preventive Maintenance' | 'Inspection' | 'Calibration' | 'Repair' | 'AMC Service' | string;
+  technician: string;
+  vendor: string;
+  scheduledDate: string;
+  completedDate?: string;
+  cost: number | null;
+  status: 'Scheduled' | 'In Progress' | 'Completed' | 'Overdue';
+  notes: string;
+}
+
+export interface StockItem {
+  id: string;
+  itemCode: string;
+  name: string;
+  category: 'Stationery' | 'Academic Supplies' | 'Lab Consumables' | 'IT Consumables' | 'Housekeeping' | 'Medical' | string;
+  packSize: string;
+  unit: string;
+  warehouse: string;
+  location: string;
+  supplier: string;
+  inStock: number;
+  minLevel: number;
+  unitPrice: number;
+  status: 'In Stock' | 'Low Stock' | 'Reorder Raised' | 'Out of Stock';
 }
 
 export interface GatePassItem {
   id: string;
   passNo: string;
-  personName: string;
-  personType: 'Student' | 'Visitor' | 'Staff' | 'Vendor';
+  passType: 'Visitor Pass' | 'Student Exit Pass' | 'Staff Pass' | 'Contractor Pass' | 'Vehicle Pass' | string;
+  holder: string;
+  personName?: string;
+  personType: 'Visitor' | 'Guardian' | 'Student' | 'Staff' | 'Vendor' | 'Contractor' | string;
+  contact: string;
+  idProof: string;
+  idNumber: string;
   purpose: string;
   hostName: string;
   issueTime: string;
   exitTime?: string;
-  status: 'Issued' | 'Active' | 'Exited' | 'Expired';
+  expectedExitTime?: string;
+  gate: string;
+  status: 'Active' | 'Returned' | 'Expired' | 'Scheduled' | 'Pending Approval' | 'Issued' | 'Exited' | string;
 }
 
 // --- REPORTS ---
