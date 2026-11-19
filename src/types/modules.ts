@@ -862,7 +862,70 @@ export interface GatePassItem {
   status: 'Active' | 'Returned' | 'Expired' | 'Scheduled' | 'Pending Approval' | 'Issued' | 'Exited' | string;
 }
 
-// --- REPORTS ---
+// --- REPORTS (BATCH 7: SCHOOL STRENGTH REPORT - PAGE 59, §12.1) ---
+export interface GenderCount {
+  male: number;
+  female: number;
+  other: number;
+  unknown: number;
+}
+
+export type GenderKey = 'male' | 'female' | 'other' | 'unknown';
+
+export interface ClassStrength extends GenderCount {
+  classId: string;
+  name: string;
+  total: number;
+  capacity?: number;
+}
+
+export interface FacultyMember {
+  id: string;
+  employeeNo: string;
+  name: string;
+  staffType: 'teaching' | 'non_teaching' | string;
+  employmentType: 'full_time' | 'part_time' | 'contract' | string;
+  gender: GenderKey;
+  status: 'active' | 'on_leave' | 'probation' | string;
+  department?: string;
+}
+
+export interface StudentMember {
+  id: string;
+  admissionNo: string;
+  name: string;
+  gender: GenderKey;
+  classId: string | null;
+  className: string | null;
+  rollNo?: string;
+}
+
+export interface SchoolStrengthReportData {
+  generatedAt: string;
+  schoolName: string;
+  academicYear: string;
+  preparedBy?: string;
+  faculty: {
+    total: number;
+    teaching: number;
+    nonTeaching: number;
+    byGender: GenderCount;
+    teachingByGender: GenderCount;
+    nonTeachingByGender: GenderCount;
+    byEmploymentType: Record<string, number>;
+    byStatus: Record<string, number>;
+    list: FacultyMember[];
+  };
+  students: {
+    total: number;
+    byGender: GenderCount;
+    byStatus: Record<string, number>;
+    classes: ClassStrength[];
+    unassigned: GenderCount & { total: number };
+    list: StudentMember[];
+  };
+}
+
 export interface ReportCategoryItem {
   id: string;
   key: string;
