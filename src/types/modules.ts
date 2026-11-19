@@ -425,11 +425,147 @@ export interface DepartmentItem {
 // --- FINANCE & ACCOUNTS ---
 export interface FeeStructureItem {
   id: string;
+  code?: string;
+  name?: string;
   grade: string;
   feeType: string;
-  term: 'Annual' | 'Term 1' | 'Term 2' | 'Monthly';
+  feeGroup?: string;
+  term?: 'Annual' | 'Term 1' | 'Term 2' | 'Monthly' | string;
+  amount: number;
+  frequency?: string;
+  dueDate: string;
+  dueNote?: string;
+  lateFee?: string;
+  collected?: string;
+  pending?: string;
+  status: 'Active' | 'Due soon' | 'Draft' | 'Completed' | string;
+}
+
+export interface FeeAssignmentItem {
+  id: string;
+  admissionNo: string;
+  studentName: string;
+  rollNo: number | string;
+  className: string;
+  section: string;
+  feeGroup: string;
+  feeType: string;
+  assignedDate: string;
+  dueDate: string;
+  total: number;
+  discount: number;
+  paid: number;
+  balance: number;
+  status: 'Assigned' | 'Pending' | 'Partially Paid' | 'Paid' | 'Overdue' | 'Cancelled';
+}
+
+export interface FeeCollectionItem {
+  id: string;
+  studentName: string;
+  admissionNo: string;
+  rollNo: number | string;
+  className: string;
+  section: string;
+  feeGroup: string;
+  feeType: string;
+  invoiceNo: string;
+  dueDate: string;
+  total: number;
+  discount: number;
+  fine: number;
+  paid: number;
+  balance: number;
+  method: 'UPI' | 'Cash' | 'Card' | 'Bank Transfer' | 'Cheque' | null;
+  collectionDate: string | null;
+  status: 'Paid' | 'Partially Paid' | 'Pending' | 'Overdue' | 'Refunded' | 'Cancelled';
+}
+
+export interface FeeTypeItem {
+  id: string;
+  name: string;
+  code: string;
+  feeGroup: string;
+  frequency: 'Annual' | 'Term' | 'Monthly' | 'One-Time';
+  description: string;
+  amount: number;
+  status: 'Active' | 'Inactive';
+}
+
+export interface FeeGroupItem {
+  id: string;
+  name: string;
+  code?: string;
+  description: string;
+  feeTypesCount: number;
+  totalAnnualAmount: number;
+  status?: 'Active' | 'Inactive';
+}
+
+export interface FineRuleItem {
+  id: string;
+  fineId: string;
+  studentName: string;
+  admissionNo: string;
+  rollNo: string;
+  className: string;
+  section: string;
+  category: string;
   amount: number;
   dueDate: string;
+  issuedOn?: string;
+  guardian?: string;
+  contact?: string;
+  remarks?: string;
+  status: 'Paid' | 'Partially Paid' | 'Unpaid' | 'Overdue' | 'Waived';
+}
+
+export interface ScholarshipItem {
+  id: string;
+  scholarshipId: string;
+  studentName: string;
+  admissionNo: string;
+  className: string;
+  name: string;
+  type: string;
+  coverage: string;
+  amount: number;
+  academicYear: string;
+  status: 'Approved' | 'Pending' | 'Under Review' | 'Rejected' | 'Renewal Due' | 'Expired';
+  sponsor: string;
+  notes?: string;
+}
+
+export interface DueReportItem {
+  id: string;
+  studentName: string;
+  admissionNo: string;
+  rollNo: string;
+  className: string;
+  section: string;
+  feeCategory: string;
+  invoiceNo: string;
+  billed: number;
+  paid: number;
+  dueAmount: number;
+  dueDate: string;
+  overdueDays: number;
+  guardianName: string;
+  guardianPhone: string;
+  status: 'Overdue' | 'Critical' | 'Due This Week' | 'Partially Paid' | 'Cleared';
+}
+
+export interface FeeReceiptItem {
+  id: string;
+  receiptNo: string;
+  invoiceNo: string;
+  studentName: string;
+  grade?: string;
+  className?: string;
+  amountPaid: number;
+  paymentMode: 'Cash' | 'Card' | 'Online / UPI' | 'Bank Transfer' | 'UPI' | 'Cheque';
+  paymentDate: string;
+  collectedBy: string;
+  status?: string;
 }
 
 export interface FeeInvoiceItem {
@@ -447,33 +583,26 @@ export interface FeeInvoiceItem {
 export interface ExpenseItem {
   id: string;
   voucherNo: string;
-  category: 'Utilities' | 'Maintenance' | 'Salaries' | 'Stationery' | 'Events' | 'Transportation';
+  category: 'Utilities' | 'Maintenance' | 'Salaries' | 'Stationery' | 'Events' | 'Transportation' | string;
   title: string;
   amount: number;
   date: string;
   paidTo: string;
-  paymentMethod: 'Cash' | 'Bank Transfer' | 'Cheque';
-  status: 'Approved' | 'Pending';
+  paymentMethod: 'Cash' | 'Bank Transfer' | 'Cheque' | 'UPI' | 'Card' | string;
+  status: 'Approved' | 'Pending' | 'In Review' | 'Rejected';
+  description?: string;
 }
 
-export interface FeeReceiptItem {
-  id: string;
-  receiptNo: string;
-  invoiceNo: string;
-  studentName: string;
-  grade: string;
-  amountPaid: number;
-  paymentMode: 'Cash' | 'Card' | 'Online / UPI' | 'Bank Transfer';
-  paymentDate: string;
-  collectedBy: string;
-}
-
-export interface FeeGroupItem {
+export interface ExpenseCategoryItem {
   id: string;
   name: string;
+  code: string;
+  parent?: string;
   description: string;
-  feeTypesCount: number;
-  totalAnnualAmount: number;
+  budget: number;
+  spent: number;
+  count: number;
+  status: 'Active' | 'Inactive';
 }
 
 // --- CAMPUS OPERATIONS ---
