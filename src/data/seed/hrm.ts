@@ -72,6 +72,9 @@ export function schoolDays(n: number): string[] {
   return out.reverse();
 }
 
+/** The latest school day on or before today: the "current" register day (today may be a weekend or holiday). */
+export const LAST_SCHOOL_DAY = schoolDays(1)[0];
+
 const hhmm = (mins: number) => `${pad(Math.floor(mins / 60), 2)}:${pad(mins % 60, 2)}`;
 
 /* ------------------------------- Student attendance ------------------------------- */
@@ -105,7 +108,7 @@ export const studentAttendance = defineCollection<StudentAttendanceRecord>('stud
   const out: StudentAttendanceRecord[] = [];
   for (const st of buildStudents()) {
     days.forEach((date, di) => {
-      const today = date === SEED_TODAY;
+      const today = date === LAST_SCHOOL_DAY;
       const risk = AT_RISK_IDS.has(st.id);
       const roll = rng.next();
       let status: StudentAttendanceStatus;
@@ -201,7 +204,7 @@ function dutyRows<T extends DutyBase>(
   const out: T[] = [];
   for (const p of people) {
     days.forEach((date, di) => {
-      const today = date === SEED_TODAY;
+      const today = date === LAST_SCHOOL_DAY;
       const roll = rng.next();
       const onLeaveBlock = p.status === 'On Leave' && di >= days.length - 4;
       let status: DutyStatus = 'Present';

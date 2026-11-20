@@ -31,12 +31,14 @@ export interface FieldDef {
   type: FieldType;
   required?: boolean;
   /** Fixed option list. */
-  options?: Option[] | string[];
+  options?: Option[] | string[] | (() => Option[]);
   /** Options built from another collection, so related records stay linked by id. */
   optionsFrom?: {
     collection: string;
     label: (r: any) => string;
     hint?: (r: any) => string;
+    /** Stored value for an option; defaults to the record's id. Use when the field stores something else (e.g. a room number). */
+    value?: (r: any) => string;
     filter?: (r: any, values: FormValues) => boolean;
   };
   placeholder?: string;
@@ -93,6 +95,10 @@ export interface ActionContext<T extends Entity> {
   role: RoleKey | null;
   /** Open the system share sheet with some text (receipts, notices, reports). */
   share: (title: string, message: string) => void;
+  /** Open another screen, e.g. a record's full profile. */
+  go: (href: string) => void;
+  /** Show a plain message dialog (comparisons, summaries too long for a toast). */
+  alert: (title: string, message: string) => void;
 }
 
 export interface ActionDef<T extends Entity> {
@@ -142,6 +148,8 @@ export interface PageActionContext<T extends Entity> {
   toast: ActionContext<T>['toast'];
   role: RoleKey | null;
   share: (title: string, message: string) => void;
+  go: (href: string) => void;
+  alert: (title: string, message: string) => void;
 }
 
 /** A button in the page header that acts on the page as a whole (bulk apply, import, mark all present). */
@@ -198,7 +206,13 @@ export interface ResourceConfig<T extends Entity> {
   /** Extra validation on top of required / type checks. Return { field: message }. */
   validate?: (values: FormValues, ctx: { existing?: T; rows: T[] }) => FieldErrors;
   /** Computed fields saved with the record (balances, codes, derived names…). */
-  prepare?: (values: FormValues, ctx: { existing?: T; rows: T[]; lookup: (collection: string, id: string) => any }) => Partial<T>;
+  prepare?: (values: FormValues, ctx: { existing?: T; rows: T[]; lookup: (collection: string, id: string) => any; user?: MockUser | null }) => Partial<T>;
+  /** Runs after a record is created, updated (form or action) or deleted: cascade renames, create related records… */
+  afterSave?: (kind: 'create' | 'update' | 'delete', record: T, previous?: T) => void;
+  /** Record changes to this kind of record in the audit trail under this entity name. */
+  auditEntity?: string;
+  /** Return a reason to refuse deleting this record (it is still in use), or null to allow it. */
+  canDeleteRecord?: (r: T) => string | null;
 
   actions?: ActionDef<T>[];
   bulk?: BulkActionDef<T>[];

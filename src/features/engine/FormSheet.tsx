@@ -13,7 +13,8 @@ const clean = (e: FieldErrors): Record<string, string> =>
 export const lookup = (collection: string, id: string): any => snapshot<any>(collection).find((r) => r.id === id);
 
 function normaliseOptions(options: FieldDef['options']): Option[] {
-  return (options ?? []).map((o) => (typeof o === 'string' ? { label: o, value: o } : o));
+  const list = typeof options === 'function' ? options() : options ?? [];
+  return list.map((o) => (typeof o === 'string' ? { label: o, value: o } : o));
 }
 
 /** Seed form values: record values as strings (numbers) / arrays / booleans, falling back to field defaults. */
@@ -69,7 +70,7 @@ function DynamicSelect({ field, values, set, error }: { field: FieldDef; values:
   const from = field.optionsFrom!;
   const rows = useCollection<any>(from.collection);
   const options = useMemo<Option[]>(
-    () => rows.filter((r) => (from.filter ? from.filter(r, values) : true)).map((r) => ({ label: from.label(r), value: r.id, hint: from.hint?.(r) })),
+    () => rows.filter((r) => (from.filter ? from.filter(r, values) : true)).map((r) => ({ label: from.label(r), value: from.value ? from.value(r) : r.id, hint: from.hint?.(r) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rows, values],
   );

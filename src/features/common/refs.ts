@@ -26,6 +26,12 @@ export const getStaff = (id?: string) => find<StaffRecord>('staff', id);
 
 export const teacherName = (id?: string) => getTeacher(id)?.name ?? '—';
 
+/** Name for a 'teacher:<id>' / 'staff:<id>' reference (department heads, assignments). */
+export function personName(ref?: string): string {
+  const [kind, id] = (ref ?? '').split(':');
+  return (kind === 'teacher' ? getTeacher(id)?.name : kind === 'staff' ? getStaff(id)?.name : undefined) ?? '—';
+}
+
 export const studentOptions: NonNullable<FieldDef['optionsFrom']> = {
   collection: 'students',
   label: (s: StudentRecord) => s.name,

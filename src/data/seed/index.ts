@@ -2,3 +2,5 @@
 import './master';
 import './finance';
 import './hrm';
+import './academic';
+import './peopleAdmin';

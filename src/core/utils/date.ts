@@ -62,6 +62,17 @@ export function formatTime(t?: string | null): string {
   return `${h % 12 === 0 ? 12 : h % 12}:${m[2]} ${h >= 12 ? 'PM' : 'AM'}`;
 }
 
+/** 'Today 14:05' / 'Yesterday 09:10' / '3 days ago' for an ISO date-time; '' means never. */
+export function relativeDay(iso?: string | null): string {
+  if (!iso) return 'Never signed in';
+  const day = iso.slice(0, 10);
+  const time = iso.length > 10 ? iso.slice(11, 16) : '';
+  const diff = diffDays(day, todayISO());
+  if (diff <= 0) return time ? `Today ${time}` : 'Today';
+  if (diff === 1) return time ? `Yesterday ${time}` : 'Yesterday';
+  return `${diff} days ago`;
+}
+
 export function dayName(iso: string): string {
   const d = parseISO(iso);
   return d ? ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()] : '';

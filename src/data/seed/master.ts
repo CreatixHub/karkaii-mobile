@@ -10,8 +10,13 @@ export interface ClassRecord extends Entity {
   numeral: string;
   category: 'Primary' | 'Middle' | 'Secondary';
   classTeacherId: string;
+  assistantTeacherId: string;
+  /** Date the current class / assistant teacher took over (set by "Assign teacher"). */
+  teachersEffectiveFrom?: string;
   roomNo: string;
-  status: 'Active' | 'Inactive';
+  year: string;
+  note: string;
+  status: 'Active' | 'New' | 'Inactive' | 'Archived';
 }
 
 export interface SectionRecord extends Entity {
@@ -23,7 +28,10 @@ export interface SectionRecord extends Entity {
   shift: 'Morning' | 'Afternoon';
   medium: string;
   capacity: number;
-  status: 'Active' | 'Inactive';
+  year: string;
+  note: string;
+  /** "Full" is not stored: it is shown when an Active section's students reach its capacity. */
+  status: 'Active' | 'Inactive' | 'Archived';
 }
 
 export interface StudentRecord extends Entity {
@@ -45,6 +53,14 @@ export interface StudentRecord extends Entity {
   scholar: boolean;
   status: 'Active' | 'Inactive' | 'Graduated' | 'Transfer' | 'On Leave';
   joinedOn: string;
+  motherName: string;
+  religion: string;
+  nationality: string;
+  phone: string;
+  emergencyPhone: string;
+  previousSchool: string;
+  /** Clubs and activities shown as chips: Sports, NCC, Arts… */
+  activities: string[];
 }
 
 export interface TeacherRecord extends Entity {
@@ -57,10 +73,56 @@ export interface TeacherRecord extends Entity {
   email: string;
   gender: 'Male' | 'Female';
   experienceYears: number;
-  designation: 'Senior Teacher' | 'Assistant Teacher';
+  designation: string;
   campus: string;
   status: 'Active' | 'Inactive' | 'On Leave';
   joinedOn: string;
+  // personal
+  dob: string;
+  maritalStatus: 'Single' | 'Married';
+  languages: string[];
+  fatherName: string;
+  motherName: string;
+  bloodGroup: string;
+  address: string;
+  permanentAddress: string;
+  panId: string;
+  notes: string;
+  previousSchool: string;
+  previousSchoolAddress: string;
+  previousSchoolPhone: string;
+  // payroll
+  epfNo: string;
+  basicSalary: number;
+  contractType: 'Permanent' | 'Temporary';
+  workShift: 'Morning' | 'Afternoon';
+  workLocation: string;
+  dateOfLeaving: string;
+  // yearly leave allowance
+  medicalLeaves: number;
+  casualLeaves: number;
+  maternityLeaves: number;
+  sickLeaves: number;
+  // bank
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+  ifscCode: string;
+  branchName: string;
+  // transport / hostel
+  route: string;
+  vehicleNumber: string;
+  pickupPoint: string;
+  hostel: string;
+  roomNo: string;
+  // social + documents
+  facebook: string;
+  instagram: string;
+  linkedin: string;
+  youtube: string;
+  twitter: string;
+  resume: string;
+  joiningLetter: string;
 }
 
 export interface StaffRecord extends Entity {
@@ -79,6 +141,12 @@ export interface StaffRecord extends Entity {
   qualification: string;
   experienceYears: number;
   status: 'Active' | 'On Leave' | 'Probation' | 'Suspended' | 'Inactive';
+  gender: 'Male' | 'Female';
+  emergencyContact: string;
+  emergencyPhone: string;
+  performanceNote: string;
+  remarks: string;
+  lastLogin: string;
 }
 
 const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
@@ -118,6 +186,8 @@ const STAFF_ROWS: [string, string, string, StaffRecord['staffType'], string, str
   ['Kavitha Suresh', 'Hostel', 'Hostel Warden', 'Support', 'North Wing', 'B.Ed.', 'Principal Office', 7],
 ];
 
+const FEMALE_STAFF = ['Priya', 'Sophia', 'Nandini', 'Emily', 'Olivia', 'Grace', 'Ava', 'Rebecca', 'Kavitha'];
+
 export const buildStaff = (): StaffRecord[] =>
   STAFF_ROWS.map(([name, department, designation, staffType, campus, qualification, reportsTo, exp], i) => ({
     id: `stf-${pad(i + 1)}`,
@@ -136,12 +206,19 @@ export const buildStaff = (): StaffRecord[] =>
     qualification,
     experienceYears: exp,
     status: i === 14 ? 'Probation' : 'Active',
+    gender: FEMALE_STAFF.includes(name.split(' ')[0]) ? 'Female' : 'Male',
+    emergencyContact: `${['Spouse', 'Parent', 'Sibling'][i % 3]} of ${name.split(' ')[0]}`,
+    emergencyPhone: `+91 98410 4${pad(i + 1, 4)}`,
+    performanceNote: i % 4 === 0 ? 'Consistently exceeds expectations.' : i % 4 === 1 ? 'Reliable and punctual.' : i % 4 === 2 ? 'Meets expectations; training planned.' : 'Strong team player.',
+    remarks: i === 14 ? 'Probation review due this term.' : '',
+    lastLogin: ['2h ago', 'Yesterday', '3h ago', 'Today 08:10', '2 days ago'][i % 5],
   }));
 
 export const staff = defineCollection<StaffRecord>('staff', buildStaff);
 
-export const buildTeachers = (): TeacherRecord[] =>
-  TEACHERS.map(([name, department, subjects, qualification, gender, exp], i) => ({
+export const buildTeachers = (): TeacherRecord[] => {
+  const rt = makeRng(31337);
+  return TEACHERS.map(([name, department, subjects, qualification, gender, exp], i) => ({
     id: `tch-${pad(i + 1)}`,
     employeeId: `EMP-T${pad(i + 1, 2)}`,
     name,
@@ -156,23 +233,68 @@ export const buildTeachers = (): TeacherRecord[] =>
     campus: i === 5 || i === 8 ? 'North Campus' : 'Main Campus',
     status: i === 7 ? 'On Leave' : 'Active',
     joinedOn: `${2026 - exp}-06-${pad(1 + (i % 20), 2)}`,
+    dob: `${2026 - 24 - exp - rt.int(0, 6)}-${pad(rt.int(1, 12), 2)}-${pad(rt.int(1, 28), 2)}`,
+    maritalStatus: rt.chance(0.7) ? 'Married' : 'Single',
+    languages: ['English', ...(rt.chance(0.8) ? ['Tamil'] : []), ...(rt.chance(0.5) ? ['Hindi'] : [])],
+    fatherName: `${rt.pick(PARENT_FIRST)} ${name.split(' ')[1]}`,
+    motherName: `${rt.pick(['Lakshmi', 'Mary', 'Radha', 'Susan', 'Fatima', 'Geeta'])} ${name.split(' ')[1]}`,
+    bloodGroup: rt.pick(BLOOD),
+    address: `${rt.int(4, 180)}, ${rt.pick(['Anna Nagar', 'Adyar', 'T. Nagar', 'Velachery', 'Mylapore'])}, Chennai`,
+    permanentAddress: `${rt.int(4, 90)}, ${rt.pick(['Gandhi Road', 'Nehru Street', 'Park Lane'])}, ${rt.pick(['Madurai', 'Coimbatore', 'Trichy', 'Chennai'])}`,
+    panId: `ABCDE${1000 + i * 37}${String.fromCharCode(65 + (i % 26))}`,
+    notes: '',
+    previousSchool: exp > 5 ? `${rt.pick(['St. Mary', 'Lakshmi', 'National', 'Sunrise'])} Matriculation School` : '',
+    previousSchoolAddress: exp > 5 ? `${rt.pick(['Salem', 'Erode', 'Chennai', 'Vellore'])}, Tamil Nadu` : '',
+    previousSchoolPhone: exp > 5 ? `+91 44 2${rt.int(1000000, 9999999)}` : '',
+    epfNo: `EPF-TN-${40000 + i * 13}`,
+    basicSalary: 2800 + exp * 120,
+    contractType: i === 8 ? 'Temporary' : 'Permanent',
+    workShift: 'Morning',
+    workLocation: i === 5 || i === 8 ? 'North Campus' : 'Main Campus',
+    dateOfLeaving: '',
+    medicalLeaves: 8,
+    casualLeaves: 12,
+    maternityLeaves: gender === 'Female' ? 90 : 0,
+    sickLeaves: 10,
+    accountName: name,
+    accountNumber: `${rt.int(10000000, 99999999)}${rt.int(1000, 9999)}`,
+    bankName: rt.pick(['State Bank of India', 'HDFC Bank', 'Indian Bank', 'ICICI Bank']),
+    ifscCode: `${rt.pick(['SBIN', 'HDFC', 'IDIB', 'ICIC'])}0${rt.int(100000, 999999)}`,
+    branchName: rt.pick(['Anna Nagar', 'Adyar', 'T. Nagar', 'Mylapore']),
+    route: '',
+    vehicleNumber: '',
+    pickupPoint: '',
+    hostel: '',
+    roomNo: '',
+    facebook: '',
+    instagram: '',
+    linkedin: `linkedin.com/in/${name.toLowerCase().replace(' ', '-')}`,
+    youtube: '',
+    twitter: '',
+    resume: `${name.replace(' ', '_')}_Resume.pdf`,
+    joiningLetter: `${name.replace(' ', '_')}_Joining_Letter.pdf`,
   }));
+};
 
 export const teachers = defineCollection<TeacherRecord>('teachers', buildTeachers);
 
-export const classes = defineCollection<ClassRecord>('classes', () =>
+export const buildClasses = (): ClassRecord[] =>
   NUMERALS.map((n, i) => ({
     id: `cls-${pad(i + 1, 2)}`,
     name: `Grade ${n}`,
     numeral: n,
     category: i < 5 ? 'Primary' : i < 8 ? 'Middle' : 'Secondary',
     classTeacherId: `tch-${pad((i % TEACHERS.length) + 1)}`,
+    assistantTeacherId: `tch-${pad(((i + 5) % TEACHERS.length) + 1)}`,
     roomNo: `${i < 5 ? 1 : i < 8 ? 2 : 3}${pad(i + 1, 2)}`,
-    status: 'Active',
-  })),
-);
+    year: '2026-27',
+    note: i === 7 ? 'Newly introduced this academic year.' : '',
+    status: i === 7 ? 'New' : 'Active',
+  }));
 
-export const sections = defineCollection<SectionRecord>('sections', () => {
+export const classes = defineCollection<ClassRecord>('classes', buildClasses);
+
+export function buildSections(): SectionRecord[] {
   const out: SectionRecord[] = [];
   NUMERALS.forEach((_, ci) => {
     ['A', 'B'].forEach((name, si) => {
@@ -185,15 +307,20 @@ export const sections = defineCollection<SectionRecord>('sections', () => {
         floor: ci < 5 ? 'Ground' : ci < 8 ? 'First' : 'Second',
         shift: si === 0 ? 'Morning' : 'Afternoon',
         medium: 'English',
-        capacity: 40,
+        // A few sections are deliberately at capacity so the "Full" state is real.
+        capacity: ['9A', '6B', '4A'].includes(`${ci}${name}`) ? 12 : 15,
+        year: '2026-27',
+        note: '',
         status: 'Active',
       });
     });
   });
   return out;
-});
+}
 
-const FIRST_M = ['Aarav', 'Lucas', 'Marcus', 'Ethan', 'Rohan', 'Daniel', 'Arjun', 'Noah', 'Kabir', 'Owen', 'Ishaan', 'Leo'];
+export const sections = defineCollection<SectionRecord>('sections', buildSections);
+
+const FIRST_M =['Aarav', 'Lucas', 'Marcus', 'Ethan', 'Rohan', 'Daniel', 'Arjun', 'Noah', 'Kabir', 'Owen', 'Ishaan', 'Leo'];
 const FIRST_F = ['Janet', 'Emma', 'Priya', 'Sophia', 'Ananya', 'Olivia', 'Diya', 'Mia', 'Kavya', 'Ava', 'Meera', 'Zara'];
 const LAST = ['Daniel', 'Watson', 'Vance', 'Sharma', 'Nair', 'Fernandes', 'Reddy', 'Khan', 'Thomas', 'Iyer', 'Menon', 'George', 'Patel', 'Joseph'];
 const HOUSES = ['Red', 'Blue', 'Green', 'Yellow'];
@@ -203,12 +330,14 @@ const PARENT_FIRST = ['Robert', 'Michael', 'Suresh', 'Anil', 'Thomas', 'Irfan', 
 /** Exported so other seed files can derive records from the *seed* students, not from user-edited ones. */
 export function buildStudents(): StudentRecord[] {
   const rng = makeRng(2026);
+  // New descriptive fields use their own generator so the original student values never change.
+  const rx = makeRng(9001);
   const out: StudentRecord[] = [];
   let n = 0;
-  // 40 students: two per section, Grade X-A first so the demo student/parent accounts line up.
+  // 240 students: twelve per section, Grade X-A first so the demo student/parent accounts line up.
   for (let ci = 9; ci >= 0; ci--) {
     for (const sec of ['A', 'B']) {
-      for (let k = 0; k < 2; k++) {
+      for (let k = 0; k < 12; k++) {
         n += 1;
         const female = n === 1 ? true : n === 2 ? false : rng.chance(0.5);
         const first = n === 1 ? 'Janet' : n === 2 ? 'Lucas' : rng.pick(female ? FIRST_F : FIRST_M);
@@ -236,6 +365,13 @@ export function buildStudents(): StudentRecord[] {
           scholar: rng.chance(0.2),
           status: n === 17 ? 'On Leave' : n === 31 ? 'Transfer' : 'Active',
           joinedOn: `${year + 5}-06-${pad(rng.int(1, 20), 2)}`,
+          motherName: `${rx.pick(FIRST_F)} ${last}`,
+          religion: rx.pick(['Christian', 'Hindu', 'Muslim', 'Hindu', 'Sikh']),
+          nationality: 'Indian',
+          phone: `+91 96${rx.int(10000000, 99999999)}`,
+          emergencyPhone: `+91 95${rx.int(10000000, 99999999)}`,
+          previousSchool: classNo > 1 && rx.chance(0.6) ? `${rx.pick(['St. Joseph', 'Little Flower', 'Greenfield', 'Holy Cross'])} School, ${rx.pick(['Chennai', 'Madurai', 'Coimbatore'])}` : '',
+          activities: [...(rx.chance(0.3) ? ['Sports'] : []), ...(rx.chance(0.12) ? ['NCC'] : []), ...(rx.chance(0.18) ? ['Arts'] : [])],
         });
       }
     }

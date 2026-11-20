@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { router, type Href } from 'expo-router';
 import { useAuth } from '@/core/auth/AuthProvider';
-import { repo, type Entity } from '@/core/store/store';
+import { repo, snapshot, type Entity } from '@/core/store/store';
 import { useCollection } from '@/core/store/useCollection';
 import { toCsv } from '@/core/utils/format';
 import { Button, EmptyState, KeyValue, Pill } from '@/ui/basics';
@@ -13,6 +14,7 @@ import { OptionSheet } from '@/ui/Fields';
 import { FilterChips, SearchField, SegmentedTabs, SummaryStrip, ToolbarButton } from '@/ui/ListChrome';
 import { useToast } from '@/ui/Toast';
 import { TONES } from '@/ui/tone';
+import { changedKeys, describeChange, logAudit } from '@/features/common/audit';
 import { RecordCard } from './RecordCard';
 import { FormSheet, fromFormValues, lookup, toFormValues } from './FormSheet';
 import type { ActionContext, ActionDef, BulkActionDef, FormValues, PageActionDef, ResourceConfig } from './types';
@@ -33,7 +35,13 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
   const [sortKey, setSortKey] = useState(cfg.sorts?.[0]?.key ?? '');
   const [selected, setSelected] = useState<string[]>([]);
   const [limit, setLimit] = useState(PAGE);
-  const [date, setDate] = useState<string>(todayISO());
+  // A per-day register opens on the most recent day that has records (today may be a weekend or holiday).
+  const [date, setDate] = useState<string>(() => {
+    const key = cfg.dateFilter?.key;
+    if (!key) return todayISO();
+    const dates = snapshot<T>(cfg.collection).map((r) => (r as Record<string, unknown>)[key]).filter((d): d is string => typeof d === 'string' && d <= todayISO());
+    return dates.sort().pop() ?? todayISO();
+  });
   const [bulkForm, setBulkForm] = useState<BulkActionDef<T> | null>(null);
   const [pageForm, setPageForm] = useState<PageActionDef<T> | null>(null);
 
@@ -98,17 +106,40 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
     Share.share({ title, message }).catch(() => toast('Share cancelled', 'info'));
   };
 
-  const actionCtx = (id: string): ActionContext<T> => ({
-    update: (patch) => store.update(id, patch),
-    remove: () => store.remove(id),
+  const go = (href: string) => router.push(href as Href);
+  const showAlert = (title: string, message: string) => Alert.alert(title, message);
+
+  /** Audit + after-save hook for one change. */
+  const recordChange = (kind: 'create' | 'update' | 'delete', record: T, previous?: T, how?: string) => {
+    if (cfg.auditEntity) {
+      const keys = changedKeys(previous as Record<string, unknown> | undefined, record as Record<string, unknown>);
+      const action = kind === 'create' ? 'Created' : kind === 'delete' ? 'Deleted' : how ? 'Action' : 'Updated';
+      logAudit({ entity: cfg.auditEntity, entityId: record.id, action, summary: how ? `${cfg.title(record)}: ${how}${keys.length ? ` (${keys.join(', ')})` : ''}` : describeChange(action, cfg.title(record), keys), by: user?.name ?? 'System' });
+    }
+    cfg.afterSave?.(kind, record, previous);
+  };
+
+  const actionCtx = (id: string, how?: string): ActionContext<T> => ({
+    update: (patch) => {
+      const previous = store.get(id);
+      const next = store.update(id, patch);
+      if (previous && next) recordChange('update', next, previous, how ?? 'updated');
+    },
+    remove: () => {
+      const previous = store.get(id);
+      store.remove(id);
+      if (previous) recordChange('delete', previous);
+    },
     toast,
     rows,
     role,
     share,
+    go,
+    alert: showAlert,
   });
 
   const runAction = (action: ActionDef<T>, row: T, values: FormValues) => {
-    action.run(row, values, actionCtx(row.id));
+    action.run(row, values, actionCtx(row.id, action.label));
     setActionForm(null);
   };
 
@@ -126,13 +157,20 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
   };
 
   const confirmDelete = (ids: string[]) => {
+    const blocked = ids.map((id) => rows.find((r) => r.id === id)).flatMap((r) => (r && cfg.canDeleteRecord ? [{ r, why: cfg.canDeleteRecord(r) }] : [])).find((x) => x.why);
+    if (blocked) {
+      Alert.alert(`Can’t delete ${cfg.title(blocked.r)}`, blocked.why!);
+      return;
+    }
     Alert.alert(`Delete ${ids.length > 1 ? `${ids.length} ${cfg.entity} records` : cfg.entity}?`, 'This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
+          const gone = ids.map((id) => store.get(id)).filter((r): r is T => !!r);
           store.removeMany(ids);
+          gone.forEach((r) => recordChange('delete', r));
           setSelected([]);
           setDetailId(null);
           toast(`${ids.length > 1 ? `${ids.length} records` : cfg.entity} deleted`);
@@ -157,12 +195,14 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
   const save = (values: FormValues) => {
     const existing = form?.mode === 'edit' ? rows.find((r) => r.id === form.id) : undefined;
     const typed = fromFormValues(cfg.form, values);
-    const computed = cfg.prepare?.(typed, { existing, rows, lookup }) ?? {};
+    const computed = cfg.prepare?.(typed, { existing, rows, lookup, user }) ?? {};
     if (existing) {
-      store.update(existing.id, { ...typed, ...computed } as Partial<T>);
+      const next = store.update(existing.id, { ...typed, ...computed } as Partial<T>);
+      if (next) recordChange('update', next, existing);
       toast(`${cfg.entity} updated`);
     } else {
-      store.create({ ...typed, ...computed } as Omit<T, 'id'>);
+      const created = store.create({ ...typed, ...computed } as Omit<T, 'id'>);
+      recordChange('create', created);
       toast(`${cfg.entity} added`);
     }
     setForm(null);
@@ -187,6 +227,8 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
       toast,
       role,
       share,
+      go,
+      alert: showAlert,
     });
     setPageForm(null);
   };

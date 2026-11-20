@@ -20,9 +20,17 @@ import {
   receiptsCfg,
   scholarshipsCfg,
 } from '@/features/finance/configs';
+import { classesCfg, classroomsCfg, materialsCfg, sectionsCfg, subjectsCfg } from '@/features/academic/configs';
+import { HomeworkScreen } from '@/features/academic/HomeworkScreen';
+import { TimetableScreen } from '@/features/academic/TimetableScreen';
 import type { HolidayRecord } from '@/data/seed/hrm';
+import type { DeleteRequestRecord, RoleRecord } from '@/data/seed/peopleAdmin';
 import { HolidayCalendar } from '@/features/hrm/HolidayCalendar';
 import { holidaysCfg, leavesCfg, staffAttendanceCfg, studentAttendanceCfg, teacherAttendanceCfg } from '@/features/hrm/configs';
+
+import { deleteRequestsCfg, departmentsCfg, designationsCfg, rolesCfg, staffCfg, usersCfg } from '@/features/people/adminConfigs';
+import { RolePanel } from '@/features/people/RolePanel';
+import { WorkflowPanel } from '@/features/people/WorkflowPanel';
 
 export type PageComponent = React.ComponentType<{ breadcrumb: string }>;
 
@@ -37,9 +45,24 @@ const dashboard = (kind: 'admin' | 'teacher' | 'student' | 'parent'): PageCompon
     return <DashboardPage kind={kind} />;
   };
 
+const timetable = (mode: 'class' | 'teacher'): PageComponent =>
+  function Timetable({ breadcrumb }) {
+    return <TimetableScreen mode={mode} breadcrumb={breadcrumb} />;
+  };
+
 const holidaysWithCalendar: ResourceConfig<HolidayRecord> = {
   ...holidaysCfg,
   header: (rows) => <HolidayCalendar rows={rows} />,
+};
+
+const rolesWithPanel: ResourceConfig<RoleRecord> = {
+  ...rolesCfg,
+  extra: (r) => <RolePanel roleId={r.id} />,
+};
+
+const deleteRequestsWithWorkflow: ResourceConfig<DeleteRequestRecord> = {
+  ...deleteRequestsCfg,
+  extra: (r) => <WorkflowPanel request={r} />,
 };
 
 export const PAGES: Record<string, PageComponent> = {
@@ -48,6 +71,24 @@ export const PAGES: Record<string, PageComponent> = {
   'teacher-dashboard': dashboard('teacher'),
   'student-dashboard': dashboard('student'),
   'parent-dashboard': dashboard('parent'),
+
+  // People & Admission
+  'staff-list': resource(staffCfg),
+  departments: resource(departmentsCfg),
+  designation: resource(designationsCfg),
+  users: resource(usersCfg),
+  'roles-permissions': resource(rolesWithPanel),
+  'delete-account-requests': resource(deleteRequestsWithWorkflow),
+
+  // Academic
+  classes: resource(classesCfg),
+  classrooms: resource(classroomsCfg),
+  sections: resource(sectionsCfg),
+  subjects: resource(subjectsCfg),
+  'class-timetable': timetable('class'),
+  'teacher-timetable': timetable('teacher'),
+  'study-materials': resource(materialsCfg),
+  homework: HomeworkScreen,
 
   // HRM
   holidays: resource(holidaysWithCalendar),

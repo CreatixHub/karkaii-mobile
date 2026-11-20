@@ -1,3 +1,5 @@
+import { todayISO } from '@/core/utils/date';
+
 /** Deterministic pseudo-random helpers so seed data is identical on every install (and testable). */
 export function makeRng(seed: number) {
   let s = seed >>> 0;
@@ -18,5 +20,8 @@ export function makeRng(seed: number) {
 
 export const pad = (n: number, w = 3) => String(n).padStart(w, '0');
 
-/** All seed dates are relative to this fixed "today" so lists look current but stay deterministic. */
-export const SEED_TODAY = '2026-11-19';
+/**
+ * Relative seed dates (attendance, leave, homework, expenses…) are anchored to the day the data is first created,
+ * so a fresh install always looks current. Calendar-year data (the holiday calendar, fee due dates) is fixed.
+ */
+export const SEED_TODAY = todayISO();

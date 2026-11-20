@@ -9,7 +9,7 @@ import { roleLabel, visibleMenu } from '@/core/auth/access';
 import { pageHref } from '@/core/nav/menu';
 
 /** Sections already rebuilt on the new engine expand to their pages; the rest still open their legacy screen. */
-export const REBUILT_SECTIONS = new Set(['dashboard', 'hrm', 'finance']);
+export const REBUILT_SECTIONS = new Set(['dashboard', 'people', 'academic', 'hrm', 'finance']);
 const LEGACY_EXTRAS = [
   { key: 'communication', label: 'Communication', icon: 'message-square' as const },
   { key: 'administration', label: 'Administration', icon: 'settings' as const },
