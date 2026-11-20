@@ -21,7 +21,7 @@ import type { ActionContext, ActionDef, BulkActionDef, FormValues, PageActionDef
 
 const PAGE = 20;
 
-export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: ResourceConfig<T>; breadcrumb?: string }) {
+export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery }: { cfg: ResourceConfig<T>; breadcrumb?: string; initialQuery?: string }) {
   const { user, role, canManage } = useAuth();
   const toast = useToast();
   const allRows = useCollection<T>(cfg.collection);
@@ -29,7 +29,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
   const rows = useMemo(() => (cfg.rowScope ? allRows.filter((r) => cfg.rowScope!(r, user)) : allRows), [allRows, cfg, user]);
   const store = useMemo(() => repo<T>(cfg.collection), [cfg.collection]);
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [viewKey, setViewKey] = useState(cfg.views?.[0]?.key ?? 'all');
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [sortKey, setSortKey] = useState(cfg.sorts?.[0]?.key ?? '');
@@ -246,7 +246,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
         <Text className="flex-1 pr-3 text-[11px] text-slate-400" numberOfLines={1}>
           {breadcrumb}
         </Text>
-        {allowCreate ? <Button label={`Add ${cfg.entity}`} icon="plus" small onPress={() => setForm({ mode: 'create' })} /> : null}
+        {allowCreate ? <Button label={`Add ${cfg.entity}`} icon="plus" small onPress={() => (cfg.addHref ? go(cfg.addHref) : setForm({ mode: 'create' }))} /> : null}
       </View>
 
       {cfg.dateFilter ? <DateStepper value={date} onChange={(d) => { setDate(d); setLimit(PAGE); setSelected([]); }} allowAll={cfg.dateFilter.allowAll} /> : null}
@@ -409,7 +409,8 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb }: { cfg: Res
                   icon="edit-2"
                   onPress={() => {
                     setDetailId(null);
-                    setForm({ mode: 'edit', id: detail.id });
+                    if (cfg.editHref) go(cfg.editHref(detail));
+                    else setForm({ mode: 'edit', id: detail.id });
                   }}
                 />
               ) : null}

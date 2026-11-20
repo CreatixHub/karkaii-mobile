@@ -4,3 +4,6 @@ import './finance';
 import './hrm';
 import './academic';
 import './peopleAdmin';
+import './studentLife';
+import './admissionsAlumni';
+import './teacherLife';

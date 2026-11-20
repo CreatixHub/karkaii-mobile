@@ -217,6 +217,9 @@ export interface ResourceConfig<T extends Entity> {
   actions?: ActionDef<T>[];
   bulk?: BulkActionDef<T>[];
 
+  /** Open a full page instead of the form sheet for Add / Edit (pages with many sections, e.g. Teachers). */
+  addHref?: string;
+  editHref?: (r: T) => string;
   canCreate?: boolean;
   canEdit?: boolean;
   canDelete?: boolean;

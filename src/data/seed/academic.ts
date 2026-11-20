@@ -109,7 +109,7 @@ function mappingFor(classNo: number): MapRow[] {
   return [['ENG-101', 6, 'tch-011'], ['MAT-102', 7, 'tch-010'], ['PHY-104', 4, 'tch-002'], ['CHE-105', 4, 'tch-007'], ['BIO-106', 4, 'tch-007'], ['HIS-108', 3, 'tch-004'], ['GEO-109', 3, 'tch-012'], ['HIN-110', 3, 'tch-005'], ['CSC-111', 3, 'tch-006'], ['PED-112', 2, 'tch-008']];
 }
 
-export const classSubjects = defineCollection<ClassSubjectRecord>('classSubjects', () =>
+export const buildClassSubjects = (): ClassSubjectRecord[] =>
   buildClasses().flatMap((c, i) =>
     mappingFor(i + 1).map(([code, periodsPerWeek, teacherId]) => {
       const subject = SUBJECT_ROWS.find((r) => r[0] === code)!;
@@ -127,8 +127,9 @@ export const classSubjects = defineCollection<ClassSubjectRecord>('classSubjects
         term: 'Annual',
       };
     }),
-  ),
-);
+  );
+
+export const classSubjects = defineCollection<ClassSubjectRecord>('classSubjects', buildClassSubjects);
 
 /* ----------------------------------- Classrooms ----------------------------------- */
 

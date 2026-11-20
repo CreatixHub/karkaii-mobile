@@ -102,7 +102,7 @@ const AT_RISK_IDS = new Set(['stu-005', 'stu-012', 'stu-027']);
 const NOT_MARKED_TODAY = new Set(['stu-036', 'stu-037', 'stu-038']);
 const LEAVE_NOTES = ['Medical – viral fever', 'Family function', 'Emergency at home', 'Dental appointment'];
 
-export const studentAttendance = defineCollection<StudentAttendanceRecord>('studentAttendance', () => {
+export function buildStudentAttendance(): StudentAttendanceRecord[] {
   const rng = makeRng(555);
   const days = schoolDays(10);
   const out: StudentAttendanceRecord[] = [];
@@ -159,7 +159,9 @@ export const studentAttendance = defineCollection<StudentAttendanceRecord>('stud
     });
   }
   return out;
-});
+}
+
+export const studentAttendance = defineCollection<StudentAttendanceRecord>('studentAttendance', buildStudentAttendance);
 
 /* --------------------------- Teacher & staff attendance --------------------------- */
 
@@ -250,9 +252,8 @@ function dutyRows<T extends DutyBase>(
   return out;
 }
 
-export const teacherAttendance = defineCollection<TeacherAttendanceRecord>('teacherAttendance', () =>
-  dutyRows<TeacherAttendanceRecord>(buildTeachers(), 'teacherId', 'ta', 811, 8 * 60, ['tch-004', 'tch-009']),
-);
+export const buildTeacherAttendance = (): TeacherAttendanceRecord[] => dutyRows<TeacherAttendanceRecord>(buildTeachers(), 'teacherId', 'ta', 811, 8 * 60, ['tch-004', 'tch-009']);
+export const teacherAttendance = defineCollection<TeacherAttendanceRecord>('teacherAttendance', buildTeacherAttendance);
 
 export const staffAttendance = defineCollection<StaffAttendanceRecord>('staffAttendance', () =>
   dutyRows<StaffAttendanceRecord>(buildStaff(), 'staffId', 'sta', 913, 8 * 60 + 30, ['stf-005']),

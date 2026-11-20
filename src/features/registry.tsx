@@ -3,6 +3,7 @@
  * (see FRONTEND_TO_MOBILE_VERIFICATION.md for the live status of each page).
  */
 import React from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import type { Entity } from '@/core/store/store';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { ResourceScreen } from '@/features/engine/ResourceScreen';
@@ -24,11 +25,22 @@ import { classesCfg, classroomsCfg, materialsCfg, sectionsCfg, subjectsCfg } fro
 import { HomeworkScreen } from '@/features/academic/HomeworkScreen';
 import { TimetableScreen } from '@/features/academic/TimetableScreen';
 import type { HolidayRecord } from '@/data/seed/hrm';
+import type { AdmissionRecord } from '@/data/seed/admissionsAlumni';
 import type { DeleteRequestRecord, RoleRecord } from '@/data/seed/peopleAdmin';
 import { HolidayCalendar } from '@/features/hrm/HolidayCalendar';
 import { holidaysCfg, leavesCfg, staffAttendanceCfg, studentAttendanceCfg, teacherAttendanceCfg } from '@/features/hrm/configs';
 
 import { deleteRequestsCfg, departmentsCfg, designationsCfg, rolesCfg, staffCfg, usersCfg } from '@/features/people/adminConfigs';
+import { AdmissionPanel } from '@/features/people/AdmissionPanel';
+import { admissionsCfg } from '@/features/people/admissionConfigs';
+import { TeacherForm } from '@/features/people/TeacherForm';
+import { TeacherProfile, TeacherRoutine } from '@/features/people/TeacherProfile';
+import { teachersCfg } from '@/features/people/teacherConfigs';
+import { AlumniScreen } from '@/features/people/AlumniScreen';
+import { StudentPromotion } from '@/features/people/StudentPromotion';
+import { StudentAttendanceHistory } from '@/features/people/StudentAttendanceHistory';
+import { StudentProfile } from '@/features/people/StudentProfile';
+import { documentsCfg, studentsCfg } from '@/features/people/studentConfigs';
 import { RolePanel } from '@/features/people/RolePanel';
 import { WorkflowPanel } from '@/features/people/WorkflowPanel';
 
@@ -36,7 +48,9 @@ export type PageComponent = React.ComponentType<{ breadcrumb: string }>;
 
 function resource<T extends Entity>(cfg: ResourceConfig<T>): PageComponent {
   return function ResourcePage({ breadcrumb }) {
-    return <ResourceScreen cfg={cfg} breadcrumb={breadcrumb} />;
+    // A link such as /people/student-documents?q=AD1256507 opens the page already searched.
+    const { q } = useLocalSearchParams<{ q?: string }>();
+    return <ResourceScreen cfg={cfg} breadcrumb={breadcrumb} initialQuery={typeof q === 'string' ? q : undefined} />;
   };
 }
 
@@ -60,6 +74,11 @@ const rolesWithPanel: ResourceConfig<RoleRecord> = {
   extra: (r) => <RolePanel roleId={r.id} />,
 };
 
+const admissionsWithPanel: ResourceConfig<AdmissionRecord> = {
+  ...admissionsCfg,
+  extra: (r) => <AdmissionPanel applicationId={r.id} />,
+};
+
 const deleteRequestsWithWorkflow: ResourceConfig<DeleteRequestRecord> = {
   ...deleteRequestsCfg,
   extra: (r) => <WorkflowPanel request={r} />,
@@ -73,6 +92,17 @@ export const PAGES: Record<string, PageComponent> = {
   'parent-dashboard': dashboard('parent'),
 
   // People & Admission
+  students: resource(studentsCfg),
+  'student-profile': StudentProfile,
+  admissions: resource(admissionsWithPanel),
+  'student-promotion': StudentPromotion,
+  alumni: AlumniScreen,
+  teachers: resource(teachersCfg),
+  'add-teacher': TeacherForm,
+  'teacher-profile': TeacherProfile,
+  'teacher-routine': TeacherRoutine,
+  'student-attendance-history': StudentAttendanceHistory,
+  'student-documents': resource(documentsCfg),
   'staff-list': resource(staffCfg),
   departments: resource(departmentsCfg),
   designation: resource(designationsCfg),

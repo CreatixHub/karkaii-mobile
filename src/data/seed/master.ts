@@ -51,7 +51,7 @@ export interface StudentRecord extends Entity {
   transport: boolean;
   hostel: boolean;
   scholar: boolean;
-  status: 'Active' | 'Inactive' | 'Graduated' | 'Transfer' | 'On Leave';
+  status: 'Active' | 'Inactive' | 'Graduated' | 'Transfer' | 'On Leave' | 'Suspended';
   joinedOn: string;
   motherName: string;
   religion: string;

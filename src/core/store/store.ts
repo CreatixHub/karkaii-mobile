@@ -16,7 +16,7 @@ export interface Entity {
 type Listener = () => void;
 
 /** Bump when seed data changes shape so stale persisted data is discarded instead of crashing screens. */
-export const SEED_VERSION = '2026-11-20.2';
+export const SEED_VERSION = '2026-11-20.4';
 
 const PREFIX = 'karkaii:data:';
 const VERSION_KEY = 'karkaii:data-version';
