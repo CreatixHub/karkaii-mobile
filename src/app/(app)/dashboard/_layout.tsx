@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { DrawerToggleButton } from 'expo-router/drawer';
+import { PageHeaderLeft } from '@/core/nav/PageHeaderLeft';
 import { colors } from '@/theme/colors';
 
 export default function DashboardLayout() {
@@ -15,7 +15,7 @@ export default function DashboardLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="[page]" options={{ title: 'Dashboard', headerLeft: () => <DrawerToggleButton tintColor={colors.ink} /> }} />
+      <Stack.Screen name="[page]" options={{ title: 'Dashboard', headerLeft: ({ canGoBack }) => <PageHeaderLeft canGoBack={canGoBack} /> }} />
     </Stack>
   );
 }

@@ -144,7 +144,7 @@ export function OverviewPane({ student, staff }: PaneProps) {
     { label: 'Academic GPA', value: (Math.round(acad) / 10).toFixed(1), tone: 'primary', icon: 'award' },
     { label: 'Behaviour', value: `${beh}/100`, tone: 'teal', icon: 'smile' },
     { label: 'Fee status', value: fee.status, tone: fee.status === 'Paid' ? 'success' : fee.status === 'Overdue' ? 'danger' : 'warning', icon: 'dollar-sign' },
-    { label: 'Transport', value: route ? route.name.split(' — ')[0] : 'Own', tone: 'info', icon: 'truck' },
+    { label: 'Transport', value: route ? route.code : 'Own', tone: 'info', icon: 'truck' },
     { label: 'Library', value: `${loans.length} book${loans.length === 1 ? '' : 's'}`, tone: 'purple', icon: 'book' },
     { label: 'Medical', value: health && health.conditions !== 'None' ? 'Note' : 'Fit', tone: health && health.conditions !== 'None' ? 'warning' : 'success', icon: 'heart' },
     { label: 'Last login', value: own ? relativeDay(own.lastLogin) : '—', tone: 'neutral', icon: 'log-in' },
@@ -219,10 +219,11 @@ export function OverviewPane({ student, staff }: PaneProps) {
             <KeyValue label="Route" value={route.name} />
             <KeyValue label="Driver" value={`${route.driver} · ${route.phone}`} />
             <KeyValue label="Pick-up" value={`${route.pickup} · ${route.pickupTime}`} />
+            <KeyValue label="Status" value={route.status} />
             <KeyValue label="Drop" value={`${route.pickup} · ${route.dropTime}`} />
           </>
         ) : (
-          <Empty text="Uses own transport." />
+          <Empty text={student.transport ? 'Waiting for a seat on a school bus.' : 'Uses own transport.'} />
         )}
       </Block>
       <Block title="Hostel">

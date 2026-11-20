@@ -2,6 +2,7 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { DrawerToggleButton } from 'expo-router/drawer';
 import { colors } from '@/theme/colors';
+import { PageHeaderLeft } from './PageHeaderLeft';
 import { MENU, type SectionDef } from './menu';
 
 /** The stack every section folder uses: hub screen (with the drawer button) + pages pushed on top. */
@@ -21,7 +22,7 @@ export function SectionStack({ section }: { section: SectionDef['key'] }) {
         name="index"
         options={{ title: def.label, headerLeft: () => <DrawerToggleButton tintColor={colors.ink} /> }}
       />
-      <Stack.Screen name="[page]" options={{ title: def.label }} />
+      <Stack.Screen name="[page]" options={{ title: def.label, headerLeft: ({ canGoBack }) => <PageHeaderLeft canGoBack={canGoBack} /> }} />
     </Stack>
   );
 }

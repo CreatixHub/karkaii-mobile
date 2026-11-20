@@ -240,9 +240,10 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     setSelected([]);
   };
 
-  const header = (
-    <View className="pt-3">
-      <View className="mb-3 flex-row items-center justify-between px-4">
+  // Always visible while the list scrolls: the page title row, date, view tabs, search and active filters.
+  const top = (
+    <View className="border-b border-slate-200/70 bg-[#f4f6fb] pt-3">
+      <View className="mb-2 flex-row items-center justify-between px-4">
         <Text className="flex-1 pr-3 text-[11px] text-slate-400" numberOfLines={1}>
           {breadcrumb}
         </Text>
@@ -251,6 +252,40 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
 
       {cfg.dateFilter ? <DateStepper value={date} onChange={(d) => { setDate(d); setLimit(PAGE); setSelected([]); }} allowAll={cfg.dateFilter.allowAll} /> : null}
 
+      {cfg.views?.length ? (
+        <SegmentedTabs
+          tabs={cfg.views.map((v) => ({ key: v.key, label: v.label, count: scoped.filter(v.match).length }))}
+          active={viewKey}
+          onChange={(k) => {
+            setViewKey(k);
+            setLimit(PAGE);
+          }}
+        />
+      ) : null}
+
+      <View className="mb-2 flex-row items-center gap-2 px-4">
+        <SearchField value={query} onChange={(v) => { setQuery(v); setLimit(PAGE); }} placeholder={cfg.searchPlaceholder ?? `Search ${cfg.entity.toLowerCase()}…`} />
+        {cfg.filters?.length ? <ToolbarButton icon="sliders" badge={activeFilterCount} onPress={() => setShowFilters(true)} /> : null}
+        {cfg.sorts?.length ? <ToolbarButton icon="bar-chart" onPress={() => setShowSort(true)} /> : null}
+        <ToolbarButton icon="share" onPress={() => exportCsv(filtered)} />
+      </View>
+
+      <FilterChips
+        chips={chips}
+        onRemove={(key) => {
+          const [fk, ...rest] = key.split('::');
+          const val = rest.join('::');
+          setFilters((f) => ({ ...f, [fk]: (f[fk] ?? []).filter((x) => x !== val) }));
+        }}
+        onClear={() => setFilters({})}
+      />
+
+    </View>
+  );
+
+  // Scrolls away with the list: page actions, any custom header, summary tiles and the record count.
+  const header = (
+    <View className="pt-3">
       {pageActionsVisible.length ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }} className="mb-3">
           {pageActionsVisible.map((a) => (
@@ -268,34 +303,6 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
         <SummaryStrip items={cfg.stats.map((s) => ({ label: s.label, value: s.value(scoped), tone: s.tone, icon: s.icon }))} />
       ) : null}
 
-      {cfg.views?.length ? (
-        <SegmentedTabs
-          tabs={cfg.views.map((v) => ({ key: v.key, label: v.label, count: scoped.filter(v.match).length }))}
-          active={viewKey}
-          onChange={(k) => {
-            setViewKey(k);
-            setLimit(PAGE);
-          }}
-        />
-      ) : null}
-
-      <View className="mb-3 flex-row items-center gap-2 px-4">
-        <SearchField value={query} onChange={(v) => { setQuery(v); setLimit(PAGE); }} placeholder={cfg.searchPlaceholder ?? `Search ${cfg.entity.toLowerCase()}…`} />
-        {cfg.filters?.length ? <ToolbarButton icon="sliders" badge={activeFilterCount} onPress={() => setShowFilters(true)} /> : null}
-        {cfg.sorts?.length ? <ToolbarButton icon="bar-chart" onPress={() => setShowSort(true)} /> : null}
-        <ToolbarButton icon="share" onPress={() => exportCsv(filtered)} />
-      </View>
-
-      <FilterChips
-        chips={chips}
-        onRemove={(key) => {
-          const [fk, ...rest] = key.split('::');
-          const val = rest.join('::');
-          setFilters((f) => ({ ...f, [fk]: (f[fk] ?? []).filter((x) => x !== val) }));
-        }}
-        onClear={() => setFilters({})}
-      />
-
       <Text className="mb-2 px-4 text-[11px] text-slate-400">
         {filtered.length} {filtered.length === 1 ? 'record' : 'records'}
         {selecting ? ` · ${selected.length} selected` : allowDelete || cfg.bulk?.length ? ' · long-press a card to select' : ''}
@@ -309,6 +316,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
 
   return (
     <View className="flex-1 bg-[#f4f6fb]">
+      {top}
       <FlatList
         data={shown}
         keyExtractor={(r) => r.id}

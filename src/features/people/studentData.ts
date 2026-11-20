@@ -4,6 +4,7 @@ import { diffDays, formatDate, todayISO } from '@/core/utils/date';
 import { gradeFor } from '@/core/academic';
 import type { FeeInvoiceRecord } from '@/data/seed/finance';
 import type { StudentRecord, TeacherRecord } from '@/data/seed/master';
+import type { DriverRecord, PickupPointRecord, StudentTransportRecord, TransportRouteRecord, VehicleRecord } from '@/data/seed/transport';
 import type { DisciplineRecord, ExamResultRecord } from '@/data/seed/studentLife';
 import { attendancePct } from '@/features/hrm/configs';
 import { balanceOf, isOverdue, netAmount } from '@/features/finance/configs';
@@ -86,17 +87,29 @@ export const performanceIndex = (studentId: string): number => Math.round(0.5 * 
 
 /* --------------------------- Transport & hostel (derived) --------------------------- */
 
-const ROUTES = [
-  { name: 'Route 12 — Downtown', bus: 'BUS-04 / TN-01-1234', driver: 'Michael Doe', phone: '+91 98400 22145', pickup: 'Maple Street', pickupTime: '07:45', dropTime: '15:45' },
-  { name: 'Route 4 — Lakeside', bus: 'BUS-02 / TN-01-2231', driver: 'Selvam Raj', phone: '+91 98400 22146', pickup: 'Lake View Corner', pickupTime: '07:30', dropTime: '15:50' },
-  { name: 'Route 7 — Airport Road', bus: 'BUS-06 / TN-01-4410', driver: 'Imran Pasha', phone: '+91 98400 22147', pickup: 'Temple Junction', pickupTime: '07:20', dropTime: '16:00' },
-  { name: 'Route 9 — Green Park', bus: 'BUS-01 / TN-01-1198', driver: 'Joseph Anand', phone: '+91 98400 22148', pickup: 'Green Park Gate', pickupTime: '07:50', dropTime: '15:40' },
-  { name: 'Route 2 — Anna Nagar', bus: 'BUS-03 / TN-01-3392', driver: 'Prakash Kumar', phone: '+91 98400 22149', pickup: 'Anna Nagar Roundabout', pickupTime: '07:35', dropTime: '15:55' },
-  { name: 'Route 15 — Beach Road', bus: 'BUS-05 / TN-01-5520', driver: 'Faisal Ahmed', phone: '+91 98400 22150', pickup: 'Beach Road Stop', pickupTime: '07:25', dropTime: '16:05' },
-];
 const numOf = (id: string) => Number(id.replace(/\D/g, '')) || 0;
 
-export const transportOf = (s: StudentRecord) => (s.transport ? ROUTES[numOf(s.id) % ROUTES.length] : null);
+/** The student's school-transport seat, read from the Transport records (null when none or still waiting for a seat). */
+export function transportOf(s: StudentRecord) {
+  const seat = snapshot<StudentTransportRecord>('studentTransport').find((a) => a.studentId === s.id && a.routeId);
+  if (!seat) return null;
+  const route = snapshot<TransportRouteRecord>('transportRoutes').find((r) => r.id === seat.routeId);
+  if (!route) return null;
+  const vehicle = snapshot<VehicleRecord>('vehicles').find((v) => v.id === route.vehicleId);
+  const driver = snapshot<DriverRecord>('drivers').find((d) => d.id === route.driverId);
+  const stop = snapshot<PickupPointRecord>('pickupPoints').find((p) => p.id === seat.pickupPointId);
+  return {
+    code: route.code,
+    name: `${route.code} · ${route.name}`,
+    bus: vehicle ? `${vehicle.number} · ${vehicle.model}` : 'No vehicle yet',
+    driver: driver?.name ?? 'No driver yet',
+    phone: driver?.phone ?? '',
+    pickup: stop?.name ?? '—',
+    pickupTime: stop?.boarding ?? '',
+    dropTime: stop?.drop ?? '',
+    status: seat.status,
+  };
+}
 
 export function hostelOf(s: StudentRecord) {
   if (!s.hostel) return null;

@@ -7,3 +7,6 @@ import './peopleAdmin';
 import './studentLife';
 import './admissionsAlumni';
 import './teacherLife';
+import './transport';
+import './assets';
+import './gatePass';
