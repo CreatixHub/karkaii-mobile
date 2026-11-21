@@ -3,6 +3,8 @@ import { snapshot } from '@/core/store/store';
 import type { ClassRecord, SectionRecord, StaffRecord, StudentRecord, TeacherRecord } from '@/data/seed/master';
 import type { MockUser } from '@/core/auth/AuthProvider';
 import type { FieldDef } from '@/features/engine/types';
+import type { CampusRecord } from '@/data/seed/administration';
+import type { Option } from '@/ui/Fields';
 
 const find = <T extends { id: string }>(collection: string, id?: string): T | undefined =>
   id ? snapshot<T>(collection).find((r) => r.id === id) : undefined;
@@ -21,6 +23,11 @@ export function classSection(s?: Pick<StudentRecord, 'classId' | 'sectionId'>): 
   const sec = getSection(s.sectionId);
   return c ? `${c.name}${sec ? `-${sec.name}` : ''}` : '—';
 }
+
+/** Campus names from the Campuses page, main campus first. Forms and filters read this so a renamed or new campus appears everywhere. */
+export const campusNames = (): string[] => [...snapshot<CampusRecord>('campuses')].sort((a, b) => Number(b.isMain) - Number(a.isMain) || a.name.localeCompare(b.name)).map((c) => c.name);
+export const campusChoices = (): Option[] => campusNames().map((n) => ({ label: n, value: n }));
+export const mainCampusName = (): string => snapshot<CampusRecord>('campuses').find((c) => c.isMain)?.name ?? 'Main Campus';
 
 export const getStaff = (id?: string) => find<StaffRecord>('staff', id);
 

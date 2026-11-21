@@ -19,7 +19,7 @@ export interface ModuleDef {
 
 export interface SectionDef {
   /** Route folder under src/app/(app)/. */
-  key: 'dashboard' | 'people' | 'academic' | 'hrm' | 'finance' | 'campus' | 'reports';
+  key: 'dashboard' | 'people' | 'academic' | 'hrm' | 'finance' | 'campus' | 'reports' | 'communication' | 'administration';
   label: string;
   icon: IconName;
   color: string;
@@ -215,6 +215,29 @@ export const MENU: SectionDef[] = [
         icon: 'bar-chart-2',
         pages: [p('school-strength-report', 'School Strength Report', 'bar-chart-2')],
       },
+    ],
+  },
+  {
+    key: 'communication',
+    label: 'Communication',
+    icon: 'message-square',
+    color: '#E8590C',
+    modules: [
+      { label: 'Broadcast', icon: 'radio', pages: [p('announcements', 'Announcements', 'volume-2'), p('notice-board', 'Notice Board', 'clipboard'), p('broadcast-scheduler', 'Broadcast Scheduler', 'clock')] },
+      { label: 'Notifications', icon: 'bell', pages: [p('notification-center', 'Notification Center', 'bell')] },
+      { label: 'SMS', icon: 'smartphone', pages: [p('sms-send', 'Send SMS', 'send'), p('sms-templates', 'SMS Templates', 'file-text')] },
+      { label: 'WhatsApp', icon: 'message-circle', pages: [p('whatsapp-inbox', 'WhatsApp Inbox', 'inbox'), p('whatsapp-templates', 'WhatsApp Templates', 'file-text')] },
+    ],
+  },
+  {
+    key: 'administration',
+    label: 'Administration',
+    icon: 'settings',
+    color: '#495057',
+    modules: [
+      { label: 'Events', icon: 'calendar', pages: [p('events', 'Events', 'calendar')] },
+      { label: 'School Setup', icon: 'home', pages: [p('school-profile', 'School Profile', 'award'), p('campuses', 'Campuses', 'map-pin'), p('academic-years', 'Academic Years', 'layers')] },
+      { label: 'Audit Logs', icon: 'activity', pages: [p('audit-logs', 'Audit Logs', 'activity')] },
     ],
   },
 ];

@@ -7,7 +7,7 @@ import type { StaffRecord, TeacherRecord } from '@/data/seed/master';
 import type { DepartmentRecord, DesignationRecord, UserRecord } from '@/data/seed/peopleAdmin';
 import type { TeacherLeaveRecord } from '@/data/seed/teacherLife';
 import { logAudit } from '@/features/common/audit';
-import { nextNo } from '@/features/common/refs';
+import { campusChoices, mainCampusName, nextNo } from '@/features/common/refs';
 import type { FieldDef, FormValues } from '@/features/engine/types';
 import { homeSectionsOf } from './teacherData';
 
@@ -59,7 +59,7 @@ export const TEACHER_SECTIONS: FormSection[] = [
       { key: 'designation', label: 'Designation', type: 'select', required: true, options: designationNames },
       { key: 'subjects', label: 'Subjects', type: 'multiselect', required: true, options: subjectNames, hint: 'Subjects this teacher can teach. Assign them to classes from Academic → Classes.' },
       { key: 'joinedOn', label: 'Date of Joining', type: 'date', required: true },
-      { key: 'campus', label: 'Campus', type: 'select', required: true, options: ['Main Campus', 'North Campus'], default: 'Main Campus' },
+      { key: 'campus', label: 'Campus', type: 'select', required: true, options: campusChoices, default: mainCampusName() },
       { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'On Leave', 'Inactive'], default: 'Active' },
     ],
   },
@@ -206,7 +206,7 @@ export function saveTeacher(v: FormValues, existing: TeacherRecord | undefined, 
     gender: v.gender,
     experienceYears: num('experienceYears'),
     designation: str('designation'),
-    campus: str('campus') || 'Main Campus',
+    campus: str('campus') || mainCampusName(),
     status: v.status || 'Active',
     joinedOn: str('joinedOn'),
     dob: str('dob'),

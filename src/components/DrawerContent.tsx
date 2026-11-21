@@ -9,11 +9,7 @@ import { roleLabel, visibleMenu } from '@/core/auth/access';
 import { pageHref } from '@/core/nav/menu';
 
 /** Sections already rebuilt on the new engine expand to their pages; the rest still open their legacy screen. */
-export const REBUILT_SECTIONS = new Set(['dashboard', 'people', 'academic', 'hrm', 'finance', 'campus', 'reports']);
-const LEGACY_EXTRAS = [
-  { key: 'communication', label: 'Communication', icon: 'message-square' as const },
-  { key: 'administration', label: 'Administration', icon: 'settings' as const },
-];
+export const REBUILT_SECTIONS = new Set(['dashboard', 'people', 'academic', 'hrm', 'finance', 'campus', 'reports', 'communication', 'administration']);
 
 export default function DrawerContent({ navigation }: DrawerContentComponentProps) {
   const { user, role, logout } = useAuth();
@@ -90,18 +86,6 @@ export default function DrawerContent({ navigation }: DrawerContentComponentProp
           );
         })}
 
-        {role === 'admin' ? (
-          <View className="mt-2 border-t border-slate-100 pt-2">
-            <Text className="mb-1 px-3 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">Additional modules</Text>
-            {LEGACY_EXTRAS.map((x) => (
-              <Pressable key={x.key} onPress={() => go(`/${x.key}`)} className="flex-row items-center rounded-xl px-3 py-2.5 active:bg-slate-50">
-                <Feather name={x.icon} size={16} color="#6A7287" />
-                <Text className="ml-3 flex-1 text-sm text-slate-600">{x.label}</Text>
-                <Text className="text-[9px] font-bold text-amber-600">LEGACY</Text>
-              </Pressable>
-            ))}
-          </View>
-        ) : null}
       </ScrollView>
 
       <View className="border-t border-slate-100 px-4 py-3">

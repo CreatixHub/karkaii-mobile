@@ -41,6 +41,9 @@ import { gatePassCfg } from '@/features/campus/gatePassConfigs';
 import { TrackingScreen } from '@/features/campus/TrackingScreen';
 import { assignStudentsCfg, assignVehicleCfg, driversCfg, pickupPointsCfg, routesCfg, schedulesCfg, vehiclesCfg } from '@/features/campus/transportConfigs';
 import { SchoolStrengthScreen } from '@/features/reports/SchoolStrengthScreen';
+import { academicYearsCfg, auditLogsCfg, campusesCfg, eventsCfg, schoolProfileCfg } from '@/features/administration/adminConfigs';
+import { announcementsCfg, broadcastsCfg, noticesCfg, notificationsCfg } from '@/features/communication/announcementConfigs';
+import { smsLogCfg, smsTemplatesCfg, waTemplatesCfg, waThreadsCfg } from '@/features/communication/messagingConfigs';
 import { AlumniScreen } from '@/features/people/AlumniScreen';
 import { StudentPromotion } from '@/features/people/StudentPromotion';
 import { StudentAttendanceHistory } from '@/features/people/StudentAttendanceHistory';
@@ -132,6 +135,23 @@ export const PAGES: Record<string, PageComponent> = {
 
   // Reports
   'school-strength-report': SchoolStrengthScreen,
+
+  // Communication
+  announcements: resource(announcementsCfg),
+  'notice-board': resource(noticesCfg),
+  'broadcast-scheduler': resource(broadcastsCfg),
+  'notification-center': resource(notificationsCfg),
+  'sms-send': resource(smsLogCfg),
+  'sms-templates': resource(smsTemplatesCfg),
+  'whatsapp-inbox': resource(waThreadsCfg),
+  'whatsapp-templates': resource(waTemplatesCfg),
+
+  // Administration
+  events: resource(eventsCfg),
+  'school-profile': resource(schoolProfileCfg),
+  campuses: resource(campusesCfg),
+  'academic-years': resource(academicYearsCfg),
+  'audit-logs': resource(auditLogsCfg),
 
   // Academic
   classes: resource(classesCfg),

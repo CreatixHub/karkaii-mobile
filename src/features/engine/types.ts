@@ -93,6 +93,8 @@ export interface ActionContext<T extends Entity> {
   toast: (message: string, kind?: 'success' | 'error' | 'info') => void;
   rows: T[];
   role: RoleKey | null;
+  /** The signed-in user (for actions that belong to the person, such as registering for an event). */
+  user?: MockUser | null;
   /** Open the system share sheet with some text (receipts, notices, reports). */
   share: (title: string, message: string) => void;
   /** Open another screen, e.g. a record's full profile. */
@@ -107,7 +109,7 @@ export interface ActionDef<T extends Entity> {
   icon: IconName;
   tone?: 'default' | 'danger' | 'success';
   /** Hidden when this returns false. */
-  visible?: (r: T, role: RoleKey | null) => boolean;
+  visible?: (r: T, role: RoleKey | null, user?: MockUser | null) => boolean;
   /** Ask for confirmation first. */
   confirm?: string;
   /** Collect input first (reject reason, payment amount…). */
@@ -220,6 +222,8 @@ export interface ResourceConfig<T extends Entity> {
   /** Open a full page instead of the form sheet for Add / Edit (pages with many sections, e.g. Teachers). */
   addHref?: string;
   editHref?: (r: T) => string;
+  /** Roles allowed to add, edit, delete or run manage actions (others can only view and use actions marked `manage: false`). Default: every role that is not read-only. */
+  manageRoles?: RoleKey[];
   canCreate?: boolean;
   canEdit?: boolean;
   canDelete?: boolean;

@@ -7,7 +7,7 @@ import type { ClassRecord, StaffRecord, TeacherRecord } from '@/data/seed/master
 import type { DepartmentRecord, DesignationRecord, UserRecord } from '@/data/seed/peopleAdmin';
 import { opts, parseCsvRows } from '@/features/academic/helpers';
 import { logAudit } from '@/features/common/audit';
-import { countBy } from '@/features/common/refs';
+import { campusChoices, countBy, mainCampusName } from '@/features/common/refs';
 import type { ResourceConfig } from '@/features/engine/types';
 import type { Tone } from '@/ui/tone';
 import { attendanceSummaryOf, classesOfTeacher, homeSectionsOf, mappingsOfTeacher, periodsPerWeek, userOfTeacher } from './teacherData';
@@ -72,7 +72,7 @@ export const teachersCfg: ResourceConfig<TeacherRecord> = {
     { key: 'department', label: 'Department', options: () => snapshot<DepartmentRecord>('departments').filter((d) => d.type === 'Academic').map((d) => ({ label: d.name, value: d.name })), match: (r, v) => r.department === v },
     { key: 'designation', label: 'Designation', options: opts(['Senior Teacher', 'Assistant Teacher']), match: (r, v) => r.designation === v },
     { key: 'contract', label: 'Contract', options: opts(['Permanent', 'Temporary']), match: (r, v) => r.contractType === v },
-    { key: 'campus', label: 'Campus', options: opts(['Main Campus', 'North Campus']), match: (r, v) => r.campus === v },
+    { key: 'campus', label: 'Campus', options: () => campusChoices(), match: (r, v) => r.campus === v },
     { key: 'gender', label: 'Gender', options: opts(['Male', 'Female']), match: (r, v) => r.gender === v },
   ],
   sorts: [
@@ -183,7 +183,7 @@ export const teachersCfg: ResourceConfig<TeacherRecord> = {
             updated += 1;
           } else {
             const [first, ...rest] = name.split(' ');
-            saveTeacher({ employeeId, firstName: first, lastName: rest.join(' ') || '-', gender: 'Female', phone, email, dob: `${new Date().getFullYear() - 32}-01-01`, qualification: 'B.Ed', department: dept!.name, designation: desig!.name, subjects: list, joinedOn, campus: 'Main Campus', status: 'Active', basicSalary: '3000', languages: ['English'], createLogin: false }, undefined, BY);
+            saveTeacher({ employeeId, firstName: first, lastName: rest.join(' ') || '-', gender: 'Female', phone, email, dob: `${new Date().getFullYear() - 32}-01-01`, qualification: 'B.Ed', department: dept!.name, designation: desig!.name, subjects: list, joinedOn, campus: mainCampusName(), status: 'Active', basicSalary: '3000', languages: ['English'], createLogin: false }, undefined, BY);
             added += 1;
           }
         }

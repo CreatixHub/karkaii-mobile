@@ -14,7 +14,7 @@ import {
   type RoleRecord,
   type UserRecord,
 } from '@/data/seed/peopleAdmin';
-import { countBy, getStaff, nextNo, personName, sum } from '@/features/common/refs';
+import { campusChoices, countBy, getStaff, mainCampusName, nextNo, personName, sum } from '@/features/common/refs';
 import type { ResourceConfig } from '@/features/engine/types';
 import type { Option } from '@/ui/Fields';
 import type { Tone } from '@/ui/tone';
@@ -95,7 +95,7 @@ export const staffCfg: ResourceConfig<StaffRecord> = {
     { key: 'type', label: 'Staff type', options: opts(['Administrative', 'Support']), match: (r, v) => r.staffType === v },
     { key: 'employment', label: 'Employment', options: opts(EMPLOYMENT), match: (r, v) => r.employmentType === v },
     { key: 'gender', label: 'Gender', options: opts(['Male', 'Female']), match: (r, v) => r.gender === v },
-    { key: 'branch', label: 'Branch', options: opts(['Main Campus', 'North Wing', 'South Wing']), match: (r, v) => r.campus === v },
+    { key: 'branch', label: 'Branch', options: () => campusChoices(), match: (r, v) => r.campus === v },
     { key: 'status', label: 'Status', options: opts(['Active', 'On Leave', 'Probation', 'Suspended', 'Inactive']), match: (r, v) => r.status === v },
     { key: 'joined', label: 'Joining period', single: true, options: opts(['Within 1 year', '1–5 years', 'Over 5 years']), match: (r, v) => { const y = yearsSince(r.joinedOn); return v === 'Within 1 year' ? y < 1 : v === '1–5 years' ? y >= 1 && y <= 5 : y > 5; } },
   ],
@@ -116,7 +116,7 @@ export const staffCfg: ResourceConfig<StaffRecord> = {
     { key: 'phone', label: 'Mobile', type: 'phone', required: true },
     { key: 'employmentType', label: 'Employment Type', type: 'select', required: true, options: EMPLOYMENT, default: 'Full-time' },
     { key: 'joinedOn', label: 'Joining Date', type: 'date', required: true },
-    { key: 'campus', label: 'Branch', type: 'select', required: true, options: ['Main Campus', 'North Wing', 'South Wing'], default: 'Main Campus' },
+    { key: 'campus', label: 'Branch', type: 'select', required: true, options: campusChoices, default: mainCampusName() },
     { key: 'shift', label: 'Shift', type: 'select', options: ['Morning', 'General'], default: 'General' },
     { key: 'reportsTo', label: 'Reports To', type: 'text' },
     { key: 'qualification', label: 'Qualification', type: 'text' },
@@ -186,7 +186,7 @@ export const staffCfg: ResourceConfig<StaffRecord> = {
           if (!name || !employeeId || !dept || !designations.has(designation) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email ?? '') || !EMPLOYMENT.includes(employmentType) || !/^\d{4}-\d{2}-\d{2}$/.test(joinedOn ?? '') || emails.has(email.toLowerCase()) || ids.has(employeeId.toLowerCase())) { skipped += 1; continue; }
           emails.add(email.toLowerCase());
           ids.add(employeeId.toLowerCase());
-          ctx.create({ employeeId, name, department: dept.name, designation, staffType: dept.type === 'Administrative' ? 'Administrative' : 'Support', campus: 'Main Campus', shift: 'General', email, phone, employmentType: employmentType as StaffRecord['employmentType'], joinedOn, reportsTo: 'Principal Office', qualification: '', experienceYears: 0, status: 'Probation', gender: 'Male', emergencyContact: '', emergencyPhone: '', performanceNote: '', remarks: 'Imported', lastLogin: 'Never' });
+          ctx.create({ employeeId, name, department: dept.name, designation, staffType: dept.type === 'Administrative' ? 'Administrative' : 'Support', campus: mainCampusName(), shift: 'General', email, phone, employmentType: employmentType as StaffRecord['employmentType'], joinedOn, reportsTo: 'Principal Office', qualification: '', experienceYears: 0, status: 'Probation', gender: 'Male', emergencyContact: '', emergencyPhone: '', performanceNote: '', remarks: 'Imported', lastLogin: 'Never' });
           added += 1;
         }
         ctx.toast(`${added} staff imported${skipped ? `, ${skipped} skipped` : ''}`, added ? 'success' : 'error');
@@ -408,7 +408,7 @@ export const usersCfg: ResourceConfig<UserRecord> = {
     { key: 'role', label: 'Role', options: () => snapshot<RoleRecord>('roles').map((r) => ({ label: r.name, value: r.id })), match: (r, v) => r.roleId === v },
     { key: 'department', label: 'Department', options: () => [...new Set(snapshot<UserRecord>('users').map((u) => u.department))].slice(0, 30).map((d) => ({ label: d, value: d })), match: (r, v) => r.department === v },
     { key: 'status', label: 'Status', options: opts(['Active', 'Pending', 'Inactive', 'Suspended', 'Blocked']), match: (r, v) => r.status === v },
-    { key: 'branch', label: 'Branch', options: opts(['Main Campus', 'North Campus', 'North Wing', 'South Wing']), match: (r, v) => r.branch === v },
+    { key: 'branch', label: 'Branch', options: () => campusChoices(), match: (r, v) => r.branch === v },
     { key: 'joined', label: 'Joined', single: true, options: opts(['Last 3 months', 'Last year', 'Older']), match: (r, v) => { const d = diffDays(r.created, todayISO()); return v === 'Last 3 months' ? d <= 90 : v === 'Last year' ? d > 90 && d <= 365 : d > 365; } },
   ],
   sorts: [
@@ -424,7 +424,7 @@ export const usersCfg: ResourceConfig<UserRecord> = {
     { key: 'phone', label: 'Phone', type: 'phone' },
     { key: 'roleId', label: 'Role', type: 'select', required: true, options: ROLE_OPTIONS },
     { key: 'department', label: 'Department', type: 'text' },
-    { key: 'branch', label: 'Branch', type: 'select', required: true, options: ['Main Campus', 'North Campus', 'North Wing', 'South Wing'], default: 'Main Campus' },
+    { key: 'branch', label: 'Branch', type: 'select', required: true, options: campusChoices, default: mainCampusName() },
     { key: 'status', label: 'Status', type: 'select', required: true, options: ['Pending', 'Active', 'Inactive', 'Suspended', 'Blocked'], default: 'Pending', hint: 'Pending means an invitation has been sent and the person has not signed in yet.' },
   ],
   validate: (v, { existing, rows }) => (rows.some((r) => r.id !== existing?.id && r.email.toLowerCase() === String(v.email).trim().toLowerCase()) ? { email: 'An account with this email already exists' } : {}),
@@ -467,7 +467,7 @@ export const usersCfg: ResourceConfig<UserRecord> = {
           const r = rolesAll.find((x) => x.name.toLowerCase() === (role ?? '').toLowerCase());
           if (!firstName || !lastName || !r || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email ?? '') || emails.has(email.toLowerCase())) { skipped += 1; continue; }
           emails.add(email.toLowerCase());
-          ctx.create({ firstName, lastName, name: `${firstName} ${lastName}`, email, phone: '', roleId: r.id, department: '', branch: branch || 'Main Campus', status: 'Pending', online: false, lastLogin: '', created: todayISO(), linkedType: 'staff', linkedId: '' });
+          ctx.create({ firstName, lastName, name: `${firstName} ${lastName}`, email, phone: '', roleId: r.id, department: '', branch: branch || mainCampusName(), status: 'Pending', online: false, lastLogin: '', created: todayISO(), linkedType: 'staff', linkedId: '' });
           added += 1;
         }
         ctx.toast(`${added} user${added === 1 ? '' : 's'} invited${skipped ? `, ${skipped} skipped` : ''}`, added ? 'success' : 'error');

@@ -23,8 +23,8 @@ export default function AppDrawerLayout() {
       <Drawer.Screen name="people" options={{ headerShown: false, title: 'People & Admission' }} />
       <Drawer.Screen name="campus" options={{ headerShown: false, title: 'Campus Operations' }} />
       <Drawer.Screen name="reports" options={{ headerShown: false, title: 'Reports' }} />
-      <Drawer.Screen name="communication" options={{ title: 'Communication' }} />
-      <Drawer.Screen name="administration" options={{ title: 'Administration' }} />
+      <Drawer.Screen name="communication" options={{ headerShown: false, title: 'Communication' }} />
+      <Drawer.Screen name="administration" options={{ headerShown: false, title: 'Administration' }} />
       <Drawer.Screen name="profile" options={{ title: 'My Profile' }} />
     </Drawer>
   );

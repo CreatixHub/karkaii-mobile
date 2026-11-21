@@ -17,7 +17,7 @@ import {
   type TeacherAttendanceRecord,
 } from '@/data/seed/hrm';
 import type { StaffRecord, StudentRecord, TeacherRecord } from '@/data/seed/master';
-import { classOptions, classSection, countBy, getClass, getStaff, getStudent, getTeacher, nextNo, ownStudentScope, staffSideScope, studentOptions } from '@/features/common/refs';
+import { campusChoices, classOptions, classSection, countBy, getClass, getStaff, getStudent, getTeacher, mainCampusName, nextNo, ownStudentScope, staffSideScope, studentOptions } from '@/features/common/refs';
 import type { ResourceConfig } from '@/features/engine/types';
 import type { Tone } from '@/ui/tone';
 
@@ -32,7 +32,7 @@ const time = (t: string) => (t ? formatTime(t) : '—');
 /* ================================== Holidays ================================== */
 
 const CATEGORIES: HolidayCategory[] = ['Public', 'School', 'Festival', 'Examination', 'Optional'];
-const BRANCHES = ['All Branches', 'Main Campus', 'North Wing', 'South Wing'];
+const branchChoices = () => [{ label: 'All Branches', value: 'All Branches' }, ...campusChoices()];
 export const categoryTone: Record<HolidayCategory, Tone> = { Public: 'danger', School: 'primary', Festival: 'warning', Examination: 'info', Optional: 'teal' };
 const durationOf = (h: Pick<HolidayRecord, 'start' | 'end'>) => inclusiveDays(h.start, h.end);
 const whenOf = (h: Pick<HolidayRecord, 'start' | 'end'>): 'Ongoing' | 'Upcoming' | 'Past' => {
@@ -90,7 +90,7 @@ export const holidaysCfg: ResourceConfig<HolidayRecord> = {
   ],
   filters: [
     { key: 'category', label: 'Holiday category', options: opts(CATEGORIES), match: (r, v) => r.category === v },
-    { key: 'branch', label: 'Branch', options: opts(BRANCHES), match: (r, v) => r.branch === v },
+    { key: 'branch', label: 'Branch', options: () => branchChoices(), match: (r, v) => r.branch === v },
     { key: 'when', label: 'When', options: opts(['Upcoming', 'Ongoing', 'Past']), single: true, match: (r, v) => whenOf(r) === v },
     { key: 'ay', label: 'Academic year', options: () => [...new Set(snapshot<HolidayRecord>('holidays').map((h) => h.academicYear))].map((y) => ({ label: y, value: y })), match: (r, v) => r.academicYear === v },
   ],
@@ -107,7 +107,7 @@ export const holidaysCfg: ResourceConfig<HolidayRecord> = {
       onChange: (v, vals) => (!vals.end || String(vals.end) < String(v) ? { end: v } : undefined),
     },
     { key: 'end', label: 'End Date', type: 'date', required: true },
-    { key: 'branch', label: 'Branch', type: 'select', required: true, options: opts(BRANCHES), default: 'All Branches' },
+    { key: 'branch', label: 'Branch', type: 'select', required: true, options: branchChoices, default: 'All Branches' },
     { key: 'classes', label: 'Applicable Classes', type: 'text', default: 'All Classes' },
     { key: 'academicYear', label: 'Academic Year', type: 'select', options: opts(['2026-27', '2025-26', '2027-28']), default: '2026-27' },
     { key: 'description', label: 'Description', type: 'textarea' },
@@ -560,7 +560,7 @@ function makeDutyCfg(kind: 'teacher' | 'staff'): ResourceConfig<Duty> {
         recordedBy: method === 'Manual' ? 'Admin Office' : 'System',
         lastUpdated: checkOut || checkIn,
         corrections: existing?.corrections ?? 0,
-        campus: (isTeacher ? getTeacher(v[idKey]) : getStaff(v[idKey]))?.campus ?? existing?.campus ?? 'Main Campus',
+        campus: (isTeacher ? getTeacher(v[idKey]) : getStaff(v[idKey]))?.campus ?? existing?.campus ?? mainCampusName(),
       } as Partial<Duty>;
     },
     actions: [
@@ -664,7 +664,7 @@ export const leavesCfg: ResourceConfig<LeaveRecord> = {
     { key: 'type', label: 'Leave type', options: opts(LEAVE_TYPES), match: (r, v) => r.leaveType === v },
     { key: 'status', label: 'Leave status', options: opts(['Approved', 'Pending', 'Forwarded', 'Rejected', 'Cancelled']), match: (r, v) => r.status === v },
     { key: 'approval', label: 'Approval status', options: opts(['Approved', 'Awaiting Approval', 'Rejected']), match: (r, v) => approvalOf(r.status) === v },
-    { key: 'branch', label: 'Branch', options: opts(['Main Campus', 'North Wing', 'South Wing']), match: (r, v) => leaveStaff(r)?.campus === v },
+    { key: 'branch', label: 'Branch', options: () => campusChoices(), match: (r, v) => leaveStaff(r)?.campus === v },
   ],
   sorts: [
     { key: 'employee', label: 'Employee (A–Z)', compare: (a, b) => (leaveStaff(a)?.name ?? '').localeCompare(leaveStaff(b)?.name ?? '') },

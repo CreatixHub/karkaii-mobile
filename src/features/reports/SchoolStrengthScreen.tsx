@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ScrollView, Share, Text, View } from 'react-native';
 import { useCollection } from '@/core/store/useCollection';
+import type { SchoolProfileRecord } from '@/data/seed/administration';
 import type { ClassRecord } from '@/data/seed/master';
 import { Button, Card } from '@/ui/basics';
 import { SelectField, SwitchField, TextField } from '@/ui/Fields';
 import { useToast } from '@/ui/Toast';
-import { DEFAULT_OPTIONS, SECTIONS, anySection, buildCsv, buildText, classRowsFor, computeSchoolStrength, genderLabel, nice, pctText, ratioText, roleLabel, studentGroups, type ReportOptions, type SchoolStrength } from './strength';
+import { DEFAULT_OPTIONS, SECTIONS, anySection, buildCsv, buildText, classRowsFor, computeSchoolStrength, genderLabel, nice, pctText, ratioText, roleLabel, studentGroups, type ReportOptions, type SchoolStrength, type SectionKey } from './strength';
 
 const NAVY = '#1e3a8a';
 
@@ -56,8 +57,8 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
   const f = data.faculty;
   const s = data.students;
   const cls = o.classId === 'all' ? null : s.classes.find((c) => c.classId === o.classId);
-  let n = 0;
-  const next = () => (n += 1);
+  // Numbering follows the sections that are switched on.
+  const num = (key: SectionKey) => SECTIONS.filter(([k]) => o[k]).findIndex(([k]) => k === key) + 1;
   const classRows = classRowsFor(data, o.classId);
   const total = classRows.reduce((a, c) => ({ male: a.male + c.male, female: a.female + c.female }), { male: 0, female: 0 });
   const extra = o.classId === 'all' ? s.unassigned : { male: 0, female: 0, total: 0 };
@@ -71,7 +72,7 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 
       {o.summary ? (
         <>
-          <H n={next()} title="Summary" />
+          <H n={num('summary')} title="Summary" />
           <View className="flex-row flex-wrap justify-between">
             <Tile label="Total Faculty" value={f.total} /><Tile label="Teaching Staff" value={f.teaching} />
             <Tile label="Non-teaching Staff" value={f.nonTeaching} /><Tile label="Total Students" value={s.total} />
@@ -83,7 +84,7 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 
       {o.faculty ? (
         <>
-          <H n={next()} title="Faculty" />
+          <H n={num('faculty')} title="Faculty" />
           <Table head={['Category', 'Male', 'Female', 'Total']} widths={[2, 1, 1, 1]} boldLast rows={[['Teaching', f.teachingByGender.male, f.teachingByGender.female, f.teaching], ['Non-teaching', f.nonTeachingByGender.male, f.nonTeachingByGender.female, f.nonTeaching], ['All faculty', f.byGender.male, f.byGender.female, f.total]]} />
           <Table head={['Employment type', 'Faculty', 'Share']} widths={[2, 1, 1]} rows={Object.entries(f.byEmploymentType).map(([k, v]) => [nice(k), v, pctText(v, f.total)])} />
           <Table head={['Staff status (all records)', 'Staff']} widths={[3, 1]} rows={Object.entries(f.byStatus).map(([k, v]) => [nice(k), v])} />
@@ -92,14 +93,14 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 
       {o.facultyList ? (
         <>
-          <H n={next()} title="Faculty list" />
+          <H n={num('facultyList')} title="Faculty list" />
           {f.list.length === 0 ? <Text className="text-xs text-slate-500">No faculty found.</Text> : <Table head={['#', 'Emp. no', 'Name', 'Role', 'Gender']} widths={[0.6, 1.4, 2.4, 1.6, 1]} rows={f.list.map((m, i) => [i + 1, m.employeeNo, m.name, `${roleLabel(m.staffType)} · ${nice(m.employmentType)}`, genderLabel(m.gender)])} />}
         </>
       ) : null}
 
       {o.studentsGender ? (
         <>
-          <H n={next()} title="Students — gender-wise" />
+          <H n={num('studentsGender')} title="Students — gender-wise" />
           <Bar label="Boys" value={s.byGender.male} total={s.total} color="#2563eb" />
           <Bar label="Girls" value={s.byGender.female} total={s.total} color="#db2777" />
           {Object.keys(s.byStatus).length > 1 ? <View className="mt-2"><Table head={['Student status (all records)', 'Students']} widths={[3, 1]} rows={Object.entries(s.byStatus).map(([k, v]) => [nice(k), v])} /></View> : null}
@@ -108,7 +109,7 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 
       {o.classWise ? (
         <>
-          <H n={next()} title="Students — class-wise and gender-wise" />
+          <H n={num('classWise')} title="Students — class-wise and gender-wise" />
           <Table
             head={['Class', 'Boys', 'Girls', 'Total', 'Girls %']}
             widths={[2, 1, 1, 1, 1.2]}
@@ -121,7 +122,7 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 
       {o.studentList ? (
         <>
-          <H n={next()} title="Student list" />
+          <H n={num('studentList')} title="Student list" />
           {studentGroups(data, o.classId).length === 0 ? <Text className="text-xs text-slate-500">No students found.</Text> : null}
           {studentGroups(data, o.classId).map((g) => (
             <View key={g.title} className="mb-1">
@@ -139,7 +140,9 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
 export function SchoolStrengthScreen({ breadcrumb }: { breadcrumb: string }) {
   const toast = useToast();
   const classes = useCollection<ClassRecord>('classes');
-  const [opts, setOpts] = useState<ReportOptions>(DEFAULT_OPTIONS);
+  // The report heading starts as the name saved on the School Profile page.
+  const profile = useCollection<SchoolProfileRecord>('schoolProfile');
+  const [opts, setOpts] = useState<ReportOptions>(() => ({ ...DEFAULT_OPTIONS, schoolName: profile[0]?.name || DEFAULT_OPTIONS.schoolName }));
   const [error, setError] = useState('');
   const [generated, setGenerated] = useState<{ data: SchoolStrength; opts: ReportOptions } | null>(null);
   const patch = (change: Partial<ReportOptions>) => setOpts((cur) => ({ ...cur, ...change }));

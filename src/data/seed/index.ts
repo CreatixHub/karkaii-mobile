@@ -10,3 +10,5 @@ import './teacherLife';
 import './transport';
 import './assets';
 import './gatePass';
+import './communication';
+import './administration';

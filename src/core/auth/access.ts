@@ -55,6 +55,8 @@ const MODULE_ACCESS: Record<string, RoleKey[]> = {
   Accounts: ['accountant'],
   Transport: ['transport_manager', 'student', 'parent'],
   'Gate Pass': ['security', 'receptionist'],
+  // Events are open to every signed-in role (they can register); the rest of Administration and all of Communication are admin only.
+  Events: EVERYONE,
   // Teachers, Staff, Users, Assets and School Strength Report have no entry: admin only.
 };
 

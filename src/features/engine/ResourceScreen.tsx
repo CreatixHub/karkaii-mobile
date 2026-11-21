@@ -22,7 +22,9 @@ import type { ActionContext, ActionDef, BulkActionDef, FormValues, PageActionDef
 const PAGE = 20;
 
 export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery }: { cfg: ResourceConfig<T>; breadcrumb?: string; initialQuery?: string }) {
-  const { user, role, canManage } = useAuth();
+  const { user, role, canManage: roleCanManage } = useAuth();
+  // Some pages (Events) are open to every role but only certain roles may change them.
+  const canManage = roleCanManage && (!cfg.manageRoles || (!!role && cfg.manageRoles.includes(role)));
   const toast = useToast();
   const allRows = useCollection<T>(cfg.collection);
   // Row-level scoping (e.g. a student only sees their own fees), the mobile stand-in for the API's own scoping.
@@ -133,6 +135,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     toast,
     rows,
     role,
+    user,
     share,
     go,
     alert: showAlert,
@@ -310,7 +313,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     </View>
   );
 
-  const visibleActions = (r: T) => (cfg.actions ?? []).filter((a) => (a.manage === false || canManage) && (a.visible ? a.visible(r, role) : true));
+  const visibleActions = (r: T) => (cfg.actions ?? []).filter((a) => (a.manage === false || canManage) && (a.visible ? a.visible(r, role, user) : true));
   const formAction = actionForm ? actionForm.action : null;
   const formActionRow = actionForm ? rows.find((r) => r.id === actionForm.id) : undefined;
 
