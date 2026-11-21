@@ -1,0 +1,13 @@
+const fs = require('fs');
+const p = 'src/features/reports/SchoolStrengthScreen.tsx';
+let s = fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
+const rep = (a, b) => { if (!s.includes(a)) throw new Error('missing: ' + a.slice(0, 70)); s = s.replace(a, b); };
+rep("  let n = 0;\n  const next = () => (n += 1);\n", "  // Numbering follows the sections that are switched on.\n  const num = (key: SectionKey) => SECTIONS.filter(([k]) => o[k]).findIndex(([k]) => k === key) + 1;\n");
+rep("<H n={next()} title=\"Summary\" />", "<H n={num('summary')} title=\"Summary\" />");
+rep("<H n={next()} title=\"Faculty\" />", "<H n={num('faculty')} title=\"Faculty\" />");
+rep("<H n={next()} title=\"Faculty list\" />", "<H n={num('facultyList')} title=\"Faculty list\" />");
+rep("<H n={next()} title=\"Students — gender-wise\" />", "<H n={num('studentsGender')} title=\"Students — gender-wise\" />");
+rep("<H n={next()} title=\"Students — class-wise and gender-wise\" />", "<H n={num('classWise')} title=\"Students — class-wise and gender-wise\" />");
+rep("<H n={next()} title=\"Student list\" />", "<H n={num('studentList')} title=\"Student list\" />");
+rep("type ReportOptions, type SchoolStrength }", "type ReportOptions, type SchoolStrength, type SectionKey }");
+fs.writeFileSync(p, s);

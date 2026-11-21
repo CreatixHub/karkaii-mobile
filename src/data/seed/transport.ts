@@ -106,6 +106,7 @@ const DRIVER_ROWS: [string, LicenseType, number, number, DriverStatus, Verificat
   ['Selvam Raj', 'Light (LMV)', 800, 5, 'On Leave', 'Verified'],
   ['Rahul Menon', 'Heavy (HMV)', 300, 3, 'Active', 'Pending'],
   ['Imran Pasha', 'Heavy (HMV)', -30, 20, 'Suspended', 'Suspended'],
+  ['Karthik Raja', 'Heavy (HMV)', 600, 10, 'Active', 'Verified'],
 ];
 
 export const buildDrivers = (): DriverRecord[] =>

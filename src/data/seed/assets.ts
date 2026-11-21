@@ -355,7 +355,7 @@ export const buildStockMovements = (): StockMovementRecord[] => {
   const out: StockMovementRecord[] = [];
   items.forEach((it, i) => {
     // Items 6 (toner), 10 (oil) and 16 (answer booklets) are drawn down to low / zero stock for the demo.
-    const heavy = i === 6 ? it.openingBalance - 2 : i === 10 ? it.openingBalance + 4 : i === 15 ? it.openingBalance - 70 : 0;
+    const heavy = i === 6 ? it.openingBalance - 2 : i === 10 ? it.openingBalance + 4 : i === 15 ? it.openingBalance - 30 : 0;
     const issues = Math.min(it.openingBalance, heavy || Math.round(it.openingBalance * rng.int(15, 45) / 100));
     const parts = heavy ? [Math.ceil(issues / 2), issues - Math.ceil(issues / 2)] : [Math.ceil(issues / 2), Math.floor(issues / 2)];
     parts.forEach((q, k) => {
