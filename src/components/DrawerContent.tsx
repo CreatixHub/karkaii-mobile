@@ -40,7 +40,7 @@ export default function DrawerContent({ navigation }: DrawerContentComponentProp
           </View>
           <View className="ml-2.5 flex-1">
             <Text className="text-xs font-bold text-slate-800" numberOfLines={1}>{user?.name}</Text>
-            <Text className="text-[10px] font-medium text-indigo-600">{roleLabel(role)} · View Profile</Text>
+            <Text className="text-[10px] font-medium text-indigo-600">{user?.roleName ?? roleLabel(role)} · View Profile</Text>
           </View>
           <Feather name="chevron-right" size={14} color="#94a3b8" />
         </Pressable>

@@ -111,15 +111,23 @@ export function transportOf(s: StudentRecord) {
   };
 }
 
+/** The two hostel blocks and who each is for. */
+export const HOSTEL_BLOCKS = [
+  { name: 'Horizon Boys Block A', gender: 'Male' as const, warden: 'Ramesh Babu' },
+  { name: 'Sunrise Girls Block B', gender: 'Female' as const, warden: 'Kavitha Suresh' },
+];
+
+/** The student's hostel place: the block and room saved on the student when set, otherwise the usual block for their gender. */
 export function hostelOf(s: StudentRecord) {
   if (!s.hostel) return null;
   const girls = s.gender === 'Female';
+  const block = HOSTEL_BLOCKS.find((b) => b.name === s.hostelName) ?? HOSTEL_BLOCKS.find((b) => b.gender === (girls ? 'Female' : 'Male'))!;
   const mates = snapshot<StudentRecord>('students').filter((x) => x.hostel && x.gender === s.gender && x.id !== s.id);
   const n = numOf(s.id);
   return {
-    room: `H-${200 + (n % 40)}`,
-    block: girls ? 'Sunrise Girls Block B' : 'Horizon Boys Block A',
-    warden: girls ? 'Kavitha Suresh' : 'Ramesh Babu',
+    room: s.hostelRoom || `H-${200 + (n % 40)}`,
+    block: block.name,
+    warden: block.warden,
     roommates: [mates[n % Math.max(1, mates.length)], mates[(n + 3) % Math.max(1, mates.length)]].filter((m, i, a) => !!m && a.indexOf(m) === i).map((m) => m.name.split(' ')[0]),
     checkIn: s.joinedOn,
   };

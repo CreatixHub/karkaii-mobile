@@ -10,6 +10,8 @@ export interface MockUser {
   phone: string;
   role: RoleKey;
   title: string;
+  /** Shown instead of the built-in role label when the account's role has no profile of its own (Staff, custom roles). */
+  roleName?: string;
   /** Students/parents/teachers are tied to records in the seed data. */
   studentId?: string;
   childIds?: string[];

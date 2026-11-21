@@ -104,13 +104,16 @@ export function checkAssignment(routeId: string, vehicleId: string, driverId: st
   return errors;
 }
 
+/** Pass this as `studentId` to check a route and stop for a student who is not on the roll yet (the Add Student form). */
+export const NEW_STUDENT = '__new__';
+
 /** Why a student cannot be given this seat / stop (empty list = allowed). */
 export function checkStudentSeat(opts: { studentId: string; routeId: string; pickupPointId: string; assignmentId?: string }): string[] {
   const errors: string[] = [];
   const student = snapshot<StudentRecord>('students').find((s) => s.id === opts.studentId);
-  if (!student) return ['Student not found.'];
-  if (student.status !== 'Active' && student.status !== 'On Leave') errors.push(`${student.name} is ${student.status.toLowerCase()}.`);
-  if (allAssignments().some((a) => a.studentId === opts.studentId && a.id !== opts.assignmentId)) errors.push(`${student.name} already has a transport assignment.`);
+  if (!student && opts.studentId !== NEW_STUDENT) return ['Student not found.'];
+  if (student && student.status !== 'Active' && student.status !== 'On Leave') errors.push(`${student.name} is ${student.status.toLowerCase()}.`);
+  if (student && allAssignments().some((a) => a.studentId === opts.studentId && a.id !== opts.assignmentId)) errors.push(`${student.name} already has a transport assignment.`);
   if (!opts.routeId) return errors;
   const route = routeOf(opts.routeId);
   if (!route) return [...errors, 'Route not found.'];

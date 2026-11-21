@@ -49,6 +49,7 @@ import { StudentPromotion } from '@/features/people/StudentPromotion';
 import { StudentAttendanceHistory } from '@/features/people/StudentAttendanceHistory';
 import { StudentProfile } from '@/features/people/StudentProfile';
 import { documentsCfg, studentsCfg } from '@/features/people/studentConfigs';
+import { StudentForm } from '@/features/people/StudentForm';
 import { RolePanel } from '@/features/people/RolePanel';
 import { WorkflowPanel } from '@/features/people/WorkflowPanel';
 
@@ -101,6 +102,7 @@ export const PAGES: Record<string, PageComponent> = {
 
   // People & Admission
   students: resource(studentsCfg),
+  'add-student': StudentForm,
   'student-profile': StudentProfile,
   admissions: resource(admissionsWithPanel),
   'student-promotion': StudentPromotion,

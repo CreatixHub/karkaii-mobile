@@ -39,6 +39,9 @@ export const studentsCfg: ResourceConfig<StudentRecord> = {
   entity: 'Student',
   collection: 'students',
   auditEntity: 'student',
+  // Add and Edit open the full Add Student page (the web app's ten-section form).
+  addHref: '/people/add-student',
+  editHref: (r) => `/people/add-student?id=${r.id}`,
   searchPlaceholder: 'Search name, admission no, class…',
   searchText: (r) => `${r.name} ${r.admissionNo} ${classSection(r)} ${r.parentName} ${r.house} ${r.rollNo} ${r.phone}`,
   code: (r) => r.admissionNo,
@@ -67,6 +70,7 @@ export const studentsCfg: ResourceConfig<StudentRecord> = {
     { title: 'Student', items: [{ label: 'Admission no', value: (r) => r.admissionNo }, { label: 'Name', value: (r) => r.name }, { label: 'Gender', value: (r) => r.gender }, { label: 'Date of birth', value: (r) => `${formatDate(r.dob)} (${ageOf(r.dob)} yrs)` }, { label: 'Blood group', value: (r) => r.bloodGroup }, { label: 'Religion', value: (r) => r.religion }, { label: 'Nationality', value: (r) => r.nationality }, { label: 'Status', value: (r) => r.status }] },
     { title: 'Class', items: [{ label: 'Class / section', value: (r) => classSection(r) }, { label: 'Roll no', value: (r) => r.rollNo }, { label: 'House', value: (r) => `${r.house} House` }, { label: 'Class teacher', value: (r) => classTeacherOf(r)?.name }, { label: 'Joined', value: (r) => formatDate(r.joinedOn) }, { label: 'Previous school', value: (r) => r.previousSchool || '—' }, { label: 'Activities', value: (r) => r.activities.join(', ') || '—' }] },
     { title: 'Family & contact', items: [{ label: 'Father / guardian', value: (r) => r.parentName }, { label: 'Mother', value: (r) => r.motherName }, { label: 'Guardian phone', value: (r) => r.parentPhone }, { label: 'Student phone', value: (r) => r.phone }, { label: 'Emergency phone', value: (r) => r.emergencyPhone }, { label: 'Email', value: (r) => r.email }, { label: 'Address', value: (r) => r.address }] },
+    { title: 'More details', items: [{ label: 'Academic year', value: (r) => r.academicYear }, { label: 'Category', value: (r) => r.category }, { label: 'Mother tongue', value: (r) => r.motherTongue }, { label: 'Languages known', value: (r) => r.languagesKnown?.join(', ') }, { label: 'Guardian', value: (r) => (r.guardianType && r.guardianType !== 'Parents' && r.guardianName ? `${r.guardianName}${r.guardianRelation ? ` (${r.guardianRelation})` : ''} · ${r.guardianPhone}` : undefined) }, { label: 'Siblings', value: (r) => { const names = (r.siblingIds ?? []).map((id) => students().find((x) => x.id === id)?.name).filter(Boolean); return names.length ? names.join(', ') : undefined; } }, { label: 'Permanent address', value: (r) => r.permanentAddress }] },
     { title: 'Services', items: [{ label: 'Transport', value: (r) => { const t = transportOf(r); return t ? `${t.name} · ${t.bus}` : 'Own transport'; } }, { label: 'Hostel', value: (r) => { const h = hostelOf(r); return h ? `${h.block} · Room ${h.room}` : 'Day scholar'; } }, { label: 'Scholarship', value: (r) => (r.scholar ? 'Yes' : 'No') }] },
     { title: 'Performance', items: [{ label: 'Attendance', value: (r) => pct(attendancePct(r.id)) }, { label: 'Academic average', value: (r) => pct(academicPercent(r.id)) }, { label: 'Behaviour', value: (r) => `${behaviourScore(r.id)}/100 · ${behaviourLabel(behaviourScore(r.id))}` }, { label: 'Fees', value: (r) => { const f = feeSummary(r.id); return f.balance > 0 ? `${f.status} · ${money(f.balance)} outstanding` : 'Paid up'; } }] },
   ],

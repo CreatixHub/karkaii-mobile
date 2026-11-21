@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { MOCK_USERS } from '@/core/auth/AuthProvider';
+import { accountExists } from '@/core/auth/accounts';
 import { Button } from '@/ui/basics';
 import { TextField } from '@/ui/Fields';
 
@@ -20,7 +20,7 @@ export default function ForgotPasswordScreen() {
     setSent(true);
   };
 
-  const known = MOCK_USERS.some((u) => u.email === email.trim().toLowerCase());
+  const known = accountExists(email);
 
   return (
     <SafeAreaView className="flex-1 bg-[#f4f6fb]">

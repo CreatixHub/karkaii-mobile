@@ -123,7 +123,10 @@ const ContactButtons = ({ phone, email, label }: { phone: string; email?: string
 
 export function OverviewPane({ student, staff }: PaneProps) {
   const users = useCollection<UserRecord>('users');
+  const everyone = useCollection<StudentRecord>('students');
   const health = useCollection<HealthRecord>('healthRecords').find((h) => h.studentId === student.id);
+  const siblings = (student.siblingIds ?? []).map((sid) => everyone.find((x) => x.id === sid)).filter((x): x is StudentRecord => !!x);
+  const hasBank = !!(student.bankName || student.ifscNumber || student.bankBranch);
   const loans = useCollection<LoanRecord>('libraryLoans').filter((l) => l.studentId === student.id && (l.status === 'Issued' || l.status === 'Overdue'));
   useCollection<StudentAttendanceRecord>('studentAttendance');
   useCollection<ExamResultRecord>('examResults');
@@ -175,15 +178,22 @@ export function OverviewPane({ student, staff }: PaneProps) {
         <KeyValue label="Email" value={student.email} />
         <KeyValue label="Phone" value={student.phone} />
         <KeyValue label="Address" value={student.address} />
+        {student.permanentAddress ? <KeyValue label="Permanent address" value={student.permanentAddress} /> : null}
+        {student.category ? <KeyValue label="Category" value={student.category} /> : null}
+        {student.caste ? <KeyValue label="Caste" value={student.caste} /> : null}
+        {student.motherTongue ? <KeyValue label="Mother tongue" value={student.motherTongue} /> : null}
+        {student.languagesKnown?.length ? <KeyValue label="Languages known" value={student.languagesKnown.join(', ')} /> : null}
       </Block>
       <Block title="Academic information">
         <KeyValue label="Admission no" value={student.admissionNo} />
+        {student.academicYear ? <KeyValue label="Academic year" value={student.academicYear} /> : null}
         <KeyValue label="Roll no" value={student.rollNo} />
         <KeyValue label="Class / section" value={classSection(student)} />
         <KeyValue label="House" value={`${student.house} House`} />
         <KeyValue label="Class teacher" value={classTeacherOf(student)?.name} />
         <KeyValue label="Joined" value={formatDate(student.joinedOn)} />
         <KeyValue label="Previous school" value={student.previousSchool || '—'} />
+        {student.previousSchoolAddress ? <KeyValue label="Previous school address" value={student.previousSchoolAddress} /> : null}
         <KeyValue label="Class rank" value={rank.of ? `#${rank.rank} of ${rank.of}` : '—'} />
       </Block>
       <Block title="Parents & guardians">
@@ -191,15 +201,29 @@ export function OverviewPane({ student, staff }: PaneProps) {
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text className="text-sm font-bold text-[#1b2240]">{student.parentName}</Text>
-              <Text className="text-[11px] text-slate-500">Father / guardian · {student.parentPhone}</Text>
+              <Text className="text-[11px] text-slate-500">Father / guardian · {student.parentPhone}{student.fatherOccupation ? ` · ${student.fatherOccupation}` : ''}</Text>
+              {student.fatherEmail ? <Text className="text-[11px] text-slate-500">{student.fatherEmail}</Text> : null}
             </View>
-            <ContactButtons phone={student.parentPhone} label="father" />
+            <ContactButtons phone={student.parentPhone} email={student.fatherEmail || undefined} label="father" />
           </View>
         </Card>
         {student.motherName ? (
           <Card style={{ marginBottom: 8 }}>
             <Text className="text-sm font-bold text-[#1b2240]">{student.motherName}</Text>
-            <Text className="text-[11px] text-slate-500">Mother</Text>
+            <Text className="text-[11px] text-slate-500">Mother{student.motherPhone ? ` · ${student.motherPhone}` : ''}{student.motherOccupation ? ` · ${student.motherOccupation}` : ''}</Text>
+            {student.motherEmail ? <Text className="text-[11px] text-slate-500">{student.motherEmail}</Text> : null}
+          </Card>
+        ) : null}
+        {student.guardianType && student.guardianType !== 'Parents' && student.guardianName ? (
+          <Card style={{ marginBottom: 8 }}>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-[#1b2240]">{student.guardianName}</Text>
+                <Text className="text-[11px] text-slate-500">{student.guardianType === 'Guardian' ? 'Guardian' : 'Other'}{student.guardianRelation ? ` · ${student.guardianRelation}` : ''} · {student.guardianPhone}</Text>
+                {student.guardianAddress ? <Text className="text-[11px] text-slate-500">{student.guardianAddress}</Text> : null}
+              </View>
+              {student.guardianPhone ? <ContactButtons phone={student.guardianPhone} email={student.guardianEmail || undefined} label="guardian" /> : null}
+            </View>
           </Card>
         ) : null}
         <Card style={{ marginBottom: 8 }}>
@@ -212,6 +236,16 @@ export function OverviewPane({ student, staff }: PaneProps) {
           </View>
         </Card>
       </Block>
+      {siblings.length ? (
+        <Block title="Siblings at this school">
+          {siblings.map((sb) => (
+            <Card key={sb.id} style={{ marginBottom: 8 }}>
+              <Text className="text-sm font-bold text-[#1b2240]">{sb.name}</Text>
+              <Text className="text-[11px] text-slate-500">{sb.admissionNo} · {classSection(sb)} · Roll {sb.rollNo}</Text>
+            </Card>
+          ))}
+        </Block>
+      ) : null}
       <Block title="Transport">
         {route ? (
           <>
@@ -239,6 +273,14 @@ export function OverviewPane({ student, staff }: PaneProps) {
           <Empty text="Day scholar." />
         )}
       </Block>
+      {hasBank || student.otherInformation ? (
+        <Block title="Other details">
+          {student.bankName ? <KeyValue label="Bank" value={student.bankName} /> : null}
+          {student.bankBranch ? <KeyValue label="Branch" value={student.bankBranch} /> : null}
+          {student.ifscNumber ? <KeyValue label="IFSC" value={student.ifscNumber} /> : null}
+          {student.otherInformation ? <KeyValue label="Other information" value={student.otherInformation} /> : null}
+        </Block>
+      ) : null}
       <Block title="Insights (from this student’s records)">
         <Item title="Attendance risk" pill={att < 75 ? 'High' : att < 85 ? 'Medium' : 'Low'} tone={att < 75 ? 'danger' : att < 85 ? 'warning' : 'success'} sub={att < 75 ? `Attendance is ${pct(att)}, below the 75% line. Speak to the guardian.` : `Attendance is ${pct(att)}. No intervention needed.`} />
         <Item title="Performance trend" pill={trend >= 0 ? 'Up' : 'Down'} tone={trend >= 0 ? 'success' : 'warning'} sub={latest.length ? `Exam average moved from ${pct(first)} to ${pct(last)} across ${latest.length} exams (${trend >= 0 ? '+' : ''}${trend.toFixed(1)} points).` : 'No exam results yet.'} />
@@ -505,6 +547,8 @@ export function HealthPane({ student, staff }: PaneProps) {
       <Block title="Medical record" right={staff ? <AddButton label="Update" onPress={form.open} /> : undefined}>
         <KeyValue label="Allergies" value={record.allergies} />
         <KeyValue label="Conditions" value={record.conditions} />
+        {record.conditionStatus ? <KeyValue label="Medical condition" value={record.conditionStatus} /> : null}
+        {record.medications ? <KeyValue label="Medications" value={record.medications} /> : null}
         <KeyValue label="Doctor" value={record.doctor} />
         <KeyValue label="Last check-up" value={formatDate(record.lastCheckup)} />
         <KeyValue label="Next check-up" value={formatDate(record.nextCheckup)} />

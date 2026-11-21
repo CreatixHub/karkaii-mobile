@@ -61,6 +61,37 @@ export interface StudentRecord extends Entity {
   previousSchool: string;
   /** Clubs and activities shown as chips: Sports, NCC, Arts… */
   activities: string[];
+
+  // Filled by the Add / Edit Student form (the web app's updated form). Optional, so older records are unaffected.
+  academicYear?: string;
+  category?: string;
+  caste?: string;
+  motherTongue?: string;
+  languagesKnown?: string[];
+  fatherEmail?: string;
+  fatherOccupation?: string;
+  motherPhone?: string;
+  motherEmail?: string;
+  motherOccupation?: string;
+  /** Who acts as the guardian: the parents, or someone else. */
+  guardianType?: 'Parents' | 'Guardian' | 'Others';
+  guardianName?: string;
+  guardianRelation?: string;
+  guardianPhone?: string;
+  guardianEmail?: string;
+  guardianOccupation?: string;
+  guardianAddress?: string;
+  /** Brothers and sisters who study at this school (student ids). */
+  siblingIds?: string[];
+  permanentAddress?: string;
+  /** Hostel block and room when the student boards. */
+  hostelName?: string;
+  hostelRoom?: string;
+  previousSchoolAddress?: string;
+  bankName?: string;
+  bankBranch?: string;
+  ifscNumber?: string;
+  otherInformation?: string;
 }
 
 export interface TeacherRecord extends Entity {

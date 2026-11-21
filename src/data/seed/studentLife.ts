@@ -70,6 +70,9 @@ export interface HealthRecord extends Entity {
   lastCheckup: string;
   nextCheckup: string;
   note: string;
+  /** The Add / Edit Student form's "Medical Condition of a Student" (optional on older records). */
+  conditionStatus?: 'Good' | 'Bad' | 'Others';
+  medications?: string;
 }
 
 export const buildHealth = (): HealthRecord[] =>

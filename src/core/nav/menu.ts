@@ -58,6 +58,7 @@ export const MENU: SectionDef[] = [
         icon: 'user',
         pages: [
           p('students', 'Students', 'users'),
+          p('add-student', 'Add Student', 'user-plus'),
           p('student-profile', 'Student Profile', 'user'),
           p('admissions', 'Admissions', 'user-plus'),
           p('student-promotion', 'Student Promotion', 'trending-up'),
