@@ -1,8 +1,8 @@
 import React from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { signInIds } from '@/core/auth/accounts';
-import { ROLES, roleLabel } from '@/core/auth/access';
+import { roleLabel } from '@/core/auth/access';
 import { resetAllData } from '@/core/store/store';
 import { useAuth } from '@/hooks/useAuth';
 import { Button, Card, KeyValue } from '@/ui/basics';
@@ -10,7 +10,7 @@ import { useToast } from '@/ui/Toast';
 
 /** The profile follows the account you signed in with: its name, role and what that role may manage. */
 export default function ProfileScreen() {
-  const { user, role, logout, loginAs, canManage, isDemoAccount } = useAuth();
+  const { user, role, logout, canManage } = useAuth();
   const toast = useToast();
   const roleName = user?.roleName ?? roleLabel(role);
 
@@ -41,22 +41,6 @@ export default function ProfileScreen() {
         <KeyValue label="Role" value={roleName} />
         {user ? <KeyValue label="Sign in with" value={signInIds(user).join('  ·  ')} /> : null}
       </Card>
-
-      {isDemoAccount ? (
-        <>
-          <Text className="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-400">Switch demo role</Text>
-          <View className="mb-5 flex-row flex-wrap gap-2">
-            {ROLES.map((r) => (
-              <Pressable key={r.key} onPress={() => loginAs(r.key)} className={`rounded-full border px-3 py-1.5 ${r.key === role ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}>
-                <Text className={`text-xs font-bold ${r.key === role ? 'text-white' : 'text-slate-600'}`}>{r.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text className="-mt-3 mb-5 text-[11px] text-slate-400">{ROLES.find((r) => r.key === role)?.blurb}</Text>
-        </>
-      ) : (
-        <Text className="mb-5 text-[11px] text-slate-400">You are signed in as yourself, so your role comes from your account. Sign out and sign in with another account to see a different profile.</Text>
-      )}
 
       <View className="gap-3">
         <Button label="Reset demo data" icon="refresh-ccw" variant="secondary" onPress={reset} />

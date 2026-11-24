@@ -3,15 +3,12 @@ import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { DEMO_PASSWORD, MOCK_USERS } from '@/core/auth/AuthProvider';
-import { ROLES } from '@/core/auth/access';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/ui/basics';
 
 /**
- * Same sign-in as the web app: one "Email or Phone Number" field (an admission number works too), a password,
- * "Remember Me" and "Forgot Password?". Like the web page, only "is it filled in" is checked here: whether the
- * account exists is decided at sign-in, and the account's role decides which profile and dashboard you land on.
+ * Sign-in against the backend: User ID (the email or username the school gave you) and password. The backend
+ * checks them and says who you are; your role decides the dashboard. Only "is it filled in" is checked here.
  */
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -22,11 +19,10 @@ export default function LoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
-  const [demoOpen, setDemoOpen] = useState(false);
 
   const submit = async () => {
     const next: typeof errors = {};
-    if (!identifier.trim()) next.identifier = 'Email or phone number is required';
+    if (!identifier.trim()) next.identifier = 'User ID is required';
     if (!password) next.password = 'Password is required';
     setErrors(next);
     setError(null);
@@ -39,17 +35,6 @@ export default function LoginScreen() {
     } finally {
       setBusy(false);
     }
-  };
-
-  /** Demo helper: fill the form with a role's account, then sign in the normal way. */
-  const fill = (role: string) => {
-    const account = MOCK_USERS.find((u) => u.role === role);
-    if (!account) return;
-    setIdentifier(account.email);
-    setPassword(DEMO_PASSWORD);
-    setShowPassword(true);
-    setErrors({});
-    setError(null);
   };
 
   return (
@@ -71,19 +56,19 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
-            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">Email or Phone Number</Text>
+            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">User ID</Text>
             <View className={`mb-1 flex-row items-center rounded-xl border bg-white px-3.5 ${errors.identifier ? 'border-red-400' : 'border-slate-200'}`}>
               <Feather name="user" size={16} color="#6A7287" />
               <TextInput
                 value={identifier}
                 onChangeText={(t) => { setIdentifier(t); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                placeholder="Email, phone number or admission no."
+                placeholder="Email or username"
                 placeholderTextColor="#94a3b8"
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="username"
                 textContentType="username"
-                accessibilityLabel="Email or phone number"
+                accessibilityLabel="User ID"
                 className="ml-2.5 flex-1 py-3 text-sm text-[#202C4B]"
               />
             </View>
@@ -123,31 +108,6 @@ export default function LoginScreen() {
             </View>
 
             <Button label={busy ? 'Signing in...' : 'Sign In'} onPress={submit} loading={busy} />
-          </View>
-
-          {/* Mock-mode helper: fills the form with one account per role. Removed when the real API login is switched on. */}
-          <View className="mt-5 rounded-2xl border border-dashed border-[#3D5EE1]/40 bg-[#E9EDFC]/60 p-4">
-            <Pressable onPress={() => setDemoOpen((o) => !o)} className="flex-row items-center justify-between">
-              <View className="flex-1 pr-3">
-                <Text className="text-xs font-extrabold uppercase tracking-wide text-[#3D5EE1]">Demo accounts · mock mode</Text>
-                <Text className="mt-0.5 text-[11px] text-slate-500">Tap a role to fill the form, then Sign In. Password for all: {DEMO_PASSWORD}</Text>
-              </View>
-              <Feather name={demoOpen ? 'chevron-up' : 'chevron-down'} size={16} color="#3D5EE1" />
-            </Pressable>
-            {demoOpen ? (
-              <>
-                <View className="mt-3 flex-row flex-wrap gap-2">
-                  {ROLES.map((r) => (
-                    <Pressable key={r.key} onPress={() => fill(r.key)} className="rounded-full border border-[#3D5EE1]/30 bg-white px-3 py-1.5 active:bg-[#E9EDFC]">
-                      <Text className="text-xs font-bold text-[#3D5EE1]">{r.label}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-                <Text className="mt-3 text-[11px] text-slate-500">
-                  The role comes from the account you sign in with. Any person on the Users page can sign in by email or phone number, and students also by admission number.
-                </Text>
-              </>
-            ) : null}
           </View>
 
           <View className="mt-8 items-center">

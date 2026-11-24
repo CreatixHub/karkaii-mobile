@@ -6,6 +6,7 @@ const ACCESS_TOKEN_KEY = 'karkaii_access_token';
 const REFRESH_TOKEN_KEY = 'karkaii_refresh_token';
 const USER_DATA_KEY = 'karkaii_user_data';
 const REMEMBERED_EMAIL_KEY = 'karkaii_remembered_email';
+const SESSION_ONLY_KEY = 'karkaii_session_only';
 
 // Web memory fallback if running in a web browser where SecureStore isn't native
 const webStorage = {
@@ -102,6 +103,16 @@ export const tokenStorage = {
     } else {
       await setItem(USER_DATA_KEY, JSON.stringify(user));
     }
+  },
+
+  /** "Remember Me" off: the session should end when the app is closed. */
+  async isSessionOnly(): Promise<boolean> {
+    return (await getItem(SESSION_ONLY_KEY)) === '1';
+  },
+
+  async setSessionOnly(on: boolean): Promise<void> {
+    if (on) await setItem(SESSION_ONLY_KEY, '1');
+    else await deleteItem(SESSION_ONLY_KEY);
   },
 
   async getRememberedEmail(): Promise<string | null> {
