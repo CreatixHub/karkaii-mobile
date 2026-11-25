@@ -12,12 +12,12 @@ export default function ActivityTimeline() {
               <Feather name={item.icon as any} size={13} color="#3D5EE1" />
             </View>
             {index < ACTIVITY_TIMELINE.length - 1 ? (
-              <View className="w-px flex-1 bg-slate-200" />
+              <View className="w-px flex-1 bg-slate-200 dark:bg-[#322D46]" />
             ) : null}
           </View>
           <View className="ml-3 flex-1 pb-4">
-            <Text className="text-sm text-slate-800">{item.title}</Text>
-            <Text className="mt-0.5 text-xs text-slate-400">{item.time}</Text>
+            <Text className="text-sm text-slate-800 dark:text-[#EFEFF2]">{item.title}</Text>
+            <Text className="mt-0.5 text-xs text-slate-400 dark:text-[#8b879b]">{item.time}</Text>
           </View>
         </View>
       ))}

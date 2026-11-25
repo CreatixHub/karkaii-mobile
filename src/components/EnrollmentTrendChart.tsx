@@ -17,7 +17,7 @@ export default function EnrollmentTrendChart() {
             className="w-5 rounded-t-md bg-[#3D5EE1]"
             style={{ height: Math.max(4, (point.value / max) * BAR_AREA_HEIGHT) }}
           />
-          <Text className="mt-2 text-[10px] text-slate-500">{point.label}</Text>
+          <Text className="mt-2 text-[10px] text-slate-500 dark:text-[#a29fb0]">{point.label}</Text>
         </View>
       ))}
     </View>

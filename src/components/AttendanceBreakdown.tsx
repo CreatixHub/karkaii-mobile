@@ -4,7 +4,7 @@ import { ATTENDANCE_BREAKDOWN } from '@/data/dashboard';
 export default function AttendanceBreakdown() {
   return (
     <View>
-      <View className="h-3 w-full flex-row overflow-hidden rounded-full bg-slate-100">
+      <View className="h-3 w-full flex-row overflow-hidden rounded-full bg-slate-100 dark:bg-[#1B1632]">
         {ATTENDANCE_BREAKDOWN.map((segment) => (
           <View
             key={segment.label}
@@ -19,7 +19,7 @@ export default function AttendanceBreakdown() {
               className="mr-1.5 h-2 w-2 rounded-full"
               style={{ backgroundColor: segment.color }}
             />
-            <Text className="text-xs text-slate-600">
+            <Text className="text-xs text-slate-600 dark:text-[#B9B7C0]">
               {segment.label} · {segment.value}%
             </Text>
           </View>
