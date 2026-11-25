@@ -33,7 +33,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         <View pointerEvents="none" style={{ position: 'absolute', left: 16, right: 16, bottom: insets.bottom + 18 }}>
           <View style={{ backgroundColor: bg }} className="flex-row items-center rounded-xl px-4 py-3 shadow-lg shadow-black/20">
             <Feather name={icon} size={16} color="#fff" />
-            <Text className="ml-2.5 flex-1 text-xs font-semibold text-white">{toast.message}</Text>
+            <Text className="text-[#202C4B] dark:text-[#EFEFF2] ml-2.5 flex-1 text-xs font-semibold text-white">{toast.message}</Text>
           </View>
         </View>
       ) : null}

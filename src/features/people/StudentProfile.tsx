@@ -37,15 +37,15 @@ export function StudentProfile({ breadcrumb }: { breadcrumb: string }) {
   const share = () => Share.share({ title: `${student.name} — profile`, message: profileText(student) }).catch(() => {});
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
         <StudentPicker student={student} options={options} onChange={(id) => { setId(id); setTab('overview'); }} locked={locked} />
         <Card>
           <View className="flex-row items-start justify-between">
             <View className="flex-1 pr-2">
-              <Text className="text-lg font-extrabold text-[#1b2240]">{student.name}</Text>
-              <Text className="mt-0.5 text-xs text-slate-500">{student.admissionNo} · Roll {student.rollNo} · {classSection(student)}</Text>
+              <Text className="text-lg font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{student.name}</Text>
+              <Text className="mt-0.5 text-xs text-slate-500 dark:text-[#a29fb0]">{student.admissionNo} · Roll {student.rollNo} · {classSection(student)}</Text>
             </View>
             <Pill label={student.status} tone={statusTone[student.status]} />
           </View>
@@ -57,8 +57,8 @@ export function StudentProfile({ breadcrumb }: { breadcrumb: string }) {
             {student.hostel ? <Pill label="Hostel" tone="purple" icon="home" /> : null}
             {portal ? <Pill label="Parent portal" tone="teal" icon="users" /> : null}
           </View>
-          <Text className="mb-1 mt-3 text-[10px] font-semibold uppercase text-slate-400">Profile completeness · {completionOf(student)}%</Text>
-          <View className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+          <Text className="mb-1 mt-3 text-[10px] font-semibold uppercase text-slate-400 dark:text-[#8b879b]">Profile completeness · {completionOf(student)}%</Text>
+          <View className="h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-[#1B1632]">
             <View style={{ width: `${completionOf(student)}%` }} className="h-full rounded-full bg-[#3D5EE1]" />
           </View>
           <View className="mt-3 flex-row gap-2">

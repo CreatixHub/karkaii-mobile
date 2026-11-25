@@ -30,22 +30,22 @@ export default function DrawerContent({ navigation }: DrawerContentComponentProp
     ]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-[#131022]" edges={['top', 'bottom']}>
       <View className="px-5 pb-3 pt-2">
         <Image source={require('../../assets/icon.png')} className="h-10 w-10 rounded-xl" resizeMode="contain" />
-        <Text className="mt-3 text-base font-bold text-slate-900" numberOfLines={1}>{user?.school ?? 'Karkaii'}</Text>
-        <Pressable onPress={() => go('/profile')} className="mt-2.5 flex-row items-center rounded-xl border border-slate-100 bg-slate-50 p-2 active:bg-slate-100">
+        <Text className="mt-3 text-base font-bold text-slate-900 dark:text-[#EFEFF2]" numberOfLines={1}>{user?.school ?? 'Karkaii'}</Text>
+        <Pressable onPress={() => go('/profile')} className="mt-2.5 flex-row items-center rounded-xl border border-slate-100 dark:border-[#262038] bg-slate-50 dark:bg-[#1B1632] p-2 active:bg-slate-100">
           <View className="h-9 w-9 items-center justify-center rounded-full bg-[#3D5EE1]">
-            <Text className="text-sm font-bold text-white">{(user?.name ?? '?').charAt(0).toUpperCase()}</Text>
+            <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-sm font-bold text-white">{(user?.name ?? '?').charAt(0).toUpperCase()}</Text>
           </View>
           <View className="ml-2.5 flex-1">
-            <Text className="text-xs font-bold text-slate-800" numberOfLines={1}>{user?.name}</Text>
-            <Text className="text-[10px] font-medium text-indigo-600">{user?.roleName ?? roleLabel(role)} · View Profile</Text>
+            <Text className="text-xs font-bold text-slate-800 dark:text-[#EFEFF2]" numberOfLines={1}>{user?.name}</Text>
+            <Text className="text-[10px] font-medium text-indigo-600 dark:text-indigo-300">{user?.roleName ?? roleLabel(role)} · View Profile</Text>
           </View>
           <Feather name="chevron-right" size={14} color="#94a3b8" />
         </Pressable>
       </View>
-      <View className="h-px bg-slate-100" />
+      <View className="h-px bg-slate-100 dark:bg-[#1B1632]" />
 
       <ScrollView className="flex-1 px-3 pt-2" showsVerticalScrollIndicator={false}>
         {menu.map((section) => {
@@ -61,21 +61,21 @@ export default function DrawerContent({ navigation }: DrawerContentComponentProp
                 <View style={{ backgroundColor: `${section.color}1A` }} className="h-7 w-7 items-center justify-center rounded-lg">
                   <Feather name={section.icon} size={14} color={section.color} />
                 </View>
-                <Text className={`ml-3 flex-1 text-sm ${isActive ? 'font-bold text-[#1b2240]' : 'font-semibold text-slate-700'}`}>{section.label}</Text>
-                {rebuilt ? <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={15} color="#94a3b8" /> : <Text className="text-[9px] font-bold text-amber-600">LEGACY</Text>}
+                <Text className={`ml-3 flex-1 text-sm ${isActive ? 'font-bold text-[#1b2240] dark:text-[#EFEFF2]' : 'font-semibold text-slate-700 dark:text-[#d6d4de]'}`}>{section.label}</Text>
+                {rebuilt ? <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={15} color="#94a3b8" /> : <Text className="text-[9px] font-bold text-amber-600 dark:text-amber-300">LEGACY</Text>}
               </Pressable>
 
               {rebuilt && expanded
                 ? section.modules.map((m) => (
-                    <View key={m.label} className="ml-5 mt-1 border-l border-slate-100 pl-3">
-                      {m.pages.length > 1 ? <Text className="mb-0.5 mt-1.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-400">{m.label}</Text> : null}
+                    <View key={m.label} className="ml-5 mt-1 border-l border-slate-100 dark:border-[#262038] pl-3">
+                      {m.pages.length > 1 ? <Text className="mb-0.5 mt-1.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-[#8b879b]">{m.label}</Text> : null}
                       {m.pages.map((p) => {
                         const href = pageHref(section.key, p.key);
                         const on = pathname === href;
                         return (
                           <Pressable key={p.key} onPress={() => go(href)} className={`flex-row items-center rounded-lg px-2 py-2 ${on ? 'bg-[#3D5EE11A]' : 'active:bg-slate-50'}`}>
                             <Feather name={p.icon} size={13} color={on ? '#3D5EE1' : '#6A7287'} />
-                            <Text className={`ml-2.5 flex-1 text-[13px] ${on ? 'font-bold text-[#3D5EE1]' : 'text-slate-600'}`} numberOfLines={1}>{p.label}</Text>
+                            <Text className={`ml-2.5 flex-1 text-[13px] ${on ? 'font-bold text-[#3D5EE1] dark:text-[#7d95f5]' : 'text-slate-600 dark:text-[#B9B7C0]'}`} numberOfLines={1}>{p.label}</Text>
                           </Pressable>
                         );
                       })}
@@ -88,16 +88,16 @@ export default function DrawerContent({ navigation }: DrawerContentComponentProp
 
       </ScrollView>
 
-      <View className="border-t border-slate-100 px-4 py-3">
+      <View className="border-t border-slate-100 dark:border-[#262038] px-4 py-3">
         <Pressable onPress={() => go('/profile')} className="flex-row items-center rounded-xl px-3 py-2.5 active:bg-slate-50">
           <Feather name="user" size={17} color="#6A7287" />
-          <Text className="ml-3 text-sm text-slate-600">My Profile</Text>
+          <Text className="ml-3 text-sm text-slate-600 dark:text-[#B9B7C0]">My Profile</Text>
         </Pressable>
         <Pressable onPress={signOut} className="flex-row items-center rounded-xl px-3 py-2.5 active:bg-red-50">
           <Feather name="log-out" size={17} color="#DC2626" />
-          <Text className="ml-3 text-sm font-semibold text-red-600">Sign Out</Text>
+          <Text className="ml-3 text-sm font-semibold text-red-600 dark:text-red-300">Sign Out</Text>
         </Pressable>
-        <Text className="mt-1 px-3 text-[10px] text-slate-400">Karkaii Mobile · v1.0.0 · mock data</Text>
+        <Text className="mt-1 px-3 text-[10px] text-slate-400 dark:text-[#8b879b]">Karkaii Mobile · v1.0.0 · mock data</Text>
       </View>
     </SafeAreaView>
   );

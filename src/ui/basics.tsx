@@ -3,11 +3,21 @@ import { ActivityIndicator, Pressable, Text, View, type StyleProp, type ViewStyl
 import { Feather } from '@expo/vector-icons';
 import { TONES, type Tone } from './tone';
 import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/ThemeProvider';
+
+/** Mix a hex colour towards white (dark mode needs lighter text colours than the light tones use). */
+const lighten = (hex: string, amount: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (s: number) => Math.round(((n >> s) & 255) + (255 - ((n >> s) & 255)) * amount).toString(16).padStart(2, '0');
+  return `#${ch(16)}${ch(8)}${ch(0)}`;
+};
 
 type IconName = React.ComponentProps<typeof Feather>['name'];
 
 export function Pill({ label, tone = 'neutral', icon }: { label: string; tone?: Tone; icon?: IconName }) {
-  const t = TONES[tone];
+  const { isDark } = useTheme();
+  const base = TONES[tone];
+  const t = isDark ? { bg: `${base.fg}26`, border: `${base.fg}55`, fg: lighten(base.fg, 0.45) } : base;
   return (
     <View
       style={{ backgroundColor: t.bg, borderColor: t.border }}
@@ -42,10 +52,11 @@ export function Button({
   small?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
+  const { isDark, palette: theme } = useTheme();
   const palette = {
     primary: { bg: colors.primary, fg: '#fff', border: colors.primary },
-    secondary: { bg: '#fff', fg: colors.ink, border: '#D9DFEA' },
-    danger: { bg: '#fff', fg: '#B91C1C', border: '#F5BEBE' },
+    secondary: { bg: theme.surface, fg: theme.text, border: isDark ? '#3d3756' : '#D9DFEA' },
+    danger: { bg: theme.surface, fg: isDark ? '#f87171' : '#B91C1C', border: isDark ? '#7f1d1d' : '#F5BEBE' },
     ghost: { bg: 'transparent', fg: colors.primary, border: 'transparent' },
   }[variant];
   return (
@@ -100,18 +111,18 @@ export function IconButton({
 export function EmptyState({ icon = 'inbox', title, hint }: { icon?: IconName; title: string; hint?: string }) {
   return (
     <View className="items-center px-6 py-14">
-      <View className="mb-3 h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+      <View className="mb-3 h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-[#1B1632]">
         <Feather name={icon} size={24} color="#94a3b8" />
       </View>
-      <Text className="text-center text-sm font-bold text-slate-700">{title}</Text>
-      {hint ? <Text className="mt-1 text-center text-xs text-slate-400">{hint}</Text> : null}
+      <Text className="text-center text-sm font-bold text-slate-700 dark:text-[#d6d4de]">{title}</Text>
+      {hint ? <Text className="mt-1 text-center text-xs text-slate-400 dark:text-[#8b879b]">{hint}</Text> : null}
     </View>
   );
 }
 
 export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   return (
-    <View style={style} className="rounded-2xl border border-slate-100 bg-white p-3.5 shadow-sm shadow-black/5">
+    <View style={style} className="rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5 shadow-sm shadow-black/5">
       {children}
     </View>
   );
@@ -120,7 +131,7 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 export function ProgressBar({ value, max = 100, tone = 'primary' }: { value: number; max?: number; tone?: Tone }) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return (
-    <View className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+    <View className="h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-[#1B1632]">
       <View style={{ width: `${pct}%`, backgroundColor: TONES[tone].fg }} className="h-full rounded-full" />
     </View>
   );
@@ -128,9 +139,9 @@ export function ProgressBar({ value, max = 100, tone = 'primary' }: { value: num
 
 export function KeyValue({ label, value }: { label: string; value?: string | number | null }) {
   return (
-    <View className="flex-row border-b border-slate-100 py-2">
-      <Text className="w-[38%] pr-2 text-xs text-slate-400">{label}</Text>
-      <Text className="flex-1 text-xs font-semibold text-slate-800">{value === undefined || value === null || value === '' ? '—' : String(value)}</Text>
+    <View className="flex-row border-b border-slate-100 dark:border-[#262038] py-2">
+      <Text className="w-[38%] pr-2 text-xs text-slate-400 dark:text-[#8b879b]">{label}</Text>
+      <Text className="flex-1 text-xs font-semibold text-slate-800 dark:text-[#EFEFF2]">{value === undefined || value === null || value === '' ? '—' : String(value)}</Text>
     </View>
   );
 }

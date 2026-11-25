@@ -60,7 +60,7 @@ interface PaneProps {
 export const Block = ({ title, right, children }: { title: string; right?: React.ReactNode; children: React.ReactNode }) => (
   <View className="mb-4">
     <View className="mb-1.5 flex-row items-center justify-between">
-      <Text className="text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">{title}</Text>
+      <Text className="text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">{title}</Text>
       {right}
     </View>
     {children}
@@ -70,22 +70,22 @@ export const Block = ({ title, right, children }: { title: string; right?: React
 export const Item = ({ title, sub, pill, tone = 'neutral', meta }: { title: string; sub?: string; pill?: string; tone?: Tone; meta?: string }) => (
   <Card style={{ marginBottom: 8 }}>
     <View className="flex-row items-start justify-between">
-      <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{title}</Text>
+      <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{title}</Text>
       {pill ? <Pill label={pill} tone={tone} /> : null}
     </View>
-    {sub ? <Text className="mt-1 text-[11px] leading-4 text-slate-500">{sub}</Text> : null}
-    {meta ? <Text className="mt-1 text-[10px] text-slate-400">{meta}</Text> : null}
+    {sub ? <Text className="mt-1 text-[11px] leading-4 text-slate-500 dark:text-[#a29fb0]">{sub}</Text> : null}
+    {meta ? <Text className="mt-1 text-[10px] text-slate-400 dark:text-[#8b879b]">{meta}</Text> : null}
   </Card>
 );
 
 export const AddButton = ({ label, onPress }: { label: string; onPress: () => void }) => (
-  <Pressable onPress={onPress} className="flex-row items-center rounded-lg bg-[#E9EDFC] px-2.5 py-1 active:opacity-80">
+  <Pressable onPress={onPress} className="flex-row items-center rounded-lg bg-[#E9EDFC] dark:bg-[#1d2450] px-2.5 py-1 active:opacity-80">
     <Feather name="plus" size={12} color="#3D5EE1" />
-    <Text className="ml-1 text-[11px] font-bold text-[#3D5EE1]">{label}</Text>
+    <Text className="ml-1 text-[11px] font-bold text-[#3D5EE1] dark:text-[#7d95f5]">{label}</Text>
   </Pressable>
 );
 
-export const Empty = ({ text }: { text: string }) => <Text className="py-4 text-center text-xs text-slate-400">{text}</Text>;
+export const Empty = ({ text }: { text: string }) => <Text className="py-4 text-center text-xs text-slate-400 dark:text-[#8b879b]">{text}</Text>;
 
 export function useRecordForm<T extends Record<string, any>>(fields: FieldDef[], initial: Record<string, any>, save: (v: T) => void, title: string) {
   const [open, setOpen] = useState(false);
@@ -103,7 +103,7 @@ function useOpenLink() {
 }
 
 const IconBtn = ({ icon, onPress, label }: { icon: React.ComponentProps<typeof Feather>['name']; onPress: () => void; label: string }) => (
-  <Pressable onPress={onPress} accessibilityLabel={label} className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-[#E9EDFC] active:opacity-70">
+  <Pressable onPress={onPress} accessibilityLabel={label} className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-[#E9EDFC] dark:bg-[#1d2450] active:opacity-70">
     <Feather name={icon} size={14} color="#3D5EE1" />
   </Pressable>
 );
@@ -200,27 +200,27 @@ export function OverviewPane({ student, staff }: PaneProps) {
         <Card style={{ marginBottom: 8 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-sm font-bold text-[#1b2240]">{student.parentName}</Text>
-              <Text className="text-[11px] text-slate-500">Father / guardian · {student.parentPhone}{student.fatherOccupation ? ` · ${student.fatherOccupation}` : ''}</Text>
-              {student.fatherEmail ? <Text className="text-[11px] text-slate-500">{student.fatherEmail}</Text> : null}
+              <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{student.parentName}</Text>
+              <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">Father / guardian · {student.parentPhone}{student.fatherOccupation ? ` · ${student.fatherOccupation}` : ''}</Text>
+              {student.fatherEmail ? <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{student.fatherEmail}</Text> : null}
             </View>
             <ContactButtons phone={student.parentPhone} email={student.fatherEmail || undefined} label="father" />
           </View>
         </Card>
         {student.motherName ? (
           <Card style={{ marginBottom: 8 }}>
-            <Text className="text-sm font-bold text-[#1b2240]">{student.motherName}</Text>
-            <Text className="text-[11px] text-slate-500">Mother{student.motherPhone ? ` · ${student.motherPhone}` : ''}{student.motherOccupation ? ` · ${student.motherOccupation}` : ''}</Text>
-            {student.motherEmail ? <Text className="text-[11px] text-slate-500">{student.motherEmail}</Text> : null}
+            <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{student.motherName}</Text>
+            <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">Mother{student.motherPhone ? ` · ${student.motherPhone}` : ''}{student.motherOccupation ? ` · ${student.motherOccupation}` : ''}</Text>
+            {student.motherEmail ? <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{student.motherEmail}</Text> : null}
           </Card>
         ) : null}
         {student.guardianType && student.guardianType !== 'Parents' && student.guardianName ? (
           <Card style={{ marginBottom: 8 }}>
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
-                <Text className="text-sm font-bold text-[#1b2240]">{student.guardianName}</Text>
-                <Text className="text-[11px] text-slate-500">{student.guardianType === 'Guardian' ? 'Guardian' : 'Other'}{student.guardianRelation ? ` · ${student.guardianRelation}` : ''} · {student.guardianPhone}</Text>
-                {student.guardianAddress ? <Text className="text-[11px] text-slate-500">{student.guardianAddress}</Text> : null}
+                <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{student.guardianName}</Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{student.guardianType === 'Guardian' ? 'Guardian' : 'Other'}{student.guardianRelation ? ` · ${student.guardianRelation}` : ''} · {student.guardianPhone}</Text>
+                {student.guardianAddress ? <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{student.guardianAddress}</Text> : null}
               </View>
               {student.guardianPhone ? <ContactButtons phone={student.guardianPhone} email={student.guardianEmail || undefined} label="guardian" /> : null}
             </View>
@@ -229,8 +229,8 @@ export function OverviewPane({ student, staff }: PaneProps) {
         <Card style={{ marginBottom: 8 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-sm font-bold text-[#1b2240]">Emergency contact</Text>
-              <Text className="text-[11px] text-slate-500">{student.emergencyPhone || '—'}</Text>
+              <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">Emergency contact</Text>
+              <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{student.emergencyPhone || '—'}</Text>
             </View>
             {student.emergencyPhone ? <ContactButtons phone={student.emergencyPhone} label="emergency contact" /> : null}
           </View>
@@ -240,8 +240,8 @@ export function OverviewPane({ student, staff }: PaneProps) {
         <Block title="Siblings at this school">
           {siblings.map((sb) => (
             <Card key={sb.id} style={{ marginBottom: 8 }}>
-              <Text className="text-sm font-bold text-[#1b2240]">{sb.name}</Text>
-              <Text className="text-[11px] text-slate-500">{sb.admissionNo} · {classSection(sb)} · Roll {sb.rollNo}</Text>
+              <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{sb.name}</Text>
+              <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{sb.admissionNo} · {classSection(sb)} · Roll {sb.rollNo}</Text>
             </Card>
           ))}
         </Block>
@@ -339,7 +339,7 @@ export function AttendancePane({ student, staff }: PaneProps) {
           {recs.length === 0 ? <Empty text="No attendance recorded this month." /> : null}
         </View>
         <Pressable onPress={() => router.push(`/people/student-attendance-history?id=${student.id}` as Href)} className="mt-2 flex-row items-center">
-          <Text className="text-xs font-bold text-[#3D5EE1]">Full attendance history</Text>
+          <Text className="text-xs font-bold text-[#3D5EE1] dark:text-[#7d95f5]">Full attendance history</Text>
           <Feather name="chevron-right" size={14} color="#3D5EE1" />
         </Pressable>
       </Block>
@@ -348,12 +348,12 @@ export function AttendancePane({ student, staff }: PaneProps) {
         {leaves.map((l) => (
           <Card key={l.id} style={{ marginBottom: 8 }}>
             <View className="flex-row items-start justify-between">
-              <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{l.leaveType}</Text>
+              <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{l.leaveType}</Text>
               <Pill label={l.status} tone={leaveTone[l.status]} />
             </View>
-            <Text className="mt-1 text-[11px] text-slate-500">{formatDate(l.from)}{l.to !== l.from ? ` – ${formatDate(l.to)}` : ''} · {l.days} day{l.days > 1 ? 's' : ''}</Text>
-            <Text className="mt-0.5 text-[11px] text-slate-500">{l.reason}</Text>
-            {l.decisionNote ? <Text className="mt-0.5 text-[11px] italic text-slate-400">{l.decisionNote}</Text> : null}
+            <Text className="mt-1 text-[11px] text-slate-500 dark:text-[#a29fb0]">{formatDate(l.from)}{l.to !== l.from ? ` – ${formatDate(l.to)}` : ''} · {l.days} day{l.days > 1 ? 's' : ''}</Text>
+            <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{l.reason}</Text>
+            {l.decisionNote ? <Text className="mt-0.5 text-[11px] italic text-slate-400 dark:text-[#8b879b]">{l.decisionNote}</Text> : null}
             {staff && l.status === 'Pending' ? (
               <View className="mt-2 flex-row gap-2">
                 <Button small label="Approve" onPress={() => toast(`Approved · ${decideLeave(l, 'Approved', user?.name ?? 'Staff')} register day(s) marked On Leave`)} style={{ flex: 1 }} />
@@ -393,10 +393,10 @@ export function AcademicsPane({ student }: PaneProps) {
           return (
             <Card key={m.id} style={{ marginBottom: 8 }}>
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{subjectName(m.subjectId)}</Text>
+                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{subjectName(m.subjectId)}</Text>
                 <Pill label={ps.length ? `${gradeFor(avg)} · ${pct(avg)}` : 'No marks'} tone={avg >= 75 ? 'success' : avg >= 50 ? 'warning' : 'danger'} />
               </View>
-              <Text className="mb-1.5 mt-0.5 text-[11px] text-slate-500">{tch} · {m.periodsPerWeek} periods a week</Text>
+              <Text className="mb-1.5 mt-0.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{tch} · {m.periodsPerWeek} periods a week</Text>
               <ProgressBar value={avg} tone={avg >= 75 ? 'success' : avg >= 50 ? 'warning' : 'danger'} />
             </Card>
           );
@@ -438,8 +438,8 @@ export function ExamsPane({ student }: PaneProps) {
           return (
             <Card key={sid} style={{ marginBottom: 8 }}>
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{subjectName(sid)}</Text>
-                <Text className="text-sm font-extrabold text-[#1b2240]">{m}/{current.max}</Text>
+                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{subjectName(sid)}</Text>
+                <Text className="text-sm font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{m}/{current.max}</Text>
                 <View className="ml-2"><Pill label={gradeFor(p)} tone={p >= PASS_PERCENT ? 'success' : 'danger'} /></View>
               </View>
               <View className="mt-1.5"><ProgressBar value={p} tone={p >= 75 ? 'success' : p >= PASS_PERCENT ? 'warning' : 'danger'} /></View>
@@ -451,9 +451,9 @@ export function ExamsPane({ student }: PaneProps) {
       <Block title="Trend">
         {results.map((r) => (
           <View key={r.id} className="mb-1.5 flex-row items-center">
-            <Text className="w-28 text-[11px] text-slate-500" numberOfLines={1}>{r.examName}</Text>
+            <Text className="w-28 text-[11px] text-slate-500 dark:text-[#a29fb0]" numberOfLines={1}>{r.examName}</Text>
             <View className="flex-1"><ProgressBar value={examPercent(r)} tone="primary" /></View>
-            <Text className="ml-2 w-12 text-right text-[11px] font-bold text-[#1b2240]">{pct(examPercent(r))}</Text>
+            <Text className="ml-2 w-12 text-right text-[11px] font-bold text-[#1b2240] dark:text-[#EFEFF2]">{pct(examPercent(r))}</Text>
           </View>
         ))}
       </Block>
@@ -507,7 +507,7 @@ export function TimetablePane({ student }: PaneProps) {
           const brk = BREAKS.find((b) => b.afterPeriod === list[i - 1]?.period);
           return (
             <View key={e.id}>
-              {brk ? <Text className="my-1 text-center text-[10px] font-bold uppercase text-slate-300">{brk.label}</Text> : null}
+              {brk ? <Text className="text-[#202C4B] dark:text-[#EFEFF2] my-1 text-center text-[10px] font-bold uppercase text-slate-300">{brk.label}</Text> : null}
               <Item title={`${subjectName(e.subjectId)}`} sub={`${slotLabel(e.period)} · Room ${e.room} · ${teacherName(e.teacherId)}`} pill={`P${e.period}`} tone="primary" />
             </View>
           );
@@ -631,11 +631,11 @@ export function TimelinePane({ student }: PaneProps) {
               <View style={{ backgroundColor: t.bg, borderColor: t.border }} className="h-7 w-7 items-center justify-center rounded-full border">
                 <Feather name={e.icon} size={12} color={t.fg} />
               </View>
-              {i < events.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200" /> : null}
+              {i < events.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200 dark:bg-[#322D46]" /> : null}
             </View>
             <View className="flex-1 pb-3">
-              <Text className="text-xs font-bold text-[#1b2240]">{e.title}</Text>
-              <Text className="text-[11px] text-slate-500">{formatDate(e.at)} · {e.sub}</Text>
+              <Text className="text-xs font-bold text-[#1b2240] dark:text-[#EFEFF2]">{e.title}</Text>
+              <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{formatDate(e.at)} · {e.sub}</Text>
             </View>
           </View>
         );
@@ -704,7 +704,7 @@ export function DisciplinePane({ student, staff }: PaneProps) {
   return (
     <View>
       <SummaryStrip items={[{ label: 'Behaviour', value: `${score}/100`, tone: 'teal', icon: 'smile' }, { label: 'Positive points', value: list.filter((d) => d.kind === 'Positive').reduce((a, b) => a + b.points, 0), tone: 'success', icon: 'thumbs-up' }, { label: 'Warnings', value: n('Warning'), tone: 'warning', icon: 'alert-triangle' }, { label: 'Suspensions', value: n('Suspension'), tone: n('Suspension') ? 'danger' : 'neutral', icon: 'slash' }, { label: 'Counselling', value: n('Counselling'), tone: 'info', icon: 'message-square' }]} />
-      <Text className="mb-2 text-center text-[11px] text-slate-400">{behaviourLabel(score)} conduct</Text>
+      <Text className="mb-2 text-center text-[11px] text-slate-400 dark:text-[#8b879b]">{behaviourLabel(score)} conduct</Text>
       <Block title="Conduct log" right={staff ? <AddButton label="Add" onPress={form.open} /> : undefined}>
         {list.length === 0 ? <Empty text="No conduct records." /> : null}
         {list.map((d) => <Item key={d.id} title={d.title} sub={`${formatDate(d.date)} · ${d.by}${d.detail ? `\n${d.detail}` : ''}`} pill={d.points ? `${d.points > 0 ? '+' : ''}${d.points} pts` : d.kind} tone={conductTone[d.kind]} />)}

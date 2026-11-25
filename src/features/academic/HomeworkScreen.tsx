@@ -22,7 +22,7 @@ export function HomeworkScreen({ breadcrumb }: { breadcrumb: string }) {
   }, [role]);
 
   return (
-    <View className="flex-1 bg-[#f4f6fb]">
+    <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <View className="pt-3">
         <SegmentedTabs tabs={tabs} active={tab} onChange={(k) => setTab(k as Tab)} />
       </View>

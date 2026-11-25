@@ -24,11 +24,11 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
+    <SafeAreaView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <View className="flex-1 justify-center p-5">
-        <View className="rounded-2xl border border-slate-100 bg-white p-6">
-          <Text className="text-xl font-bold text-[#202C4B]">Set a new password</Text>
-          <Text className="mb-5 mt-1 text-sm text-[#515B73]">Choose a strong password you have not used before.</Text>
+        <View className="rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-6">
+          <Text className="text-xl font-bold text-[#202C4B] dark:text-[#EFEFF2]">Set a new password</Text>
+          <Text className="mb-5 mt-1 text-sm text-[#515B73] dark:text-[#B9B7C0]">Choose a strong password you have not used before.</Text>
           <TextField label="New password" value={password} onChange={setPassword} secure error={errors.password} />
           <TextField label="Confirm password" value={confirm} onChange={setConfirm} secure error={errors.confirm} />
           <Button label="Update password" onPress={submit} />

@@ -28,19 +28,19 @@ export function FieldShell({
 }) {
   return (
     <View className="mb-3.5">
-      <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">
+      <Text className="mb-1.5 text-xs font-semibold text-[#202C4B] dark:text-[#EFEFF2]">
         {label}
-        {required ? <Text className="text-red-500"> *</Text> : null}
+        {required ? <Text className="text-red-500 dark:text-red-300"> *</Text> : null}
       </Text>
       {children}
-      {error ? <Text className="mt-1 text-[11px] font-medium text-red-600">{error}</Text> : null}
-      {!error && hint ? <Text className="mt-1 text-[11px] text-slate-400">{hint}</Text> : null}
+      {error ? <Text className="mt-1 text-[11px] font-medium text-red-600 dark:text-red-300">{error}</Text> : null}
+      {!error && hint ? <Text className="mt-1 text-[11px] text-slate-400 dark:text-[#8b879b]">{hint}</Text> : null}
     </View>
   );
 }
 
 const boxClass = (error?: string, disabled?: boolean) =>
-  `flex-row items-center rounded-xl border bg-white px-3.5 ${error ? 'border-red-400' : 'border-slate-200'} ${disabled ? 'opacity-50' : ''}`;
+  `flex-row items-center rounded-xl border bg-white dark:bg-[#131022] px-3.5 ${error ? 'border-red-400' : 'border-slate-200 dark:border-[#322D46]'} ${disabled ? 'opacity-50' : ''}`;
 
 export function TextField({
   label,
@@ -72,7 +72,7 @@ export function TextField({
   return (
     <FieldShell label={label} required={required} error={error} hint={hint}>
       <View className={boxClass(error, disabled)}>
-        {prefix ? <Text className="mr-1.5 text-sm font-semibold text-slate-400">{prefix}</Text> : null}
+        {prefix ? <Text className="mr-1.5 text-sm font-semibold text-slate-400 dark:text-[#8b879b]">{prefix}</Text> : null}
         <TextInput
           value={value}
           onChangeText={onChange}
@@ -84,7 +84,7 @@ export function TextField({
           editable={!disabled}
           autoCapitalize={keyboard === 'email-address' ? 'none' : 'sentences'}
           style={multiline ? { minHeight: 76, textAlignVertical: 'top' } : undefined}
-          className="flex-1 py-2.5 text-sm text-[#202C4B]"
+          className="flex-1 py-2.5 text-sm text-[#202C4B] dark:text-[#EFEFF2]"
         />
       </View>
     </FieldShell>
@@ -119,7 +119,7 @@ export function SelectField({
   return (
     <FieldShell label={label} required={required} error={error} hint={hint}>
       <Pressable onPress={() => !disabled && setOpen(true)} className={`${boxClass(error, disabled)} justify-between py-2.5`}>
-        <Text className={`flex-1 text-sm ${selected ? 'text-[#202C4B]' : 'text-slate-400'}`} numberOfLines={1}>
+        <Text className={`flex-1 text-sm ${selected ? 'text-[#202C4B] dark:text-[#EFEFF2]' : 'text-slate-400 dark:text-[#8b879b]'}`} numberOfLines={1}>
           {selected ? selected.label : placeholder ?? `Select ${label.toLowerCase()}`}
         </Text>
         <Feather name="chevron-down" size={16} color="#94a3b8" />
@@ -162,7 +162,7 @@ export function MultiSelectField({
   return (
     <FieldShell label={label} required={required} error={error} hint={hint}>
       <Pressable onPress={() => setOpen(true)} className={`${boxClass(error)} justify-between py-2.5`}>
-        <Text className={`flex-1 text-sm ${labels.length ? 'text-[#202C4B]' : 'text-slate-400'}`} numberOfLines={1}>
+        <Text className={`flex-1 text-sm ${labels.length ? 'text-[#202C4B] dark:text-[#EFEFF2]' : 'text-slate-400 dark:text-[#8b879b]'}`} numberOfLines={1}>
           {labels.length ? labels.join(', ') : `Select ${label.toLowerCase()}`}
         </Text>
         <Feather name="chevron-down" size={16} color="#94a3b8" />
@@ -220,20 +220,20 @@ export function OptionSheet({
       }
     >
       {options.length > 7 ? (
-        <View className="mb-2 flex-row items-center rounded-xl border border-slate-200 px-3">
+        <View className="mb-2 flex-row items-center rounded-xl border border-slate-200 dark:border-[#322D46] px-3">
           <Feather name="search" size={14} color="#94a3b8" />
-          <TextInput value={q} onChangeText={setQ} placeholder="Search…" placeholderTextColor="#94a3b8" className="ml-2 flex-1 py-2 text-sm" />
+          <TextInput value={q} onChangeText={setQ} placeholder="Search…" placeholderTextColor="#94a3b8" className="ml-2 flex-1 py-2 text-sm text-[#202C4B] dark:text-[#EFEFF2]" />
         </View>
       ) : null}
       <ScrollView style={{ maxHeight: 420 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400">No matches</Text> : null}
+        {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400 dark:text-[#8b879b]">No matches</Text> : null}
         {shown.map((o) => {
           const on = selected.includes(o.value);
           return (
-            <Pressable key={o.value} onPress={() => onPick(o.value)} className="flex-row items-center border-b border-slate-100 py-3 active:bg-slate-50">
+            <Pressable key={o.value} onPress={() => onPick(o.value)} className="flex-row items-center border-b border-slate-100 dark:border-[#262038] py-3 active:bg-slate-50">
               <View className="flex-1">
-                <Text className={`text-sm ${on ? 'font-bold text-[#3D5EE1]' : 'text-slate-800'}`}>{o.label}</Text>
-                {o.hint ? <Text className="mt-0.5 text-[11px] text-slate-400">{o.hint}</Text> : null}
+                <Text className={`text-sm ${on ? 'font-bold text-[#3D5EE1] dark:text-[#7d95f5]' : 'text-slate-800 dark:text-[#EFEFF2]'}`}>{o.label}</Text>
+                {o.hint ? <Text className="mt-0.5 text-[11px] text-slate-400 dark:text-[#8b879b]">{o.hint}</Text> : null}
               </View>
               {on ? <Feather name={multi ? 'check-square' : 'check'} size={16} color={colors.primary} /> : multi ? <Feather name="square" size={16} color="#cbd5e1" /> : null}
             </Pressable>
@@ -283,7 +283,7 @@ export function DateField({
   return (
     <FieldShell label={label} required={required} error={error} hint={hint}>
       <Pressable onPress={open} className={`${boxClass(error, disabled)} justify-between py-2.5`}>
-        <Text className={`flex-1 text-sm ${value ? 'text-[#202C4B]' : 'text-slate-400'}`}>{value ? formatDate(value) : 'Select date'}</Text>
+        <Text className={`flex-1 text-sm ${value ? 'text-[#202C4B] dark:text-[#EFEFF2]' : 'text-slate-400 dark:text-[#8b879b]'}`}>{value ? formatDate(value) : 'Select date'}</Text>
         <Feather name="calendar" size={16} color="#94a3b8" />
       </Pressable>
       {Platform.OS === 'ios' ? (
@@ -333,7 +333,7 @@ export function TimeField({
   return (
     <FieldShell label={label} required={required} error={error} hint={hint}>
       <Pressable onPress={open} className={`${boxClass(error, disabled)} justify-between py-2.5`}>
-        <Text className={`flex-1 text-sm ${value ? 'text-[#202C4B]' : 'text-slate-400'}`}>{value ? formatTime(value) : 'Select time'}</Text>
+        <Text className={`flex-1 text-sm ${value ? 'text-[#202C4B] dark:text-[#EFEFF2]' : 'text-slate-400 dark:text-[#8b879b]'}`}>{value ? formatTime(value) : 'Select time'}</Text>
         <Feather name="clock" size={16} color="#94a3b8" />
       </Pressable>
       {Platform.OS === 'ios' ? (
@@ -347,10 +347,10 @@ export function TimeField({
 
 export function SwitchField({ label, value, onChange, hint }: { label: string; value: boolean; onChange: (v: boolean) => void; hint?: string }) {
   return (
-    <View className="mb-3.5 flex-row items-center justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-2.5">
+    <View className="mb-3.5 flex-row items-center justify-between rounded-xl border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] px-3.5 py-2.5">
       <View className="flex-1 pr-3">
-        <Text className="text-xs font-semibold text-[#202C4B]">{label}</Text>
-        {hint ? <Text className="mt-0.5 text-[11px] text-slate-400">{hint}</Text> : null}
+        <Text className="text-xs font-semibold text-[#202C4B] dark:text-[#EFEFF2]">{label}</Text>
+        {hint ? <Text className="mt-0.5 text-[11px] text-slate-400 dark:text-[#8b879b]">{hint}</Text> : null}
       </View>
       <Switch value={value} onValueChange={onChange} trackColor={{ true: colors.primary, false: '#cbd5e1' }} />
     </View>

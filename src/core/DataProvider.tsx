@@ -13,10 +13,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f4f6fb]">
+      <View className="flex-1 items-center justify-center bg-[#f4f6fb] dark:bg-[#0F0C1C]">
         <Image source={require('../../assets/karkaii-logo.png')} style={{ width: 170, height: 44 }} resizeMode="contain" />
         <ActivityIndicator style={{ marginTop: 18 }} color="#3D5EE1" />
-        <Text className="mt-2 text-xs text-slate-400">Loading school data…</Text>
+        <Text className="mt-2 text-xs text-slate-400 dark:text-[#8b879b]">Loading school data…</Text>
       </View>
     );
   }

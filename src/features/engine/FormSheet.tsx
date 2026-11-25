@@ -132,7 +132,7 @@ export function FormFields({
         }
         return (
           <View key={f.key}>
-            {f.section ? <Text className="mb-2 mt-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">{f.section}</Text> : null}
+            {f.section ? <Text className="mb-2 mt-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">{f.section}</Text> : null}
             {control}
           </View>
         );
@@ -200,7 +200,7 @@ function FormSheetBody({
       }
     >
       <FormFields fields={fields} values={values} errors={errors} set={set} isEdit={isEdit} />
-      {Object.keys(errors).length ? <Text className="mb-2 text-center text-xs font-semibold text-red-600">Please fix the highlighted fields.</Text> : null}
+      {Object.keys(errors).length ? <Text className="mb-2 text-center text-xs font-semibold text-red-600 dark:text-red-300">Please fix the highlighted fields.</Text> : null}
     </Sheet>
   );
 }

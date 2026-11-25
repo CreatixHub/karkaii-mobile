@@ -36,9 +36,9 @@ export function PageHost({ section }: { section: SectionDef['key'] }) {
       {Page ? (
         <Page breadcrumb={breadcrumb} />
       ) : (
-        <View className="flex-1 bg-[#f4f6fb]">
+        <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
           <EmptyState icon="tool" title={`${loc.page.label} is being rebuilt`} hint="This page is queued for a later implementation batch." />
-          <Text className="px-6 text-center text-[11px] text-slate-400">{breadcrumb}</Text>
+          <Text className="px-6 text-center text-[11px] text-slate-400 dark:text-[#8b879b]">{breadcrumb}</Text>
         </View>
       )}
     </>

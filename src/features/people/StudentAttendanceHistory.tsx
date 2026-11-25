@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTheme } from '@/theme/ThemeProvider';
 import { Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useCollection } from '@/core/store/useCollection';
@@ -18,6 +19,7 @@ const FILTERS = [{ key: 'all', label: 'All' }, { key: 'present', label: 'Present
 
 /** One student's attendance by month: totals, calendar and a day-by-day list. */
 export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string }) {
+  const ink = useTheme().palette.text;
   const { student, setId, options, locked } = useSelectedStudent();
   useCollection<StudentAttendanceRecord>('studentAttendance'); // re-render when the register changes
   const [month, setMonth] = useState(defaultMonth());
@@ -38,21 +40,21 @@ export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string })
     }).catch(() => {});
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
         <StudentPicker student={student} options={options} onChange={setId} locked={locked} />
         <View className="mb-3 flex-row items-center">
-          <Pressable onPress={() => setMonth(addMonths(month, -1))} hitSlop={6} className="h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white active:bg-slate-50">
-            <Feather name="chevron-left" size={18} color="#1b2240" />
+          <Pressable onPress={() => setMonth(addMonths(month, -1))} hitSlop={6} className="h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] active:bg-slate-50">
+            <Feather name="chevron-left" size={18} color={ink} />
           </Pressable>
-          <Pressable onPress={() => setMonth(defaultMonth())} className="mx-2 h-10 flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white">
-            <Text className="text-xs font-bold text-[#1b2240]">{monthLabel(month)}</Text>
+          <Pressable onPress={() => setMonth(defaultMonth())} className="mx-2 h-10 flex-1 items-center justify-center rounded-xl border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]">
+            <Text className="text-xs font-bold text-[#1b2240] dark:text-[#EFEFF2]">{monthLabel(month)}</Text>
           </Pressable>
-          <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={6} className="h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white active:bg-slate-50">
-            <Feather name="chevron-right" size={18} color="#1b2240" />
+          <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={6} className="h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] active:bg-slate-50">
+            <Feather name="chevron-right" size={18} color={ink} />
           </Pressable>
-          <Pressable onPress={share} hitSlop={6} className="ml-2 h-10 w-10 items-center justify-center rounded-xl bg-[#E9EDFC] active:opacity-80">
+          <Pressable onPress={share} hitSlop={6} className="ml-2 h-10 w-10 items-center justify-center rounded-xl bg-[#E9EDFC] dark:bg-[#1d2450] active:opacity-80">
             <Feather name="share-2" size={16} color="#3D5EE1" />
           </Pressable>
         </View>
@@ -73,10 +75,10 @@ export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string })
         <Card>
           <View className="mb-2 flex-row justify-between">
             {WEEK.map((d, i) => (
-              <Text key={i} className="w-[13%] text-center text-[10px] font-bold text-slate-400">{d}</Text>
+              <Text key={i} className="w-[13%] text-center text-[10px] font-bold text-slate-400 dark:text-[#8b879b]">{d}</Text>
             ))}
           </View>
-          {records.length === 0 ? <Text className="mb-2 text-center text-[11px] text-slate-400">No attendance has been recorded for {monthLabel(month)}.</Text> : null}
+          {records.length === 0 ? <Text className="mb-2 text-center text-[11px] text-slate-400 dark:text-[#8b879b]">No attendance has been recorded for {monthLabel(month)}.</Text> : null}
           {weeks.map((week, wi) => (
             <View key={wi} className="mb-1.5 flex-row justify-between">
               {week.map((cell, ci) => {
@@ -84,7 +86,7 @@ export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string })
                 const t = cell.kind && cell.kind !== 'none' ? TONES[KIND_TONE[cell.kind]] : null;
                 return (
                   <View key={ci} style={t ? { backgroundColor: t.bg, borderColor: t.border } : undefined} className={`h-9 w-[13%] items-center justify-center rounded-lg ${t ? 'border' : ''}`}>
-                    <Text style={t ? { color: t.fg } : undefined} className={`text-xs font-bold ${t ? '' : 'text-slate-400'}`}>{cell.day}</Text>
+                    <Text style={t ? { color: t.fg } : undefined} className={`text-xs font-bold ${t ? '' : 'text-slate-400 dark:text-[#8b879b]'}`}>{cell.day}</Text>
                   </View>
                 );
               })}
@@ -94,7 +96,7 @@ export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string })
             {(['present', 'absent', 'late', 'half', 'leave'] as DayKind[]).map((k) => (
               <View key={k} className="flex-row items-center">
                 <View style={{ backgroundColor: TONES[KIND_TONE[k]].fg }} className="mr-1 h-2 w-2 rounded-full" />
-                <Text className="text-[10px] text-slate-500">{KIND_LABEL[k]}</Text>
+                <Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">{KIND_LABEL[k]}</Text>
               </View>
             ))}
           </View>
@@ -106,20 +108,20 @@ export function StudentAttendanceHistory({ breadcrumb }: { breadcrumb: string })
       </View>
 
       <View className="gap-2 px-4">
-        {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400">No days match this filter.</Text> : null}
+        {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400 dark:text-[#8b879b]">No days match this filter.</Text> : null}
         {shown.map((r) => (
           <Card key={r.id}>
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-bold text-[#1b2240]">{weekdayShort(r.date)}, {formatDate(r.date)}</Text>
+              <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{weekdayShort(r.date)}, {formatDate(r.date)}</Text>
               <Pill label={r.status} tone={KIND_TONE[kindOf(r.status)]} />
             </View>
-            <Text className="mt-1.5 text-[11px] text-slate-500">
+            <Text className="mt-1.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">
               {r.checkIn ? `In ${formatTime(r.checkIn)}` : 'No check-in'}
               {r.checkOut ? ` · Out ${formatTime(r.checkOut)}` : ''}
               {r.lateMinutes ? ` · ${r.lateMinutes} min late` : ''}
               {` · ${classTeacherOf(student)?.name ?? 'Class teacher'}`}
             </Text>
-            {r.remark || r.leaveNote ? <Text className="mt-1 text-[11px] text-slate-500">{r.leaveNote || r.remark}</Text> : null}
+            {r.remark || r.leaveNote ? <Text className="mt-1 text-[11px] text-slate-500 dark:text-[#a29fb0]">{r.leaveNote || r.remark}</Text> : null}
           </Card>
         ))}
       </View>

@@ -21,16 +21,16 @@ export default function ProfileScreen() {
     ]);
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerClassName="p-4 pb-12">
-      <View className="mb-4 items-center rounded-2xl border border-slate-100 bg-white p-5">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerClassName="p-4 pb-12">
+      <View className="mb-4 items-center rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-5">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-[#3D5EE1]">
-          <Text className="text-2xl font-bold text-white">{(user?.name ?? '?').charAt(0).toUpperCase()}</Text>
+          <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-2xl font-bold text-white">{(user?.name ?? '?').charAt(0).toUpperCase()}</Text>
         </View>
-        <Text className="mt-3 text-lg font-bold text-[#1b2240]">{user?.name}</Text>
-        <Text className="text-xs text-slate-500">{user?.title}</Text>
-        <View className="mt-2 flex-row items-center rounded-full bg-[#E9EDFC] px-3 py-1">
+        <Text className="mt-3 text-lg font-bold text-[#1b2240] dark:text-[#EFEFF2]">{user?.name}</Text>
+        <Text className="text-xs text-slate-500 dark:text-[#a29fb0]">{user?.title}</Text>
+        <View className="mt-2 flex-row items-center rounded-full bg-[#E9EDFC] dark:bg-[#1d2450] px-3 py-1">
           <Feather name={canManage ? 'edit-3' : 'eye'} size={11} color="#3D5EE1" />
-          <Text className="ml-1.5 text-[11px] font-bold text-[#3D5EE1]">{roleName} · {canManage ? 'can manage data' : 'view only'}</Text>
+          <Text className="ml-1.5 text-[11px] font-bold text-[#3D5EE1] dark:text-[#7d95f5]">{roleName} · {canManage ? 'can manage data' : 'view only'}</Text>
         </View>
       </View>
 

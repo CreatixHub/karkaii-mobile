@@ -1,17 +1,20 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { PageHeaderLeft } from '@/core/nav/PageHeaderLeft';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/ThemeProvider';
+import { ThemeToggle } from '@/theme/ThemeToggle';
 
 export default function DashboardLayout() {
+  const { palette } = useTheme();
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: '#ffffff' },
-        headerTintColor: colors.ink,
+        headerStyle: { backgroundColor: palette.surface },
+        headerTintColor: palette.text,
+        headerRight: () => <ThemeToggle />,
         headerTitleStyle: { fontSize: 16, fontWeight: '600' },
         headerShadowVisible: false,
-        contentStyle: { backgroundColor: colors.background },
+        contentStyle: { backgroundColor: palette.background },
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />

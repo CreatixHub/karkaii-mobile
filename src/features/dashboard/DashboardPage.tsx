@@ -23,20 +23,20 @@ export function DashboardPage({ kind }: { kind: Kind }) {
   const school = user?.school ?? ADMIN_DASHBOARD_DATA.schoolName;
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerClassName="p-4 pb-14" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerClassName="p-4 pb-14" showsVerticalScrollIndicator={false}>
       <View className="mb-3 flex-row items-center justify-between">
         <View className="flex-row items-center">
           <View className="h-8 w-8 items-center justify-center rounded-xl bg-[#3D5EE1]/10">
             <Feather name="book-open" size={16} color="#3D5EE1" />
           </View>
           <View className="ml-2.5">
-            <Text className="text-xs font-bold text-slate-800" numberOfLines={1}>{school}</Text>
-            <Text className="text-[10px] text-slate-400">Academic Year: 2026 / 2027</Text>
+            <Text className="text-xs font-bold text-slate-800 dark:text-[#EFEFF2]" numberOfLines={1}>{school}</Text>
+            <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">Academic Year: 2026 / 2027</Text>
           </View>
         </View>
-        <View className="flex-row items-center rounded-full border border-slate-200 bg-white px-2.5 py-1">
+        <View className="flex-row items-center rounded-full border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] px-2.5 py-1">
           <Feather name="calendar" size={12} color="#3D5EE1" />
-          <Text className="ml-1 text-[11px] font-semibold text-slate-700">AY 2026-27</Text>
+          <Text className="ml-1 text-[11px] font-semibold text-slate-700 dark:text-[#d6d4de]">AY 2026-27</Text>
         </View>
       </View>
 

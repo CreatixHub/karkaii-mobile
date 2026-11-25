@@ -2,11 +2,11 @@ import '../global.css';
 
 import React from 'react';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '@/core/auth/AuthProvider';
 import { DataProvider } from '@/core/DataProvider';
+import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/ui/Toast';
 
 function RootNavigator() {
@@ -30,7 +30,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <StatusBar style="dark" />
+        <ThemeProvider>
         <DataProvider>
           <AuthProvider>
             <ToastProvider>
@@ -38,6 +38,7 @@ export default function RootLayout() {
             </ToastProvider>
           </AuthProvider>
         </DataProvider>
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

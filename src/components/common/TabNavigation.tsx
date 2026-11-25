@@ -15,7 +15,7 @@ interface TabNavigationProps {
 
 export default function TabNavigation({ tabs, activeTab, onSelectTab }: TabNavigationProps) {
   return (
-    <View className="border-b border-slate-200 bg-white">
+    <View className="border-b border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -28,12 +28,12 @@ export default function TabNavigation({ tabs, activeTab, onSelectTab }: TabNavig
               key={tab.id}
               onPress={() => onSelectTab(tab.id)}
               className={`flex-row items-center rounded-xl px-3.5 py-2 ${
-                isActive ? 'bg-[#3D5EE1]' : 'bg-slate-100'
+                isActive ? 'bg-[#3D5EE1]' : 'bg-slate-100 dark:bg-[#1B1632]'
               }`}
             >
               <Text
                 className={`text-xs font-semibold ${
-                  isActive ? 'text-white' : 'text-slate-600'
+                  isActive ? 'text-white' : 'text-slate-600 dark:text-[#B9B7C0]'
                 }`}
               >
                 {tab.label}
@@ -41,12 +41,12 @@ export default function TabNavigation({ tabs, activeTab, onSelectTab }: TabNavig
               {tab.badge ? (
                 <View
                   className={`ml-1.5 rounded-full px-1.5 py-0.5 ${
-                    isActive ? 'bg-white/20' : 'bg-slate-200'
+                    isActive ? 'bg-white/20' : 'bg-slate-200 dark:bg-[#322D46]'
                   }`}
                 >
                   <Text
                     className={`text-[10px] font-bold ${
-                      isActive ? 'text-white' : 'text-slate-600'
+                      isActive ? 'text-white' : 'text-slate-600 dark:text-[#B9B7C0]'
                     }`}
                   >
                     {tab.badge}

@@ -38,26 +38,26 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
+    <SafeAreaView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
         <ScrollView contentContainerClassName="p-5 pb-12 flex-grow justify-center" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View className="mb-6 items-center">
             <Image source={require('../../../assets/karkaii-logo.png')} style={{ width: 180, height: 46 }} resizeMode="contain" />
           </View>
 
-          <View className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm shadow-black/5">
-            <Text className="text-2xl font-bold text-[#202C4B]">Welcome</Text>
-            <Text className="mb-5 mt-1 text-sm text-[#515B73]">Please enter your details to sign in</Text>
+          <View className="rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-6 shadow-sm shadow-black/5">
+            <Text className="text-2xl font-bold text-[#202C4B] dark:text-[#EFEFF2]">Welcome</Text>
+            <Text className="mb-5 mt-1 text-sm text-[#515B73] dark:text-[#B9B7C0]">Please enter your details to sign in</Text>
 
             {error ? (
-              <View className="mb-4 flex-row items-center rounded-xl border border-red-200 bg-red-50 p-3">
+              <View className="mb-4 flex-row items-center rounded-xl border border-red-200 dark:border-[#3d3756] bg-red-50 dark:bg-[#2e1a22] p-3">
                 <Feather name="alert-circle" size={16} color="#DC2626" />
-                <Text className="ml-2 flex-1 text-xs font-medium text-red-700">{error}</Text>
+                <Text className="ml-2 flex-1 text-xs font-medium text-red-700 dark:text-red-300">{error}</Text>
               </View>
             ) : null}
 
-            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">User ID</Text>
-            <View className={`mb-1 flex-row items-center rounded-xl border bg-white px-3.5 ${errors.identifier ? 'border-red-400' : 'border-slate-200'}`}>
+            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B] dark:text-[#EFEFF2]">User ID</Text>
+            <View className={`mb-1 flex-row items-center rounded-xl border bg-white dark:bg-[#131022] px-3.5 ${errors.identifier ? 'border-red-400' : 'border-slate-200 dark:border-[#322D46]'}`}>
               <Feather name="user" size={16} color="#6A7287" />
               <TextInput
                 value={identifier}
@@ -69,13 +69,13 @@ export default function LoginScreen() {
                 autoComplete="username"
                 textContentType="username"
                 accessibilityLabel="User ID"
-                className="ml-2.5 flex-1 py-3 text-sm text-[#202C4B]"
+                className="ml-2.5 flex-1 py-3 text-sm text-[#202C4B] dark:text-[#EFEFF2]"
               />
             </View>
-            {errors.identifier ? <Text className="mb-2 text-xs text-red-600">{errors.identifier}</Text> : <View className="mb-3" />}
+            {errors.identifier ? <Text className="mb-2 text-xs text-red-600 dark:text-red-300">{errors.identifier}</Text> : <View className="mb-3" />}
 
-            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B]">Password</Text>
-            <View className={`mb-1 flex-row items-center rounded-xl border bg-white px-3.5 ${errors.password ? 'border-red-400' : 'border-slate-200'}`}>
+            <Text className="mb-1.5 text-xs font-semibold text-[#202C4B] dark:text-[#EFEFF2]">Password</Text>
+            <View className={`mb-1 flex-row items-center rounded-xl border bg-white dark:bg-[#131022] px-3.5 ${errors.password ? 'border-red-400' : 'border-slate-200 dark:border-[#322D46]'}`}>
               <TextInput
                 value={password}
                 onChangeText={(t) => { setPassword(t); setErrors((e) => ({ ...e, password: undefined })); }}
@@ -87,23 +87,23 @@ export default function LoginScreen() {
                 textContentType="password"
                 accessibilityLabel="Password"
                 onSubmitEditing={submit}
-                className="flex-1 py-3 text-sm text-[#202C4B]"
+                className="flex-1 py-3 text-sm text-[#202C4B] dark:text-[#EFEFF2]"
               />
               <Pressable onPress={() => setShowPassword((s) => !s)} hitSlop={10} accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
                 <Feather name={showPassword ? 'eye' : 'eye-off'} size={16} color="#6A7287" />
               </Pressable>
             </View>
-            {errors.password ? <Text className="mb-2 text-xs text-red-600">{errors.password}</Text> : <View className="mb-3" />}
+            {errors.password ? <Text className="mb-2 text-xs text-red-600 dark:text-red-300">{errors.password}</Text> : <View className="mb-3" />}
 
             <View className="mb-5 flex-row items-center justify-between">
               <Pressable onPress={() => setRememberMe((r) => !r)} hitSlop={8} className="flex-row items-center" accessibilityRole="checkbox" accessibilityState={{ checked: rememberMe }}>
-                <View className={`h-[18px] w-[18px] items-center justify-center rounded border ${rememberMe ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-300 bg-white'}`}>
+                <View className={`h-[18px] w-[18px] items-center justify-center rounded border ${rememberMe ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-300 dark:border-[#3d3756] bg-white dark:bg-[#131022]'}`}>
                   {rememberMe ? <Feather name="check" size={12} color="#fff" /> : null}
                 </View>
-                <Text className="ml-2 text-xs text-[#515B73]">Remember Me</Text>
+                <Text className="ml-2 text-xs text-[#515B73] dark:text-[#B9B7C0]">Remember Me</Text>
               </Pressable>
               <Pressable onPress={() => router.push('/(auth)/forgot-password')} hitSlop={8}>
-                <Text className="text-xs font-semibold text-[#E82646]">Forgot Password?</Text>
+                <Text className="text-xs font-semibold text-[#E82646] dark:text-[#ff7a90]">Forgot Password?</Text>
               </Pressable>
             </View>
 
@@ -111,7 +111,7 @@ export default function LoginScreen() {
           </View>
 
           <View className="mt-8 items-center">
-            <Text className="text-[11px] text-slate-400">Copyright © {new Date().getFullYear()} - Karkaii</Text>
+            <Text className="text-[11px] text-slate-400 dark:text-[#8b879b]">Copyright © {new Date().getFullYear()} - Karkaii</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

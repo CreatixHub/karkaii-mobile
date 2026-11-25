@@ -80,9 +80,9 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
   const timeline = history.filter((h) => tl === 'all' || h.kind.toLowerCase().startsWith(tl)).sort((a, b) => b.date.localeCompare(a.date) || b.batchNo.localeCompare(a.batchNo));
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
       </View>
       <SummaryStrip
         items={[
@@ -98,8 +98,8 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
       {done ? (
         <View className="px-4">
           <Card style={{ marginBottom: 12, borderColor: TONES.success.border }}>
-            <Text className="text-sm font-extrabold text-[#15803D]">Promotion finished</Text>
-            <Text className="mt-1 text-xs text-slate-600">{done.promoted} moved up · {done.graduated} graduated · {done.retained} retained. Batches {done.batchNos.join(', ') || '—'} are in the history below.</Text>
+            <Text className="text-sm font-extrabold text-[#15803D] dark:text-[#6ee7a0]">Promotion finished</Text>
+            <Text className="mt-1 text-xs text-slate-600 dark:text-[#B9B7C0]">{done.promoted} moved up · {done.graduated} graduated · {done.retained} retained. Batches {done.batchNos.join(', ') || '—'} are in the history below.</Text>
           </Card>
         </View>
       ) : null}
@@ -115,14 +115,14 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
               <Card key={y.id} style={{ marginBottom: 8, borderColor: y.on ? TONES.primary.border : undefined }}>
                 <View className="flex-row items-center justify-between">
                   <View>
-                    <Text className="text-base font-extrabold text-[#1b2240]">{y.label}</Text>
-                    <Text className="text-[11px] text-slate-500">{y.sub}</Text>
+                    <Text className="text-base font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{y.label}</Text>
+                    <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{y.sub}</Text>
                   </View>
                   <Pill label={y.on ? 'From' : 'To'} tone={y.on ? 'primary' : 'success'} />
                 </View>
               </Card>
             ))}
-            <Text className="mb-3 text-[11px] text-slate-400">Students keep their attendance, fee and exam records when they move up. Promote the top class first so seats are free in the class below.</Text>
+            <Text className="mb-3 text-[11px] text-slate-400 dark:text-[#8b879b]">Students keep their attendance, fee and exam records when they move up. Promote the top class first so seats are free in the class below.</Text>
             <Button label="Next: choose class" onPress={() => setStep(2)} />
           </View>
         ) : null}
@@ -133,8 +133,8 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
             <SelectField label="Section" value={fromSection} options={[{ label: 'All sections', value: 'all' }, ...sections.filter((s) => s.classId === fromClass).map((s) => ({ label: `Section ${s.name}`, value: s.id }))]} onChange={(v) => { setFromSection(v); setDecisions({}); }} />
             {final ? (
               <Card style={{ marginBottom: 12 }}>
-                <Text className="text-sm font-bold text-[#1b2240]">Graduation</Text>
-                <Text className="mt-0.5 text-[11px] text-slate-500">{className(fromClass)} is the final class. Students who move up graduate and are added to the alumni network.</Text>
+                <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">Graduation</Text>
+                <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{className(fromClass)} is the final class. Students who move up graduate and are added to the alumni network.</Text>
               </Card>
             ) : (
               <>
@@ -142,16 +142,16 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
                 <SelectField label="Target section" value={toSection} options={[{ label: 'Auto-assign (most free seats)', value: 'auto' }, ...targetSections.map((s) => ({ label: `Section ${s.name}`, value: s.id, hint: `${freeSeats(s)} of ${s.capacity} seats free` }))]} onChange={setToSection} />
                 <Card style={{ marginBottom: 12 }}>
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-sm font-bold text-[#1b2240]">{className(toClassId)} seats</Text>
+                    <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{className(toClassId)} seats</Text>
                     <Pill label={`${free} free`} tone={free >= pool.length ? 'success' : 'warning'} />
                   </View>
                   <View className="mt-2"><ProgressBar value={targetSections.reduce((n, s) => n + (s.capacity - freeSeats(s)), 0)} max={Math.max(1, targetSections.reduce((n, s) => n + s.capacity, 0))} tone={free >= pool.length ? 'primary' : 'danger'} /></View>
-                  <Text className="mt-1.5 text-[11px] text-slate-500">{pool.length} students in {className(fromClass)} · {free} seat{free === 1 ? '' : 's'} free in {className(toClassId)}</Text>
+                  <Text className="mt-1.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{pool.length} students in {className(fromClass)} · {free} seat{free === 1 ? '' : 's'} free in {className(toClassId)}</Text>
                 </Card>
               </>
             )}
             <Button label="Next: review students" onPress={() => setStep(3)} disabled={pool.length === 0} />
-            {pool.length === 0 ? <Text className="mt-2 text-center text-[11px] text-slate-400">There are no active students in this selection.</Text> : null}
+            {pool.length === 0 ? <Text className="mt-2 text-center text-[11px] text-slate-400 dark:text-[#8b879b]">There are no active students in this selection.</Text> : null}
           </View>
         ) : null}
 
@@ -164,7 +164,7 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
               <Button small variant="secondary" label="Clear" onPress={() => setAll('skip')} />
             </View>
             <SegmentedTabs tabs={[{ key: 'all', label: 'All' }, { key: 'eligible', label: 'Eligible' }, { key: 'graduate', label: 'Graduate' }, { key: 'fee', label: 'Fee pending' }, { key: 'lowatt', label: 'Low attendance' }, { key: 'risk', label: 'Academic risk' }]} active={recFilter} onChange={setRecFilter} />
-            {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400">No students match this filter.</Text> : null}
+            {shown.length === 0 ? <Text className="py-6 text-center text-xs text-slate-400 dark:text-[#8b879b]">No students match this filter.</Text> : null}
             {shown.map((s) => {
               const rec = recommendationOf(s);
               const fee = feeSummary(s.id);
@@ -173,18 +173,18 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
                 <Card key={s.id} style={{ marginBottom: 8 }}>
                   <View className="flex-row items-start justify-between">
                     <View className="flex-1 pr-2">
-                      <Text className="text-sm font-bold text-[#1b2240]">{s.name}</Text>
-                      <Text className="text-[11px] text-slate-500">{s.admissionNo} · {classSection(s)} · Roll {s.rollNo}</Text>
+                      <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{s.name}</Text>
+                      <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{s.admissionNo} · {classSection(s)} · Roll {s.rollNo}</Text>
                     </View>
                     <Pill label={rec.label} tone={rec.tone} />
                   </View>
-                  <Text className="mt-1.5 text-[11px] text-slate-500">Attendance {pct(attendancePct(s.id))} · Academic {pct(academicPercent(s.id))} · {behaviourLabel(behaviourScore(s.id))} · Fees {fee.status}</Text>
+                  <Text className="mt-1.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">Attendance {pct(attendancePct(s.id))} · Academic {pct(academicPercent(s.id))} · {behaviourLabel(behaviourScore(s.id))} · Fees {fee.status}</Text>
                   <View className="mt-2 flex-row gap-2">
                     {DECISIONS.map((o) => {
                       const on = d === o.key;
                       return (
-                        <Pressable key={o.key} onPress={() => setDecisions((cur) => ({ ...cur, [s.id]: o.key }))} className={`flex-1 items-center rounded-lg border py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}>
-                          <Text className={`text-[11px] font-bold ${on ? 'text-white' : 'text-slate-600'}`}>{o.key === 'promote' && final ? 'Graduate' : o.label}</Text>
+                        <Pressable key={o.key} onPress={() => setDecisions((cur) => ({ ...cur, [s.id]: o.key }))} className={`flex-1 items-center rounded-lg border py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]'}`}>
+                          <Text className={`text-[11px] font-bold ${on ? 'text-white' : 'text-slate-600 dark:text-[#B9B7C0]'}`}>{o.key === 'promote' && final ? 'Graduate' : o.label}</Text>
                         </Pressable>
                       );
                     })}
@@ -199,11 +199,11 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
         {step === 4 ? (
           <View>
             <Card style={{ marginBottom: 10 }}>
-              <Text className="text-sm font-bold text-[#1b2240]">{className(fromClass)}{fromSection !== 'all' ? ` · ${sections.find((s) => s.id === fromSection)?.name}` : ''} → {final ? 'Graduation' : className(toClassId)}</Text>
+              <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{className(fromClass)}{fromSection !== 'all' ? ` · ${sections.find((s) => s.id === fromSection)?.name}` : ''} → {final ? 'Graduation' : className(toClassId)}</Text>
               <View className="mt-2 flex-row justify-between">
-                <View className="items-center"><Text className="text-lg font-extrabold text-[#15803D]">{check.promote.length}</Text><Text className="text-[10px] text-slate-500">{final ? 'Graduate' : 'Move up'}</Text></View>
-                <View className="items-center"><Text className="text-lg font-extrabold text-[#B91C1C]">{check.retain.length}</Text><Text className="text-[10px] text-slate-500">Retain</Text></View>
-                <View className="items-center"><Text className="text-lg font-extrabold text-slate-500">{check.skip.length}</Text><Text className="text-[10px] text-slate-500">Unchanged</Text></View>
+                <View className="items-center"><Text className="text-lg font-extrabold text-[#15803D] dark:text-[#6ee7a0]">{check.promote.length}</Text><Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">{final ? 'Graduate' : 'Move up'}</Text></View>
+                <View className="items-center"><Text className="text-lg font-extrabold text-[#B91C1C] dark:text-[#fca5a5]">{check.retain.length}</Text><Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">Retain</Text></View>
+                <View className="items-center"><Text className="text-lg font-extrabold text-slate-500 dark:text-[#a29fb0]">{check.skip.length}</Text><Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">Unchanged</Text></View>
               </View>
             </Card>
             {[
@@ -213,28 +213,28 @@ export function StudentPromotion({ breadcrumb }: { breadcrumb: string }) {
               { ok: check.promote.length + check.retain.length > 0, text: 'At least one student is selected' },
             ].map((c) => (
               <View key={c.text} className="mb-1.5 flex-row items-start">
-                <Text className={`mr-2 text-sm ${c.ok ? 'text-[#15803D]' : 'text-[#B45309]'}`}>{c.ok ? '✓' : '!'}</Text>
-                <Text className="flex-1 text-xs text-slate-600">{c.text}</Text>
+                <Text className={`mr-2 text-sm ${c.ok ? 'text-[#15803D] dark:text-[#6ee7a0]' : 'text-[#B45309] dark:text-[#fcd34d]'}`}>{c.ok ? '✓' : '!'}</Text>
+                <Text className="flex-1 text-xs text-slate-600 dark:text-[#B9B7C0]">{c.text}</Text>
               </View>
             ))}
-            <Text className="mb-3 mt-1 text-[11px] text-slate-400">Parents are not notified in this demo, and roll numbers stay as they are.</Text>
-            {staff ? <Button label="Finalise promotion" icon="check" onPress={finalise} disabled={check.short.length > 0 || check.promote.length + check.retain.length === 0} /> : <Text className="text-center text-xs text-slate-400">Your role can review a promotion plan but not finalise it.</Text>}
+            <Text className="mb-3 mt-1 text-[11px] text-slate-400 dark:text-[#8b879b]">Parents are not notified in this demo, and roll numbers stay as they are.</Text>
+            {staff ? <Button label="Finalise promotion" icon="check" onPress={finalise} disabled={check.short.length > 0 || check.promote.length + check.retain.length === 0} /> : <Text className="text-center text-xs text-slate-400 dark:text-[#8b879b]">Your role can review a promotion plan but not finalise it.</Text>}
           </View>
         ) : null}
       </View>
 
       <View className="mt-6">
-        <Text className="mb-2 px-4 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">Promotion history · {thisSession.length} batch{thisSession.length === 1 ? '' : 'es'} this session</Text>
+        <Text className="mb-2 px-4 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">Promotion history · {thisSession.length} batch{thisSession.length === 1 ? '' : 'es'} this session</Text>
         <SegmentedTabs tabs={[{ key: 'all', label: 'All' }, { key: 'promoted', label: 'Promoted' }, { key: 'graduated', label: 'Graduated' }, { key: 'detained', label: 'Detained' }]} active={tl} onChange={setTl} />
         <View className="gap-2 px-4">
           {timeline.length === 0 ? <EmptyState icon="clock" title="No batches yet" /> : null}
           {timeline.slice(0, 20).map((h) => (
             <Card key={h.id}>
               <View className="flex-row items-start justify-between">
-                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{h.count} student{h.count === 1 ? '' : 's'} · {className(h.fromClassId)}{h.toClassId && h.toClassId !== h.fromClassId ? ` → ${className(h.toClassId)}` : h.kind === 'Graduated' ? ' → Graduated' : ' (retained)'}</Text>
+                <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{h.count} student{h.count === 1 ? '' : 's'} · {className(h.fromClassId)}{h.toClassId && h.toClassId !== h.fromClassId ? ` → ${className(h.toClassId)}` : h.kind === 'Graduated' ? ' → Graduated' : ' (retained)'}</Text>
                 <Pill label={h.kind} tone={h.kind === 'Promoted' ? 'success' : h.kind === 'Graduated' ? 'purple' : 'warning'} />
               </View>
-              <Text className="mt-1 text-[11px] text-slate-500">{h.batchNo} · {h.academicYear} · {formatDate(h.date)} · approved by {h.approvedBy}</Text>
+              <Text className="mt-1 text-[11px] text-slate-500 dark:text-[#a29fb0]">{h.batchNo} · {h.academicYear} · {formatDate(h.date)} · approved by {h.approvedBy}</Text>
             </Card>
           ))}
         </View>

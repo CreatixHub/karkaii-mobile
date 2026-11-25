@@ -35,21 +35,21 @@ export function RecordCard<T extends Entity>({
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={280}
-      className={`mx-4 mb-3 rounded-2xl border bg-white p-3.5 shadow-sm shadow-black/5 active:opacity-90 ${selected ? 'border-[#3D5EE1]' : 'border-slate-100'}`}
+      className={`mx-4 mb-3 rounded-2xl border bg-white dark:bg-[#131022] p-3.5 shadow-sm shadow-black/5 active:opacity-90 ${selected ? 'border-[#3D5EE1]' : 'border-slate-100 dark:border-[#262038]'}`}
     >
       <View className="flex-row items-start">
         {selecting ? (
-          <View className={`mr-3 mt-0.5 h-5 w-5 items-center justify-center rounded-md border ${selected ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-300 bg-white'}`}>
+          <View className={`mr-3 mt-0.5 h-5 w-5 items-center justify-center rounded-md border ${selected ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-300 dark:border-[#3d3756] bg-white dark:bg-[#131022]'}`}>
             {selected ? <Feather name="check" size={13} color="#fff" /> : null}
           </View>
         ) : null}
         <View className="flex-1 pr-2">
-          {code ? <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">{code}</Text> : null}
-          <Text className="text-[15px] font-bold text-[#1b2240]" numberOfLines={2}>
+          {code ? <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-[#8b879b]">{code}</Text> : null}
+          <Text className="text-[15px] font-bold text-[#1b2240] dark:text-[#EFEFF2]" numberOfLines={2}>
             {cfg.title(row)}
           </Text>
           {subtitle ? (
-            <Text className="mt-0.5 text-xs text-slate-500" numberOfLines={2}>
+            <Text className="mt-0.5 text-xs text-slate-500 dark:text-[#a29fb0]" numberOfLines={2}>
               {subtitle}
             </Text>
           ) : null}
@@ -69,8 +69,8 @@ export function RecordCard<T extends Entity>({
         <View className="mt-3 flex-row flex-wrap">
           {facts.map((f) => (
             <View key={f.label} style={{ width: '50%' }} className="mb-2 pr-2">
-              <Text className="text-[10px] text-slate-400">{f.label}</Text>
-              <Text className="text-xs font-semibold text-slate-800" numberOfLines={1}>
+              <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">{f.label}</Text>
+              <Text className="text-xs font-semibold text-slate-800 dark:text-[#EFEFF2]" numberOfLines={1}>
                 {String(f.value)}
               </Text>
             </View>
@@ -81,7 +81,7 @@ export function RecordCard<T extends Entity>({
       {progress ? (
         <View className="mt-1">
           <View className="mb-1 flex-row justify-between">
-            <Text className="text-[10px] text-slate-400">{progress.label}</Text>
+            <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">{progress.label}</Text>
             <Text style={{ color: TONES[progress.tone ?? 'primary'].fg }} className="text-[10px] font-bold">
               {progress.max > 0 ? Math.round((progress.value / progress.max) * 100) : 0}%
             </Text>

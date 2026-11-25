@@ -28,16 +28,16 @@ export function Sheet({
         <Pressable className="absolute inset-0 bg-black/45" onPress={onClose} accessibilityLabel="Close" />
         <View
           style={{ maxHeight: tall ? '92%' : '82%', paddingBottom: Math.max(insets.bottom, 12) }}
-          className="rounded-t-3xl bg-white"
+          className="rounded-t-3xl bg-white dark:bg-[#131022]"
         >
           <View className="items-center pt-2">
-            <View className="h-1 w-10 rounded-full bg-slate-200" />
+            <View className="h-1 w-10 rounded-full bg-slate-200 dark:bg-[#322D46]" />
           </View>
           <View className="flex-row items-center justify-between px-5 pb-2 pt-3">
-            <Text className="flex-1 pr-3 text-base font-bold text-[#1b2240]" numberOfLines={1}>
+            <Text className="flex-1 pr-3 text-base font-bold text-[#1b2240] dark:text-[#EFEFF2]" numberOfLines={1}>
               {title}
             </Text>
-            <Pressable onPress={onClose} hitSlop={10} className="h-8 w-8 items-center justify-center rounded-full bg-slate-100">
+            <Pressable onPress={onClose} hitSlop={10} className="h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-[#1B1632]">
               <Feather name="x" size={16} color="#475569" />
             </Pressable>
           </View>
@@ -52,7 +52,7 @@ export function Sheet({
           ) : (
             <View style={{ paddingHorizontal: 20, flexShrink: 1 }}>{children}</View>
           )}
-          {footer ? <View className="border-t border-slate-100 px-5 pt-3">{footer}</View> : null}
+          {footer ? <View className="border-t border-slate-100 dark:border-[#262038] px-5 pt-3">{footer}</View> : null}
         </View>
       </KeyboardAvoidingView>
     </Modal>

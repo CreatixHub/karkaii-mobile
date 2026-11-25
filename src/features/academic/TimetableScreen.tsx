@@ -253,32 +253,32 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
     if (!first) {
       const addable = canManage && (isClassView ? !!sel : !!sel);
       return (
-        <Pressable disabled={!addable} onPress={() => setForm({ kind: 'add', day: d, period: p })} className="mx-4 mb-2 flex-row items-center rounded-2xl border border-dashed border-slate-200 bg-white/60 px-3.5 py-3">
+        <Pressable disabled={!addable} onPress={() => setForm({ kind: 'add', day: d, period: p })} className="mx-4 mb-2 flex-row items-center rounded-2xl border border-dashed border-slate-200 dark:border-[#322D46] bg-white/60 px-3.5 py-3">
           <View className="w-[88px]">
-            <Text className="text-[10px] font-bold uppercase text-slate-400">Period {p}</Text>
-            <Text className="text-[11px] text-slate-400">{slotLabel(p).replace(' – ', '–')}</Text>
+            <Text className="text-[10px] font-bold uppercase text-slate-400 dark:text-[#8b879b]">Period {p}</Text>
+            <Text className="text-[11px] text-slate-400 dark:text-[#8b879b]">{slotLabel(p).replace(' – ', '–')}</Text>
           </View>
-          <Text className="flex-1 text-xs text-slate-400">{isClassView ? 'No class scheduled' : 'Free period'}</Text>
+          <Text className="flex-1 text-xs text-slate-400 dark:text-[#8b879b]">{isClassView ? 'No class scheduled' : 'Free period'}</Text>
           {addable ? <Feather name="plus-circle" size={16} color="#94a3b8" /> : null}
         </Pressable>
       );
     }
     const tone = entryTone(first);
     return (
-      <Pressable onPress={() => setEntryId(first.id)} className="mx-4 mb-2 flex-row overflow-hidden rounded-2xl border border-slate-100 bg-white active:opacity-90">
+      <Pressable onPress={() => setEntryId(first.id)} className="mx-4 mb-2 flex-row overflow-hidden rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] active:opacity-90">
         <View style={{ backgroundColor: TONES[tone].fg }} className="w-1.5" />
         <View className="w-[88px] justify-center px-3 py-3">
-          <Text className="text-[10px] font-bold uppercase text-slate-400">Period {p}</Text>
-          <Text className="text-[11px] font-semibold text-slate-600">{slotLabel(p).replace(' – ', '–')}</Text>
+          <Text className="text-[10px] font-bold uppercase text-slate-400 dark:text-[#8b879b]">Period {p}</Text>
+          <Text className="text-[11px] font-semibold text-slate-600 dark:text-[#B9B7C0]">{slotLabel(p).replace(' – ', '–')}</Text>
         </View>
         <View className="flex-1 py-2.5 pr-3">
           <View className="flex-row items-center justify-between">
             <Text style={{ color: TONES[tone].fg }} className="flex-1 pr-2 text-sm font-extrabold" numberOfLines={1}>{entryTitle(first)}</Text>
-            {here.length > 1 ? <Text className="text-[10px] font-bold text-slate-400">+{here.length - 1} more</Text> : null}
+            {here.length > 1 ? <Text className="text-[10px] font-bold text-slate-400 dark:text-[#8b879b]">+{here.length - 1} more</Text> : null}
           </View>
-          <Text className="text-xs text-slate-600" numberOfLines={1}>{entryLine2(first)}</Text>
+          <Text className="text-xs text-slate-600 dark:text-[#B9B7C0]" numberOfLines={1}>{entryLine2(first)}</Text>
           <View className="mt-1.5 flex-row flex-wrap items-center gap-1.5">
-            <Text className="text-[11px] text-slate-400">{roomLabel(first.room)}</Text>
+            <Text className="text-[11px] text-slate-400 dark:text-[#8b879b]">{roomLabel(first.room)}</Text>
             {first.mode !== 'Teaching' ? <Pill label={MODE_LABEL[first.mode]} tone={first.mode === 'Lab Session' ? 'info' : first.mode === 'Exam Duty' ? 'danger' : 'neutral'} /> : null}
             {first.originalTeacherId ? <Pill label={`Sub for ${teacherName(first.originalTeacherId).split(' ')[0]}`} tone="warning" /> : null}
           </View>
@@ -288,9 +288,9 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
   };
 
   const breakRow = (label: string, start: string, end: string) => (
-    <View className="mx-4 mb-2 flex-row items-center justify-center rounded-xl bg-amber-50 py-1.5">
+    <View className="mx-4 mb-2 flex-row items-center justify-center rounded-xl bg-amber-50 dark:bg-[#2e2616] py-1.5">
       <Feather name="coffee" size={11} color="#B45309" />
-      <Text className="ml-1.5 text-[11px] font-semibold text-amber-700">
+      <Text className="ml-1.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
         {label} · {formatTime(start)} – {formatTime(end)}
       </Text>
     </View>
@@ -316,13 +316,13 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
         <View className="flex-row">
           <View className="w-10" />
           {DAYS.map((d) => (
-            <Text key={d} className="w-[58px] pb-1 text-center text-[11px] font-extrabold text-slate-500">{d}</Text>
+            <Text key={d} className="w-[58px] pb-1 text-center text-[11px] font-extrabold text-slate-500 dark:text-[#a29fb0]">{d}</Text>
           ))}
         </View>
         {TIME_SLOTS.map((s) => (
           <View key={s.period} className="mb-1.5 flex-row">
             <View className="w-10 justify-center">
-              <Text className="text-[10px] font-bold text-slate-400">P{s.period}</Text>
+              <Text className="text-[10px] font-bold text-slate-400 dark:text-[#8b879b]">P{s.period}</Text>
             </View>
             {DAYS.map((d) => {
               const e = cell(d, s.period)[0];
@@ -332,15 +332,15 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
                   key={d}
                   onPress={() => (e ? setEntryId(e.id) : canManage ? setForm({ kind: 'add', day: d, period: s.period }) : undefined)}
                   style={e ? { backgroundColor: TONES[tone].bg, borderColor: TONES[tone].border } : undefined}
-                  className={`mr-1 h-12 w-[54px] items-center justify-center rounded-lg border px-0.5 ${e ? '' : 'border-dashed border-slate-200 bg-white/60'}`}
+                  className={`mr-1 h-12 w-[54px] items-center justify-center rounded-lg border px-0.5 ${e ? '' : 'border-dashed border-slate-200 dark:border-[#322D46] bg-white/60'}`}
                 >
                   {e ? (
                     <>
                       <Text style={{ color: TONES[tone].fg }} className="text-[10px] font-extrabold" numberOfLines={1}>{(e.mode === 'Staff Meeting' ? 'Meet' : e.mode === 'Exam Duty' ? 'Exam' : subjectName(e.subjectId)).slice(0, 7)}</Text>
-                      <Text className="text-[9px] text-slate-500" numberOfLines={1}>{isClassView ? teacherName(e.teacherId).split(' ')[0] : e.sectionId ? sectionLabel(e.sectionId).replace('Grade ', '') : ''}</Text>
+                      <Text className="text-[9px] text-slate-500 dark:text-[#a29fb0]" numberOfLines={1}>{isClassView ? teacherName(e.teacherId).split(' ')[0] : e.sectionId ? sectionLabel(e.sectionId).replace('Grade ', '') : ''}</Text>
                     </>
                   ) : (
-                    <Text className="text-[10px] text-slate-300">—</Text>
+                    <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-[10px] text-slate-300">—</Text>
                   )}
                 </Pressable>
               );
@@ -362,9 +362,9 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
     return (
       <View>
         {list.map(([k, es]) => (
-          <View key={k} className="mx-4 mb-3 rounded-2xl border border-slate-100 bg-white p-3.5">
+          <View key={k} className="mx-4 mb-3 rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5">
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="flex-1 text-sm font-extrabold text-[#1b2240]">{by === 'teacher' ? teacherName(k) : roomLabel(k)}</Text>
+              <Text className="flex-1 text-sm font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{by === 'teacher' ? teacherName(k) : roomLabel(k)}</Text>
               <Pill label={`${es.length} periods`} tone="primary" />
             </View>
             <View className="flex-row flex-wrap gap-1.5">
@@ -385,17 +385,17 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
       {DAYS.map((d) => {
         const free = TIME_SLOTS.filter((s) => !cell(d, s.period).length);
         return (
-          <View key={d} className="mx-4 mb-2.5 rounded-2xl border border-slate-100 bg-white p-3.5">
+          <View key={d} className="mx-4 mb-2.5 rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5">
             <View className="mb-1.5 flex-row items-center justify-between">
-              <Text className="text-sm font-extrabold text-[#1b2240]">{DAY_NAMES[d]}</Text>
+              <Text className="text-sm font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{DAY_NAMES[d]}</Text>
               <Pill label={`${free.length} free`} tone={free.length ? 'success' : 'neutral'} />
             </View>
             <View className="flex-row flex-wrap gap-1.5">
               {free.length ? free.map((s) => (
-                <Pressable key={s.period} disabled={!canManage} onPress={() => setForm({ kind: 'add', day: d, period: s.period })} className="rounded-lg bg-emerald-50 px-2 py-1">
-                  <Text className="text-[10px] font-bold text-emerald-700">P{s.period} · {slotLabel(s.period).split(' – ')[0]}</Text>
+                <Pressable key={s.period} disabled={!canManage} onPress={() => setForm({ kind: 'add', day: d, period: s.period })} className="rounded-lg bg-emerald-50 dark:bg-[#14291f] px-2 py-1">
+                  <Text className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">P{s.period} · {slotLabel(s.period).split(' – ')[0]}</Text>
                 </Pressable>
-              )) : <Text className="text-xs text-slate-400">Fully booked</Text>}
+              )) : <Text className="text-xs text-slate-400 dark:text-[#8b879b]">Fully booked</Text>}
             </View>
           </View>
         );
@@ -406,7 +406,7 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
   const specialDuties = () => {
     const list = mine.filter((e) => e.mode === 'Exam Duty' || e.mode === 'Staff Meeting').sort((a, b) => DAYS.indexOf(a.day) - DAYS.indexOf(b.day) || a.period - b.period);
     if (!list.length) return <EmptyState icon="shield" title="No exam duties or meetings" hint="Invigilation and staff meetings assigned to this teacher appear here." />;
-    return <View>{list.map((e) => (<Pressable key={e.id} onPress={() => setEntryId(e.id)} className="mx-4 mb-2 flex-row items-center rounded-2xl border border-slate-100 bg-white p-3.5"><Feather name={e.mode === 'Exam Duty' ? 'shield' : 'users'} size={18} color={TONES[entryTone(e)].fg} /><View className="ml-3 flex-1"><Text className="text-sm font-bold text-[#1b2240]">{entryTitle(e)}</Text><Text className="text-xs text-slate-500">{DAY_NAMES[e.day]} · {slotLabel(e.period)} · {roomLabel(e.room)}</Text>{e.note ? <Text className="text-[11px] text-slate-400">{e.note}</Text> : null}</View></Pressable>))}</View>;
+    return <View>{list.map((e) => (<Pressable key={e.id} onPress={() => setEntryId(e.id)} className="mx-4 mb-2 flex-row items-center rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5"><Feather name={e.mode === 'Exam Duty' ? 'shield' : 'users'} size={18} color={TONES[entryTone(e)].fg} /><View className="ml-3 flex-1"><Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{entryTitle(e)}</Text><Text className="text-xs text-slate-500 dark:text-[#a29fb0]">{DAY_NAMES[e.day]} · {slotLabel(e.period)} · {roomLabel(e.room)}</Text>{e.note ? <Text className="text-[11px] text-slate-400 dark:text-[#8b879b]">{e.note}</Text> : null}</View></Pressable>))}</View>;
   };
 
   const cfg = formConfig();
@@ -418,18 +418,18 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
   if (!sel) return <EmptyState icon="calendar" title="No timetable available" hint={isClassView ? 'There is no class for your account.' : 'Pick a teacher.'} />;
 
   return (
-    <View className="flex-1 bg-[#f4f6fb]">
+    <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         <View className="px-4 pb-2 pt-3">
-          <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
-          <Pressable onPress={() => setPickerOpen(true)} disabled={pickerOptions.length < 2} className="flex-row items-center rounded-2xl border border-slate-100 bg-white p-3.5">
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#E9EDFC]">
+          <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
+          <Pressable onPress={() => setPickerOpen(true)} disabled={pickerOptions.length < 2} className="flex-row items-center rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5">
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#E9EDFC] dark:bg-[#1d2450]">
               <Feather name={isClassView ? 'columns' : 'user'} size={18} color="#3D5EE1" />
             </View>
             <View className="ml-3 flex-1">
-              <Text className="text-[10px] font-bold uppercase text-slate-400">{isClassView ? 'Class & section' : 'Teacher'}</Text>
-              <Text className="text-base font-extrabold text-[#1b2240]" numberOfLines={1}>{isClassView ? sectionLabel(sel) : teacher?.name}</Text>
-              <Text className="text-xs text-slate-500" numberOfLines={1}>
+              <Text className="text-[10px] font-bold uppercase text-slate-400 dark:text-[#8b879b]">{isClassView ? 'Class & section' : 'Teacher'}</Text>
+              <Text className="text-base font-extrabold text-[#1b2240] dark:text-[#EFEFF2]" numberOfLines={1}>{isClassView ? sectionLabel(sel) : teacher?.name}</Text>
+              <Text className="text-xs text-slate-500 dark:text-[#a29fb0]" numberOfLines={1}>
                 {isClassView ? `Class teacher: ${teacherName(section?.classTeacherId)} · Room ${section?.roomNo}` : `${teacher?.department} · ${teacher?.designation} · ${teacher?.status}`}
               </Text>
             </View>
@@ -437,13 +437,13 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
           </Pressable>
 
           {isClassView ? (
-            <View className="mt-3 rounded-2xl border border-slate-100 bg-white p-3.5">
+            <View className="mt-3 rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3.5">
               <View className="mb-1.5 flex-row justify-between">
-                <Text className="text-xs font-semibold text-slate-600">Periods scheduled</Text>
-                <Text className="text-xs font-extrabold text-[#1b2240]">{scheduled} / {demand}</Text>
+                <Text className="text-xs font-semibold text-slate-600 dark:text-[#B9B7C0]">Periods scheduled</Text>
+                <Text className="text-xs font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{scheduled} / {demand}</Text>
               </View>
               <ProgressBar value={scheduled} max={Math.max(1, demand)} tone={scheduled >= demand ? 'success' : scheduled ? 'warning' : 'danger'} />
-              {scheduled === 0 ? <Text className="mt-2 text-xs text-slate-400">No timetable yet.{canManage ? ' Tap Generate to build one from the class’s subjects.' : ''}</Text> : null}
+              {scheduled === 0 ? <Text className="mt-2 text-xs text-slate-400 dark:text-[#8b879b]">No timetable yet.{canManage ? ' Tap Generate to build one from the class’s subjects.' : ''}</Text> : null}
             </View>
           ) : (
             <View className="mt-3 flex-row gap-2">
@@ -452,10 +452,10 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
                 { label: 'Available', value: `${Math.round(((load?.freePeriods ?? 0) * PERIOD_MINUTES) / 6) / 10} hrs`, tone: 'success' as Tone, icon: 'coffee' as const },
                 { label: 'Classes', value: String(load?.classes ?? 0), tone: 'info' as Tone, icon: 'users' as const },
               ].map((s) => (
-                <View key={s.label} className="flex-1 rounded-2xl border border-slate-100 bg-white p-3">
+                <View key={s.label} className="flex-1 rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-3">
                   <Feather name={s.icon} size={14} color={TONES[s.tone].fg} />
                   <Text style={{ color: TONES[s.tone].fg }} className="mt-1 text-base font-extrabold">{s.value}</Text>
-                  <Text className="text-[10px] text-slate-400">{s.label}</Text>
+                  <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">{s.label}</Text>
                 </View>
               ))}
             </View>
@@ -477,9 +477,9 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
               const on = day === d;
               const count = d === 'week' ? mine.length : mine.filter((e) => e.day === d).length;
               return (
-                <Pressable key={d} onPress={() => setDay(d)} className={`items-center rounded-2xl border px-3.5 py-2 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}>
-                  <Text className={`text-xs font-extrabold ${on ? 'text-white' : 'text-slate-700'}`}>{d === 'week' ? 'Week' : d}</Text>
-                  <Text className={`text-[10px] ${on ? 'text-white/80' : 'text-slate-400'}`}>{count} {count === 1 ? 'period' : 'periods'}</Text>
+                <Pressable key={d} onPress={() => setDay(d)} className={`items-center rounded-2xl border px-3.5 py-2 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]'}`}>
+                  <Text className={`text-xs font-extrabold ${on ? 'text-white' : 'text-slate-700 dark:text-[#d6d4de]'}`}>{d === 'week' ? 'Week' : d}</Text>
+                  <Text className={`text-[10px] ${on ? 'text-white/80' : 'text-slate-400 dark:text-[#8b879b]'}`}>{count} {count === 1 ? 'period' : 'periods'}</Text>
                 </Pressable>
               );
             })}
@@ -492,7 +492,7 @@ export function TimetableScreen({ mode, breadcrumb }: { mode: Mode; breadcrumb: 
         {view === 'free' ? freePeriods() : null}
         {view === 'exam' ? specialDuties() : null}
 
-        {!canManage ? <Text className="mt-2 px-6 text-center text-[11px] text-slate-400">View-only access for your role.</Text> : null}
+        {!canManage ? <Text className="mt-2 px-6 text-center text-[11px] text-slate-400 dark:text-[#8b879b]">View-only access for your role.</Text> : null}
       </ScrollView>
 
       <OptionSheet visible={pickerOpen} title={isClassView ? 'Choose class & section' : 'Choose teacher'} options={pickerOptions} selected={[sel]} onClose={() => setPickerOpen(false)} onPick={(v) => { setSel(v); setPickerOpen(false); }} />

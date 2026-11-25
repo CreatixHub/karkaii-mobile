@@ -17,16 +17,16 @@ const H = ({ n, title }: { n: number; title: string }) => (
 /** A small table: header row on navy, body rows, optional bold last row. */
 function Table({ head, rows, widths, boldLast }: { head: string[]; rows: (string | number)[][]; widths: number[]; boldLast?: boolean }) {
   return (
-    <View className="mb-3 overflow-hidden rounded-lg border border-slate-200">
+    <View className="mb-3 overflow-hidden rounded-lg border border-slate-200 dark:border-[#322D46]">
       <View style={{ backgroundColor: NAVY }} className="flex-row px-2 py-1.5">
         {head.map((h, i) => (
           <Text key={h + i} style={{ flex: widths[i] }} className={`text-[10px] font-bold text-white ${i > 0 && widths[i] <= 1 ? 'text-right' : ''}`}>{h}</Text>
         ))}
       </View>
       {rows.map((r, ri) => (
-        <View key={ri} className={`flex-row border-t border-slate-100 px-2 py-1.5 ${boldLast && ri === rows.length - 1 ? 'bg-slate-100' : ''}`}>
+        <View key={ri} className={`flex-row border-t border-slate-100 dark:border-[#262038] px-2 py-1.5 ${boldLast && ri === rows.length - 1 ? 'bg-slate-100 dark:bg-[#1B1632]' : ''}`}>
           {r.map((c, i) => (
-            <Text key={i} style={{ flex: widths[i] }} className={`text-[11px] ${boldLast && ri === rows.length - 1 ? 'font-bold' : ''} text-slate-800 ${i > 0 && widths[i] <= 1 ? 'text-right' : ''}`}>{c}</Text>
+            <Text key={i} style={{ flex: widths[i] }} className={`text-[11px] ${boldLast && ri === rows.length - 1 ? 'font-bold' : ''} text-slate-800 dark:text-[#EFEFF2] ${i > 0 && widths[i] <= 1 ? 'text-right' : ''}`}>{c}</Text>
           ))}
         </View>
       ))}
@@ -36,8 +36,8 @@ function Table({ head, rows, widths, boldLast }: { head: string[]; rows: (string
 
 function Tile({ label, value }: { label: string; value: string | number }) {
   return (
-    <View className="mb-2 w-[48.5%] rounded-xl border border-slate-200 bg-white px-3 py-2">
-      <Text className="text-[10px] text-slate-500">{label}</Text>
+    <View className="mb-2 w-[48.5%] rounded-xl border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] px-3 py-2">
+      <Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">{label}</Text>
       <Text style={{ color: NAVY }} className="text-xl font-extrabold">{value}</Text>
     </View>
   );
@@ -46,8 +46,8 @@ function Tile({ label, value }: { label: string; value: string | number }) {
 function Bar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
   return (
     <View className="my-1.5">
-      <View className="flex-row justify-between"><Text className="text-[11px] text-slate-700">{label}</Text><Text className="text-[11px] text-slate-700"><Text className="font-bold">{value}</Text> ({pctText(value, total)})</Text></View>
-      <View className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100"><View style={{ width: `${total ? (value / total) * 100 : 0}%`, backgroundColor: color }} className="h-full rounded-full" /></View>
+      <View className="flex-row justify-between"><Text className="text-[11px] text-slate-700 dark:text-[#d6d4de]">{label}</Text><Text className="text-[11px] text-slate-700 dark:text-[#d6d4de]"><Text className="text-[#202C4B] dark:text-[#EFEFF2] font-bold">{value}</Text> ({pctText(value, total)})</Text></View>
+      <View className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-[#1B1632]"><View style={{ width: `${total ? (value / total) * 100 : 0}%`, backgroundColor: color }} className="h-full rounded-full" /></View>
     </View>
   );
 }
@@ -65,9 +65,9 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
   return (
     <View>
       <View style={{ backgroundColor: NAVY }} className="rounded-xl px-4 py-3">
-        <Text className="text-lg font-extrabold text-white">{o.schoolName || 'School'}</Text>
-        <Text className="text-xs text-white">School Strength Report{cls ? ` — ${cls.name}` : ''}</Text>
-        <Text className="mt-1.5 text-[10px] text-white/80">Generated {new Date(data.generatedAt).toLocaleString()}{o.preparedBy ? ` · Prepared by ${o.preparedBy}` : ''}</Text>
+        <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-lg font-extrabold text-white">{o.schoolName || 'School'}</Text>
+        <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-xs text-white">School Strength Report{cls ? ` — ${cls.name}` : ''}</Text>
+        <Text className="text-[#202C4B] dark:text-[#EFEFF2] mt-1.5 text-[10px] text-white/80">Generated {new Date(data.generatedAt).toLocaleString()}{o.preparedBy ? ` · Prepared by ${o.preparedBy}` : ''}</Text>
       </View>
 
       {o.summary ? (
@@ -94,7 +94,7 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
       {o.facultyList ? (
         <>
           <H n={num('facultyList')} title="Faculty list" />
-          {f.list.length === 0 ? <Text className="text-xs text-slate-500">No faculty found.</Text> : <Table head={['#', 'Emp. no', 'Name', 'Role', 'Gender']} widths={[0.6, 1.4, 2.4, 1.6, 1]} rows={f.list.map((m, i) => [i + 1, m.employeeNo, m.name, `${roleLabel(m.staffType)} · ${nice(m.employmentType)}`, genderLabel(m.gender)])} />}
+          {f.list.length === 0 ? <Text className="text-xs text-slate-500 dark:text-[#a29fb0]">No faculty found.</Text> : <Table head={['#', 'Emp. no', 'Name', 'Role', 'Gender']} widths={[0.6, 1.4, 2.4, 1.6, 1]} rows={f.list.map((m, i) => [i + 1, m.employeeNo, m.name, `${roleLabel(m.staffType)} · ${nice(m.employmentType)}`, genderLabel(m.gender)])} />}
         </>
       ) : null}
 
@@ -116,23 +116,23 @@ export function ReportPreview({ data, o }: { data: SchoolStrength; o: ReportOpti
             boldLast
             rows={[...classRows.map((c) => [c.name, c.male, c.female, c.total, pctText(c.female, c.total)]), ...(extra.total ? [['Not assigned', extra.male, extra.female, extra.total, pctText(extra.female, extra.total)]] : []), ['Total', total.male + extra.male, total.female + extra.female, total.male + total.female + extra.total, pctText(total.female + extra.female, total.male + total.female + extra.total)]]}
           />
-          <Text className="text-[10px] text-slate-500">Class is taken from each student’s record. Active and on-leave students only.</Text>
+          <Text className="text-[10px] text-slate-500 dark:text-[#a29fb0]">Class is taken from each student’s record. Active and on-leave students only.</Text>
         </>
       ) : null}
 
       {o.studentList ? (
         <>
           <H n={num('studentList')} title="Student list" />
-          {studentGroups(data, o.classId).length === 0 ? <Text className="text-xs text-slate-500">No students found.</Text> : null}
+          {studentGroups(data, o.classId).length === 0 ? <Text className="text-xs text-slate-500 dark:text-[#a29fb0]">No students found.</Text> : null}
           {studentGroups(data, o.classId).map((g) => (
             <View key={g.title} className="mb-1">
-              <Text className="mt-2 text-xs font-bold text-slate-900">{g.title} <Text className="font-normal text-slate-500">— {g.members.length} students ({g.members.filter((m) => m.gender === 'male').length} boys, {g.members.filter((m) => m.gender === 'female').length} girls)</Text></Text>
+              <Text className="mt-2 text-xs font-bold text-slate-900 dark:text-[#EFEFF2]">{g.title} <Text className="font-normal text-slate-500 dark:text-[#a29fb0]">— {g.members.length} students ({g.members.filter((m) => m.gender === 'male').length} boys, {g.members.filter((m) => m.gender === 'female').length} girls)</Text></Text>
               <Table head={['#', 'Adm. no', 'Name', 'Gender']} widths={[0.6, 1.6, 3, 1]} rows={g.members.map((m, i) => [i + 1, m.admissionNo, m.name, genderLabel(m.gender)])} />
             </View>
           ))}
         </>
       ) : null}
-      <Text className="mt-4 border-t border-slate-200 pt-2 text-[10px] text-slate-400">{o.schoolName || 'School'} — School Strength Report — computer generated</Text>
+      <Text className="mt-4 border-t border-slate-200 dark:border-[#322D46] pt-2 text-[10px] text-slate-400 dark:text-[#8b879b]">{o.schoolName || 'School'} — School Strength Report — computer generated</Text>
     </View>
   );
 }
@@ -160,17 +160,17 @@ export function SchoolStrengthScreen({ breadcrumb }: { breadcrumb: string }) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
         <Card style={{ marginBottom: 12 }}>
-          <Text className="mb-2 text-sm font-bold text-[#1b2240]">Choose report contents</Text>
+          <Text className="mb-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">Choose report contents</Text>
           <TextField label="School name" value={opts.schoolName} onChange={(v) => patch({ schoolName: v })} />
           <TextField label="Prepared by (optional)" value={opts.preparedBy} onChange={(v) => patch({ preparedBy: v })} placeholder="e.g. Principal / Admin office" />
-          <Text className="mb-1 text-xs font-semibold text-slate-600">Sections to include</Text>
+          <Text className="mb-1 text-xs font-semibold text-slate-600 dark:text-[#B9B7C0]">Sections to include</Text>
           {SECTIONS.map(([key, label]) => <SwitchField key={key} label={label} value={opts[key]} onChange={(v) => patch({ [key]: v } as Partial<ReportOptions>)} />)}
           <SelectField label="Class (for the student sections)" value={opts.classId} options={[{ label: 'All classes', value: 'all' }, ...classes.map((c) => ({ label: c.name, value: c.id }))]} onChange={(v) => patch({ classId: v })} />
-          {error ? <Text className="mb-2 text-xs font-semibold text-red-600">{error}</Text> : null}
+          {error ? <Text className="mb-2 text-xs font-semibold text-red-600 dark:text-red-300">{error}</Text> : null}
           <Button label="Generate Report" icon="bar-chart-2" onPress={generate} />
         </Card>
 
@@ -183,7 +183,7 @@ export function SchoolStrengthScreen({ breadcrumb }: { breadcrumb: string }) {
             <Card><ReportPreview data={generated.data} o={generated.opts} /></Card>
           </>
         ) : (
-          <Text className="py-8 text-center text-xs text-slate-400">Choose what to include, then tap Generate Report. The preview appears here.</Text>
+          <Text className="py-8 text-center text-xs text-slate-400 dark:text-[#8b879b]">Choose what to include, then tap Generate Report. The preview appears here.</Text>
         )}
       </View>
     </ScrollView>

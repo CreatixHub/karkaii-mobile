@@ -55,17 +55,17 @@ export function TeacherForm({ breadcrumb }: { breadcrumb: string }) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-1 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
-        <Text className="mb-3 text-base font-extrabold text-[#1b2240]">{existing ? `Edit ${existing.name}` : 'Add teacher'}</Text>
+        <Text className="mb-1 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-3 text-base font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{existing ? `Edit ${existing.name}` : 'Add teacher'}</Text>
         {sections.map((section) => {
           const expanded = !!open[section.key];
           return (
             <Card key={section.key} style={{ marginBottom: 10 }}>
               <Pressable onPress={() => setOpen((cur) => ({ ...cur, [section.key]: !cur[section.key] }))} className="flex-row items-center justify-between">
-                <Text className="flex-1 text-sm font-bold text-[#1b2240]">{section.title}</Text>
-                {errorCount[section.key] ? <Text className="mr-2 text-[11px] font-bold text-red-600">{errorCount[section.key]} to fix</Text> : null}
+                <Text className="flex-1 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{section.title}</Text>
+                {errorCount[section.key] ? <Text className="mr-2 text-[11px] font-bold text-red-600 dark:text-red-300">{errorCount[section.key]} to fix</Text> : null}
                 <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="#64748b" />
               </Pressable>
               {expanded ? (

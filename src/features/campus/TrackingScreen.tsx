@@ -70,9 +70,9 @@ export function TrackingScreen({ breadcrumb }: { breadcrumb: string }) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
         <Card style={{ marginBottom: 12 }}>
           <SwitchField label="Demo positions" value={demo} onChange={setDemo} hint={demo ? 'Simulated: every running bus loops through a trip so you can see the screen working. There is no live GPS feed in this build.' : 'Simulated from the real morning and afternoon run times, so buses are idle outside those windows.'} />
         </Card>
@@ -82,17 +82,17 @@ export function TrackingScreen({ breadcrumb }: { breadcrumb: string }) {
 
       {alerts.length ? (
         <View className="mb-3 px-4">
-          <Text className="mb-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">Alerts</Text>
+          <Text className="mb-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">Alerts</Text>
           {alerts.slice(0, 6).map((a) => (
-            <Pressable key={a.id} onPress={() => { const f = fleet.find((x) => x.vehicle?.id === a.vehicleId); if (f) setOpenId(f.route.id); }} className="mb-1.5 flex-row items-start rounded-xl border bg-white px-3 py-2" style={{ borderColor: TONES[alertTone[a.level]].border }}>
+            <Pressable key={a.id} onPress={() => { const f = fleet.find((x) => x.vehicle?.id === a.vehicleId); if (f) setOpenId(f.route.id); }} className="mb-1.5 flex-row items-start rounded-xl border bg-white dark:bg-[#131022] px-3 py-2" style={{ borderColor: TONES[alertTone[a.level]].border }}>
               <Feather name={a.level === 'Info' ? 'info' : 'alert-triangle'} size={14} color={TONES[alertTone[a.level]].fg} style={{ marginTop: 2 }} />
               <View className="ml-2 flex-1">
-                <Text className="text-xs font-bold text-[#1b2240]">{a.title}</Text>
-                <Text className="text-[11px] text-slate-500">{a.detail}</Text>
+                <Text className="text-xs font-bold text-[#1b2240] dark:text-[#EFEFF2]">{a.title}</Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{a.detail}</Text>
               </View>
             </Pressable>
           ))}
-          {alerts.length > 6 ? <Text className="text-[11px] text-slate-400">+ {alerts.length - 6} more</Text> : null}
+          {alerts.length > 6 ? <Text className="text-[11px] text-slate-400 dark:text-[#8b879b]">+ {alerts.length - 6} more</Text> : null}
         </View>
       ) : null}
 
@@ -105,20 +105,20 @@ export function TrackingScreen({ breadcrumb }: { breadcrumb: string }) {
             <Card>
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-2">
-                  <Text className="text-sm font-extrabold text-[#1b2240]">{vehicle?.number ?? '—'}</Text>
-                  <Text className="text-[11px] text-slate-500">{routeLabel(route)} · {driver?.name ?? 'No driver'}</Text>
+                  <Text className="text-sm font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{vehicle?.number ?? '—'}</Text>
+                  <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{routeLabel(route)} · {driver?.name ?? 'No driver'}</Text>
                 </View>
                 <Pill label={trip.state} tone={stateTone[trip.state]} />
               </View>
               {trip.state === 'On Trip' ? (
                 <>
                   <View className="mt-2"><ProgressBar value={trip.progress * 100} tone="success" /></View>
-                  <Text className="mt-1.5 text-[11px] text-slate-500">{trip.kind} · stop {Math.min(trip.totalStops, trip.stopsCovered + 1)} of {trip.totalStops} · next {trip.nextStop} in {trip.etaMin} min · {trip.speedKmh} km/h{trip.delayMin ? ` · ${trip.delayMin} min late` : ''}</Text>
+                  <Text className="mt-1.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{trip.kind} · stop {Math.min(trip.totalStops, trip.stopsCovered + 1)} of {trip.totalStops} · next {trip.nextStop} in {trip.etaMin} min · {trip.speedKmh} km/h{trip.delayMin ? ` · ${trip.delayMin} min late` : ''}</Text>
                 </>
               ) : (
-                <Text className="mt-1.5 text-[11px] text-slate-400">{trip.state === 'Offline' ? 'GPS device is not reporting.' : trip.state === 'Out of Service' ? 'Vehicle is out of service.' : 'Parked — no trip in progress.'}</Text>
+                <Text className="mt-1.5 text-[11px] text-slate-400 dark:text-[#8b879b]">{trip.state === 'Offline' ? 'GPS device is not reporting.' : trip.state === 'Out of Service' ? 'Vehicle is out of service.' : 'Parked — no trip in progress.'}</Text>
               )}
-              <Text className="mt-1 text-[10px] text-slate-400">{seatedOn(route.id)} students · fuel {vehicle?.fuelLevel ?? 0}%</Text>
+              <Text className="mt-1 text-[10px] text-slate-400 dark:text-[#8b879b]">{seatedOn(route.id)} students · fuel {vehicle?.fuelLevel ?? 0}%</Text>
             </Card>
           </Pressable>
         ))}
@@ -138,7 +138,7 @@ export function TrackingScreen({ breadcrumb }: { breadcrumb: string }) {
             <KeyValue label="Fuel / odometer" value={`${open.vehicle?.fuelLevel}% · ${open.vehicle?.odometerKm.toLocaleString('en-US')} km`} />
             <KeyValue label="GPS device" value={open.vehicle ? `${open.vehicle.gpsDevice} · ${open.vehicle.gpsOnline ? 'online' : 'offline'}` : undefined} />
             {open.trip.state === 'On Trip' ? <KeyValue label="Now" value={`${open.trip.speedKmh} km/h · next ${open.trip.nextStop} in ${open.trip.etaMin} min`} /> : null}
-            <Text className="mb-1.5 mt-3 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">Stops</Text>
+            <Text className="mb-1.5 mt-3 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">Stops</Text>
             {(() => {
               const list = stopsOfRoute(open.route.id).filter((s) => s.status === 'Active');
               const ordered = open.trip.kind === 'Afternoon Drop' ? [...list].reverse() : list;
@@ -152,11 +152,11 @@ export function TrackingScreen({ breadcrumb }: { breadcrumb: string }) {
                       <View style={{ backgroundColor: t.bg, borderColor: t.border }} className="h-5 w-5 items-center justify-center rounded-full border">
                         <Feather name={done ? 'check' : next ? 'navigation' : 'circle'} size={9} color={t.fg} />
                       </View>
-                      {i < ordered.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200" /> : null}
+                      {i < ordered.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200 dark:bg-[#322D46]" /> : null}
                     </View>
                     <View className="flex-1 pb-2.5">
-                      <Text className={`text-xs font-bold ${done ? 'text-slate-400' : 'text-[#1b2240]'}`}>{s.name}{next ? ' · next' : ''}</Text>
-                      <Text className="text-[11px] text-slate-500">{formatTime(open.trip.kind === 'Afternoon Drop' ? s.drop : s.boarding)}</Text>
+                      <Text className={`text-xs font-bold ${done ? 'text-slate-400 dark:text-[#8b879b]' : 'text-[#1b2240] dark:text-[#EFEFF2]'}`}>{s.name}{next ? ' · next' : ''}</Text>
+                      <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{formatTime(open.trip.kind === 'Afternoon Drop' ? s.drop : s.boarding)}</Text>
                     </View>
                   </View>
                 );

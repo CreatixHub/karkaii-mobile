@@ -21,19 +21,19 @@ const lookup = (collection: string, id: string) => snapshot<{ id: string }>(coll
 function ChoiceRow({ label, options, value, onChange, error }: { label: string; options: readonly string[]; value: string; onChange: (v: string) => void; error?: string }) {
   return (
     <View className="mb-3">
-      <Text className="mb-1.5 text-xs font-semibold text-slate-600">{label}</Text>
+      <Text className="mb-1.5 text-xs font-semibold text-slate-600 dark:text-[#B9B7C0]">{label}</Text>
       <View className="flex-row flex-wrap gap-2">
         {options.map((o) => {
           const on = value === o;
           return (
-            <Pressable key={o} onPress={() => onChange(o)} accessibilityRole="radio" accessibilityState={{ selected: on }} className={`flex-row items-center rounded-full border px-3.5 py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}>
+            <Pressable key={o} onPress={() => onChange(o)} accessibilityRole="radio" accessibilityState={{ selected: on }} className={`flex-row items-center rounded-full border px-3.5 py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]'}`}>
               <Feather name={on ? 'check-circle' : 'circle'} size={13} color={on ? '#fff' : '#94a3b8'} />
-              <Text className={`ml-1.5 text-xs font-bold ${on ? 'text-white' : 'text-slate-600'}`}>{o}</Text>
+              <Text className={`ml-1.5 text-xs font-bold ${on ? 'text-white' : 'text-slate-600 dark:text-[#B9B7C0]'}`}>{o}</Text>
             </Pressable>
           );
         })}
       </View>
-      {error ? <Text className="mt-1 text-xs text-red-600">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-xs text-red-600 dark:text-red-300">{error}</Text> : null}
     </View>
   );
 }
@@ -49,26 +49,26 @@ function Siblings({ ids, onChange, selfId, error }: { ids: string[]; onChange: (
       {rows.map((id, i) => {
         const s = all.find((x) => x.id === id);
         return (
-          <View key={`${i}-${id}`} className="mb-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+          <View key={`${i}-${id}`} className="mb-3 rounded-xl border border-slate-100 dark:border-[#262038] bg-slate-50/60 p-3">
             <View className="flex-row items-end">
               <View className="flex-1">
                 <SelectField label="Name" value={id} options={options} onChange={(v) => set(i, v)} placeholder="Select" />
               </View>
-              <Pressable onPress={() => onChange(rows.filter((_x, j) => j !== i).filter(Boolean))} hitSlop={8} accessibilityLabel="Remove sibling" className="mb-3 ml-3 h-10 w-10 items-center justify-center rounded-xl bg-red-50">
+              <Pressable onPress={() => onChange(rows.filter((_x, j) => j !== i).filter(Boolean))} hitSlop={8} accessibilityLabel="Remove sibling" className="mb-3 ml-3 h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-[#2e1a22]">
                 <Feather name="trash-2" size={16} color="#DC2626" />
               </Pressable>
             </View>
             {s ? (
               <View className="flex-row gap-4">
-                <Text className="text-[11px] text-slate-500">Roll No <Text className="font-bold text-slate-700">{s.rollNo}</Text></Text>
-                <Text className="text-[11px] text-slate-500">Admission No <Text className="font-bold text-slate-700">{s.admissionNo}</Text></Text>
-                <Text className="text-[11px] text-slate-500">Class <Text className="font-bold text-slate-700">{classSection(s)}</Text></Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">Roll No <Text className="font-bold text-slate-700 dark:text-[#d6d4de]">{s.rollNo}</Text></Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">Admission No <Text className="font-bold text-slate-700 dark:text-[#d6d4de]">{s.admissionNo}</Text></Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">Class <Text className="font-bold text-slate-700 dark:text-[#d6d4de]">{classSection(s)}</Text></Text>
               </View>
             ) : null}
           </View>
         );
       })}
-      {error ? <Text className="mb-2 text-xs text-red-600">{error}</Text> : null}
+      {error ? <Text className="mb-2 text-xs text-red-600 dark:text-red-300">{error}</Text> : null}
       <Button small variant="secondary" icon="plus-circle" label="Add New" onPress={() => onChange([...ids, ''])} />
     </View>
   );
@@ -174,7 +174,7 @@ export function StudentForm({ breadcrumb }: { breadcrumb: string }) {
       const choice = CHOICE_FIELDS[f.key];
       if (choice) {
         flush();
-        if (f.section) out.push(<Text key={`h-${f.key}`} className="mb-2 mt-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">{f.section}</Text>);
+        if (f.section) out.push(<Text key={`h-${f.key}`} className="mb-2 mt-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">{f.section}</Text>);
         out.push(<ChoiceRow key={f.key} label={choice.label} options={choice.options} value={String(values[f.key] ?? '')} onChange={(v) => set(f.key, v)} error={errors[f.key]} />);
       } else run.push(f);
     }
@@ -183,25 +183,25 @@ export function StudentForm({ breadcrumb }: { breadcrumb: string }) {
   };
 
   return (
-    <View className="flex-1 bg-[#f4f6fb]">
+    <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <ScrollView ref={scroller} className="flex-1" contentContainerStyle={{ paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
         <View className="px-4 pt-3">
-          <Text className="mb-1 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
-          <Text className="mb-3 text-base font-extrabold text-[#1b2240]">{existing ? `Edit ${existing.name}` : 'Add Student'}</Text>
+          <Text className="mb-1 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
+          <Text className="mb-3 text-base font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{existing ? `Edit ${existing.name}` : 'Add Student'}</Text>
 
           {draftAt ? (
-            <View className="mb-3 flex-row items-center rounded-xl border border-amber-200 bg-amber-50 p-3">
+            <View className="mb-3 flex-row items-center rounded-xl border border-amber-200 dark:border-[#3d3756] bg-amber-50 dark:bg-[#2e2616] p-3">
               <Feather name="file-text" size={16} color="#B45309" />
-              <Text className="ml-2 flex-1 text-xs text-amber-800">Draft from {formatDate(draftAt.slice(0, 10))} restored.</Text>
-              <Pressable onPress={discardDraft} hitSlop={8}><Text className="text-xs font-bold text-amber-900">Discard</Text></Pressable>
+              <Text className="ml-2 flex-1 text-xs text-amber-800 dark:text-amber-300">Draft from {formatDate(draftAt.slice(0, 10))} restored.</Text>
+              <Pressable onPress={discardDraft} hitSlop={8}><Text className="text-xs font-bold text-amber-900 dark:text-amber-300">Discard</Text></Pressable>
             </View>
           ) : null}
 
-          <Text className="mb-1.5 text-[11px] font-extrabold uppercase tracking-wide text-slate-400">Form Sections</Text>
+          <Text className="mb-1.5 text-[11px] font-extrabold uppercase tracking-wide text-slate-400 dark:text-[#8b879b]">Form Sections</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3" contentContainerStyle={{ gap: 8 }}>
             {STUDENT_SECTIONS.map((s) => (
-              <Pressable key={s.key} onPress={() => jump(s.key)} className={`rounded-full border px-3 py-1.5 ${errorCount[s.key] ? 'border-red-300 bg-red-50' : open[s.key] ? 'border-[#3D5EE1] bg-[#E9EDFC]' : 'border-slate-200 bg-white'}`}>
-                <Text className={`text-xs font-bold ${errorCount[s.key] ? 'text-red-600' : open[s.key] ? 'text-[#3D5EE1]' : 'text-slate-600'}`}>{s.nav}{errorCount[s.key] ? ` · ${errorCount[s.key]}` : ''}</Text>
+              <Pressable key={s.key} onPress={() => jump(s.key)} className={`rounded-full border px-3 py-1.5 ${errorCount[s.key] ? 'border-red-300 dark:border-[#3d3756] bg-red-50 dark:bg-[#2e1a22]' : open[s.key] ? 'border-[#3D5EE1] bg-[#E9EDFC] dark:bg-[#1d2450]' : 'border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]'}`}>
+                <Text className={`text-xs font-bold ${errorCount[s.key] ? 'text-red-600 dark:text-red-300' : open[s.key] ? 'text-[#3D5EE1] dark:text-[#7d95f5]' : 'text-slate-600 dark:text-[#B9B7C0]'}`}>{s.nav}{errorCount[s.key] ? ` · ${errorCount[s.key]}` : ''}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -213,8 +213,8 @@ export function StudentForm({ breadcrumb }: { breadcrumb: string }) {
                 <View key={section.key} onLayout={(e) => { offsets.current[section.key] = e.nativeEvent.layout.y; }}>
                   <Card style={{ marginBottom: 10 }}>
                     <Pressable onPress={() => setOpen((cur) => ({ ...cur, [section.key]: !cur[section.key] }))} className="flex-row items-center justify-between">
-                      <Text className="flex-1 text-sm font-bold text-[#1b2240]">{section.title}</Text>
-                      {errorCount[section.key] ? <Text className="mr-2 text-[11px] font-bold text-red-600">{errorCount[section.key]} to fix</Text> : null}
+                      <Text className="flex-1 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{section.title}</Text>
+                      {errorCount[section.key] ? <Text className="mr-2 text-[11px] font-bold text-red-600 dark:text-red-300">{errorCount[section.key]} to fix</Text> : null}
                       <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color="#64748b" />
                     </Pressable>
                     {expanded ? (
@@ -233,7 +233,7 @@ export function StudentForm({ breadcrumb }: { breadcrumb: string }) {
         </View>
       </ScrollView>
 
-      <View className="flex-row gap-2 border-t border-slate-200 bg-white px-4 py-3">
+      <View className="flex-row gap-2 border-t border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] px-4 py-3">
         <Button label="Cancel" variant="secondary" onPress={cancel} style={{ flex: 1 }} />
         {existing ? null : <Button label="Save Draft" variant="secondary" icon="save" onPress={draft} style={{ flex: 1 }} />}
         <Button label={existing ? 'Save changes' : 'Add Student'} icon={existing ? 'check' : 'plus-circle'} onPress={submit} style={{ flex: existing ? 2 : 1.4 }} />

@@ -52,14 +52,14 @@ export function RolePanel({ roleId }: { roleId: string }) {
   return (
     <View className="mb-3">
       <View className="mb-1 flex-row items-center justify-between">
-        <Text className="text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">Permissions</Text>
-        <Text className="text-[11px] font-semibold text-slate-400">{permissionCount(role)} granted</Text>
+        <Text className="text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">Permissions</Text>
+        <Text className="text-[11px] font-semibold text-slate-400 dark:text-[#8b879b]">{permissionCount(role)} granted</Text>
       </View>
       {editable ? (
         <View className="mb-2 flex-row flex-wrap gap-1.5">
           {PRESET_LABELS.map(([key, label]) => (
-            <Pressable key={key} onPress={() => preset(key)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 active:bg-slate-50">
-              <Text className="text-[10px] font-bold text-slate-600">All: {label}</Text>
+            <Pressable key={key} onPress={() => preset(key)} className="rounded-full border border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022] px-2.5 py-1 active:bg-slate-50">
+              <Text className="text-[10px] font-bold text-slate-600 dark:text-[#B9B7C0]">All: {label}</Text>
             </Pressable>
           ))}
         </View>
@@ -67,10 +67,10 @@ export function RolePanel({ roleId }: { roleId: string }) {
       {PERMISSION_MODULES.map((m) => {
         const flags = role.permissions[m.id] ?? [];
         return (
-          <View key={m.id} className="mb-2 rounded-xl border border-slate-100 bg-slate-50 p-2.5">
+          <View key={m.id} className="mb-2 rounded-xl border border-slate-100 dark:border-[#262038] bg-slate-50 dark:bg-[#1B1632] p-2.5">
             <View className="mb-1.5 flex-row items-center justify-between">
-              <Text className="text-xs font-bold text-slate-800">{m.label}</Text>
-              <Text className="text-[10px] text-slate-400">
+              <Text className="text-xs font-bold text-slate-800 dark:text-[#EFEFF2]">{m.label}</Text>
+              <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">
                 {flags.filter(Boolean).length}/{PERMISSION_ACTIONS.length}
               </Text>
             </View>
@@ -99,7 +99,7 @@ export function RolePanel({ roleId }: { roleId: string }) {
               <View className="mt-1.5 flex-row flex-wrap gap-x-3">
                 {PRESET_LABELS.filter(([k]) => k === 'none' || k === 'read_only' || k === 'full_access').map(([key, label]) => (
                   <Pressable key={key} onPress={() => preset(key, m.id)} hitSlop={6}>
-                    <Text className="text-[10px] font-bold text-[#3D5EE1]">{label}</Text>
+                    <Text className="text-[10px] font-bold text-[#3D5EE1] dark:text-[#7d95f5]">{label}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -107,9 +107,9 @@ export function RolePanel({ roleId }: { roleId: string }) {
           </View>
         );
       })}
-      {!editable ? <Text className="mb-2 text-[11px] text-slate-400">Your role can view permissions but not change them.</Text> : null}
+      {!editable ? <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]">Your role can view permissions but not change them.</Text> : null}
 
-      <Text className="mb-1 mt-2 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">Assigned users ({holders.length})</Text>
+      <Text className="mb-1 mt-2 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">Assigned users ({holders.length})</Text>
       {holders.length ? (
         <View className="flex-row flex-wrap gap-1.5">
           {holders.slice(0, 12).map((u) => (
@@ -118,7 +118,7 @@ export function RolePanel({ roleId }: { roleId: string }) {
           {holders.length > 12 ? <Pill label={`+${holders.length - 12} more`} tone="neutral" /> : null}
         </View>
       ) : (
-        <Text className="text-xs text-slate-400">No users have this role yet.</Text>
+        <Text className="text-xs text-slate-400 dark:text-[#8b879b]">No users have this role yet.</Text>
       )}
     </View>
   );

@@ -23,15 +23,15 @@ export default function ForgotPasswordScreen() {
   const known = accountExists(email);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f4f6fb]">
+    <SafeAreaView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       <View className="flex-1 justify-center p-5">
-        <View className="rounded-2xl border border-slate-100 bg-white p-6">
-          <Text className="text-xl font-bold text-[#202C4B]">Forgot password?</Text>
-          <Text className="mb-5 mt-1 text-sm text-[#515B73]">Enter your email and we will send reset instructions.</Text>
+        <View className="rounded-2xl border border-slate-100 dark:border-[#262038] bg-white dark:bg-[#131022] p-6">
+          <Text className="text-xl font-bold text-[#202C4B] dark:text-[#EFEFF2]">Forgot password?</Text>
+          <Text className="mb-5 mt-1 text-sm text-[#515B73] dark:text-[#B9B7C0]">Enter your email and we will send reset instructions.</Text>
           {sent ? (
             <>
-              <View className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3">
-                <Text className="text-xs font-medium text-green-800">
+              <View className="mb-4 rounded-xl border border-green-200 dark:border-[#3d3756] bg-green-50 dark:bg-[#14291f] p-3">
+                <Text className="text-xs font-medium text-green-800 dark:text-green-300">
                   If an account exists for {email.trim()}, reset instructions have been sent. (Mock mode: no email is actually sent.)
                 </Text>
               </View>

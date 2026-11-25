@@ -150,7 +150,7 @@ function RoutinePane({ teacher: t }: PaneProps) {
           const sec = sections.find((s) => s.id === e.sectionId);
           return (
             <View key={e.id}>
-              {brk ? <Text className="my-1 text-center text-[10px] font-bold uppercase text-slate-300">{brk.label}</Text> : null}
+              {brk ? <Text className="text-[#202C4B] dark:text-[#EFEFF2] my-1 text-center text-[10px] font-bold uppercase text-slate-300">{brk.label}</Text> : null}
               <Item title={`${subjectName(e.subjectId)}${sec ? ` · ${sectionLabel(sec.id)}` : ' · Staff meeting'}`} sub={`${slotLabel(e.period)} · Room ${e.room}${e.mode !== 'Teaching' ? ` · ${e.mode}` : ''}`} pill={`P${e.period}`} tone="primary" meta={e.originalTeacherId ? 'Substitute period' : undefined} />
             </View>
           );
@@ -192,10 +192,10 @@ function LeavePane({ teacher: t, staff }: PaneProps) {
       <SummaryStrip items={[{ label: 'Leave requests', value: leaves.length, tone: 'primary', icon: 'calendar' }, { label: 'Approved', value: n('Approved'), tone: 'success', icon: 'check' }, { label: 'Pending', value: n('Pending'), tone: 'warning', icon: 'clock' }, { label: 'Rejected', value: n('Rejected'), tone: 'danger', icon: 'x' }, { label: 'Attendance', value: pct(sum.pct), tone: sum.pct < 90 ? 'warning' : 'success', icon: 'check-square' }]} />
       <Block title="Leave balance (this year)">
         {balances.filter((b) => b.allowed > 0).map((b) => (
-          <View key={b.type} className="flex-row border-b border-slate-100 py-2">
-            <Text className="flex-1 text-xs font-semibold text-slate-700">{b.type}</Text>
-            <Text className="text-xs text-slate-500">{b.used} used · </Text>
-            <Text className="text-xs font-bold text-[#1b2240]">{b.available} of {b.allowed} left</Text>
+          <View key={b.type} className="flex-row border-b border-slate-100 dark:border-[#262038] py-2">
+            <Text className="flex-1 text-xs font-semibold text-slate-700 dark:text-[#d6d4de]">{b.type}</Text>
+            <Text className="text-xs text-slate-500 dark:text-[#a29fb0]">{b.used} used · </Text>
+            <Text className="text-xs font-bold text-[#1b2240] dark:text-[#EFEFF2]">{b.available} of {b.allowed} left</Text>
           </View>
         ))}
       </Block>
@@ -204,12 +204,12 @@ function LeavePane({ teacher: t, staff }: PaneProps) {
         {leaves.map((l) => (
           <Card key={l.id} style={{ marginBottom: 8 }}>
             <View className="flex-row items-start justify-between">
-              <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240]">{l.leaveType}</Text>
+              <Text className="flex-1 pr-2 text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{l.leaveType}</Text>
               <Pill label={l.status} tone={leaveTone[l.status]} />
             </View>
-            <Text className="mt-1 text-[11px] text-slate-500">{formatDate(l.from)}{l.to !== l.from ? ` – ${formatDate(l.to)}` : ''} · {l.days} day{l.days > 1 ? 's' : ''} · applied {formatDate(l.appliedOn)}</Text>
-            <Text className="mt-0.5 text-[11px] text-slate-500">{l.reason}</Text>
-            {l.decisionNote ? <Text className="mt-0.5 text-[11px] italic text-slate-400">{l.decisionNote}</Text> : null}
+            <Text className="mt-1 text-[11px] text-slate-500 dark:text-[#a29fb0]">{formatDate(l.from)}{l.to !== l.from ? ` – ${formatDate(l.to)}` : ''} · {l.days} day{l.days > 1 ? 's' : ''} · applied {formatDate(l.appliedOn)}</Text>
+            <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{l.reason}</Text>
+            {l.decisionNote ? <Text className="mt-0.5 text-[11px] italic text-slate-400 dark:text-[#8b879b]">{l.decisionNote}</Text> : null}
             {staff && l.status === 'Pending' ? (
               <View className="mt-2 flex-row gap-2">
                 <Button small label="Approve" onPress={() => toast(`Approved · ${decideTeacherLeave(l, 'Approved', user?.name ?? 'Admin')} register day(s) marked On Leave`)} style={{ flex: 1 }} />
@@ -252,7 +252,7 @@ function SalaryPane({ teacher: t, canSeePay }: PaneProps) {
         <KeyValue label="Tax (4% of gross)" value={`− ${money(p.tax)}`} />
         <KeyValue label="Absent-day deduction" value={`− ${money(p.leaveDeduction)} (${p.unpaidDays} day${p.unpaidDays === 1 ? '' : 's'})`} />
         <KeyValue label="Net pay" value={money(p.net)} />
-        <Text className="mt-1 text-[10px] text-slate-400">Worked out from the stored basic salary. Payroll processing is not one of the app’s pages.</Text>
+        <Text className="mt-1 text-[10px] text-slate-400 dark:text-[#8b879b]">Worked out from the stored basic salary. Payroll processing is not one of the app’s pages.</Text>
       </Block>
       <Block title="Payslips">
         {slips.map((s, i) => (
@@ -314,15 +314,15 @@ export function TeacherProfile({ breadcrumb, initialTab = 'details' }: { breadcr
   const canSeePay = role === 'admin' || role === 'accountant' || (role === 'teacher' && user?.teacherId === teacher.id);
   const Pane = PANES[tab];
   return (
-    <ScrollView className="flex-1 bg-[#f4f6fb]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="px-4 pt-3">
-        <Text className="mb-2 text-[11px] text-slate-400" numberOfLines={1}>{breadcrumb}</Text>
+        <Text className="mb-2 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>{breadcrumb}</Text>
         <SelectField label="Teacher" value={teacher.id} options={options} onChange={(v) => setPicked(v)} />
         <Card>
           <View className="flex-row items-start justify-between">
             <View className="flex-1 pr-2">
-              <Text className="text-lg font-extrabold text-[#1b2240]">{teacher.name}</Text>
-              <Text className="mt-0.5 text-xs text-slate-500">{teacher.employeeId} · {teacher.designation} · {teacher.department}</Text>
+              <Text className="text-lg font-extrabold text-[#1b2240] dark:text-[#EFEFF2]">{teacher.name}</Text>
+              <Text className="mt-0.5 text-xs text-slate-500 dark:text-[#a29fb0]">{teacher.employeeId} · {teacher.designation} · {teacher.department}</Text>
             </View>
             <Pill label={teacher.status} tone={statusTone[teacher.status]} />
           </View>
@@ -331,7 +331,7 @@ export function TeacherProfile({ breadcrumb, initialTab = 'details' }: { breadcr
             <Pill label={teacher.contractType} tone={teacher.contractType === 'Permanent' ? 'success' : 'warning'} />
             {homeSectionsOf(teacher.id).map((s) => <Pill key={s.id} label={`Class teacher ${sectionLabel(s.id)}`} tone="primary" />)}
           </View>
-          <Text className="mt-2 text-[11px] text-slate-500">{teacher.subjects.join(', ')} · {periodsPerWeek(teacher.id)} periods a week · {mappingsOfTeacher(teacher.id).length} class-subject assignments</Text>
+          <Text className="mt-2 text-[11px] text-slate-500 dark:text-[#a29fb0]">{teacher.subjects.join(', ')} · {periodsPerWeek(teacher.id)} periods a week · {mappingsOfTeacher(teacher.id).length} class-subject assignments</Text>
         </Card>
       </View>
       <View className="mt-3">

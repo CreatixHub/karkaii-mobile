@@ -245,9 +245,9 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
 
   // Always visible while the list scrolls: the page title row, date, view tabs, search and active filters.
   const top = (
-    <View className="border-b border-slate-200/70 bg-[#f4f6fb] pt-3">
+    <View className="border-b border-slate-200/70 bg-[#f4f6fb] dark:bg-[#0F0C1C] pt-3">
       <View className="mb-2 flex-row items-center justify-between px-4">
-        <Text className="flex-1 pr-3 text-[11px] text-slate-400" numberOfLines={1}>
+        <Text className="flex-1 pr-3 text-[11px] text-slate-400 dark:text-[#8b879b]" numberOfLines={1}>
           {breadcrumb}
         </Text>
         {allowCreate ? <Button label={`Add ${cfg.entity}`} icon="plus" small onPress={() => (cfg.addHref ? go(cfg.addHref) : setForm({ mode: 'create' }))} /> : null}
@@ -292,9 +292,9 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
       {pageActionsVisible.length ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }} className="mb-3">
           {pageActionsVisible.map((a) => (
-            <Pressable key={a.key} onPress={() => triggerPageAction(a)} className="flex-row items-center rounded-xl border border-[#3D5EE1]/30 bg-[#E9EDFC] px-3 py-2 active:opacity-80">
+            <Pressable key={a.key} onPress={() => triggerPageAction(a)} className="flex-row items-center rounded-xl border border-[#3D5EE1]/30 bg-[#E9EDFC] dark:bg-[#1d2450] px-3 py-2 active:opacity-80">
               <Feather name={a.icon} size={13} color="#3D5EE1" />
-              <Text className="ml-1.5 text-xs font-bold text-[#3D5EE1]">{a.label}</Text>
+              <Text className="ml-1.5 text-xs font-bold text-[#3D5EE1] dark:text-[#7d95f5]">{a.label}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -306,7 +306,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
         <SummaryStrip items={cfg.stats.map((s) => ({ label: s.label, value: s.value(scoped), tone: s.tone, icon: s.icon }))} />
       ) : null}
 
-      <Text className="mb-2 px-4 text-[11px] text-slate-400">
+      <Text className="mb-2 px-4 text-[11px] text-slate-400 dark:text-[#8b879b]">
         {filtered.length} {filtered.length === 1 ? 'record' : 'records'}
         {selecting ? ` · ${selected.length} selected` : allowDelete || cfg.bulk?.length ? ' · long-press a card to select' : ''}
       </Text>
@@ -318,7 +318,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
   const formActionRow = actionForm ? rows.find((r) => r.id === actionForm.id) : undefined;
 
   return (
-    <View className="flex-1 bg-[#f4f6fb]">
+    <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       {top}
       <FlatList
         data={shown}
@@ -359,24 +359,24 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
           <Pressable onPress={() => setSelected([])} hitSlop={8} className="mr-2 h-8 w-8 items-center justify-center">
             <Feather name="x" size={16} color="#fff" />
           </Pressable>
-          <Text className="flex-1 text-xs font-bold text-white">{selected.length} selected</Text>
+          <Text className="text-[#202C4B] dark:text-[#EFEFF2] flex-1 text-xs font-bold text-white">{selected.length} selected</Text>
           <Pressable onPress={() => setSelected(filtered.length === selected.length ? [] : filtered.map((r) => r.id))} className="ml-1 rounded-lg bg-white/15 px-2.5 py-1.5">
-            <Text className="text-[11px] font-bold text-white">{filtered.length === selected.length ? 'None' : 'All'}</Text>
+            <Text className="text-[#202C4B] dark:text-[#EFEFF2] text-[11px] font-bold text-white">{filtered.length === selected.length ? 'None' : 'All'}</Text>
           </Pressable>
           {(cfg.bulk ?? []).filter(() => canManage).map((b) => (
             <Pressable key={b.key} onPress={() => (b.form ? setBulkForm(b) : runBulk(b, {}))} className="ml-2 flex-row items-center rounded-lg bg-white/15 px-2.5 py-1.5">
               <Feather name={b.icon} size={12} color="#fff" />
-              <Text className="ml-1 text-[11px] font-bold text-white">{b.label}</Text>
+              <Text className="text-[#202C4B] dark:text-[#EFEFF2] ml-1 text-[11px] font-bold text-white">{b.label}</Text>
             </Pressable>
           ))}
           <Pressable onPress={() => exportCsv(rows.filter((r) => selected.includes(r.id)))} className="ml-2 flex-row items-center rounded-lg bg-white/15 px-2.5 py-1.5">
             <Feather name="share" size={12} color="#fff" />
-            <Text className="ml-1 text-[11px] font-bold text-white">Export</Text>
+            <Text className="text-[#202C4B] dark:text-[#EFEFF2] ml-1 text-[11px] font-bold text-white">Export</Text>
           </Pressable>
           {allowDelete ? (
             <Pressable onPress={() => confirmDelete(selected)} className="ml-2 flex-row items-center rounded-lg bg-red-500 px-2.5 py-1.5">
               <Feather name="trash-2" size={12} color="#fff" />
-              <Text className="ml-1 text-[11px] font-bold text-white">Delete</Text>
+              <Text className="text-[#202C4B] dark:text-[#EFEFF2] ml-1 text-[11px] font-bold text-white">Delete</Text>
             </Pressable>
           ) : null}
         </View>
@@ -395,7 +395,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
 
             {(cfg.detail ?? [{ title: 'Details', items: cfg.facts }]).map((section) => (
               <View key={section.title} className="mb-3">
-                <Text className="mb-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1]">{section.title}</Text>
+                <Text className="mb-1 text-[11px] font-extrabold uppercase tracking-wide text-[#3D5EE1] dark:text-[#7d95f5]">{section.title}</Text>
                 {section.items.map((it) => (
                   <KeyValue key={it.label} label={it.label} value={it.value(detail) as string | number | null | undefined} />
                 ))}
@@ -505,7 +505,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
       >
         {(cfg.filters ?? []).map((f) => (
           <View key={f.key} className="mb-4">
-            <Text className="mb-2 text-xs font-bold text-[#202C4B]">{f.label}</Text>
+            <Text className="mb-2 text-xs font-bold text-[#202C4B] dark:text-[#EFEFF2]">{f.label}</Text>
             <View className="flex-row flex-wrap gap-2">
               {optionList(f).map((o) => {
                 const on = (filters[f.key] ?? []).includes(o.value);
@@ -519,9 +519,9 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
                         return { ...prev, [f.key]: next };
                       })
                     }
-                    className={`rounded-full border px-3 py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 bg-white'}`}
+                    className={`rounded-full border px-3 py-1.5 ${on ? 'border-[#3D5EE1] bg-[#3D5EE1]' : 'border-slate-200 dark:border-[#322D46] bg-white dark:bg-[#131022]'}`}
                   >
-                    <Text className={`text-xs font-semibold ${on ? 'text-white' : 'text-slate-600'}`}>{o.label}</Text>
+                    <Text className={`text-xs font-semibold ${on ? 'text-white' : 'text-slate-600 dark:text-[#B9B7C0]'}`}>{o.label}</Text>
                   </Pressable>
                 );
               })}

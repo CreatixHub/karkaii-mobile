@@ -49,11 +49,11 @@ export function AdmissionPanel({ applicationId }: { applicationId: string }) {
                 <View style={{ backgroundColor: t.bg, borderColor: t.border }} className="h-6 w-6 items-center justify-center rounded-full border">
                   <Feather name={st.icon} size={11} color={t.fg} />
                 </View>
-                {i < all.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200" /> : null}
+                {i < all.length - 1 ? <View className="my-0.5 w-px flex-1 bg-slate-200 dark:bg-[#322D46]" /> : null}
               </View>
               <View className="flex-1 pb-3">
-                <Text className={`text-xs font-bold ${s.state === 'pending' ? 'text-slate-400' : 'text-slate-800'}`}>{s.title}</Text>
-                {s.meta ? <Text className="mt-0.5 text-[11px] text-slate-500">{s.meta}</Text> : null}
+                <Text className={`text-xs font-bold ${s.state === 'pending' ? 'text-slate-400 dark:text-[#8b879b]' : 'text-slate-800 dark:text-[#EFEFF2]'}`}>{s.title}</Text>
+                {s.meta ? <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-[#a29fb0]">{s.meta}</Text> : null}
               </View>
             </View>
           );
@@ -65,8 +65,8 @@ export function AdmissionPanel({ applicationId }: { applicationId: string }) {
           <Card key={d.type} style={{ marginBottom: 8 }}>
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-2">
-                <Text className="text-sm font-bold text-[#1b2240]">{d.type}</Text>
-                <Text className="text-[11px] text-slate-500">{d.uploadedOn ? `Uploaded ${formatDate(d.uploadedOn)}` : 'Not uploaded'}</Text>
+                <Text className="text-sm font-bold text-[#1b2240] dark:text-[#EFEFF2]">{d.type}</Text>
+                <Text className="text-[11px] text-slate-500 dark:text-[#a29fb0]">{d.uploadedOn ? `Uploaded ${formatDate(d.uploadedOn)}` : 'Not uploaded'}</Text>
               </View>
               <Pill label={d.status} tone={docTone[d.status]} />
             </View>
@@ -80,7 +80,7 @@ export function AdmissionPanel({ applicationId }: { applicationId: string }) {
             ) : null}
           </Card>
         ))}
-        <Text className="text-[10px] text-slate-400">Documents are recorded as metadata in this demo; no file is stored.</Text>
+        <Text className="text-[10px] text-slate-400 dark:text-[#8b879b]">Documents are recorded as metadata in this demo; no file is stored.</Text>
       </Block>
 
       <Block title="Notes" right={editable ? <AddButton label="Add" onPress={noteForm.open} /> : undefined}>
