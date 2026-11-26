@@ -26,19 +26,36 @@ interface RequestOptions extends RequestInit {
   skipRefresh?: boolean;
 }
 
-let isRefreshing = false;
-let refreshSubscribers: ((token: string | null) => void)[] = [];
+let refreshInFlight: Promise<string | null> | null = null;
 
-function subscribeTokenRefresh(cb: (token: string | null) => void) {
-  refreshSubscribers.push(cb);
+async function refreshAccessToken(): Promise<string | null> {
+  if (refreshInFlight) return refreshInFlight;
+
+  refreshInFlight = (async () => {
+    const refreshToken = await tokenStorage.getRefreshToken();
+    if (!refreshToken) {
+      await tokenStorage.clearTokens();
+      return null;
+    }
+    try {
+      const refreshResponse = await authApi.refresh(refreshToken);
+      await tokenStorage.setTokens(refreshResponse.accessToken, refreshResponse.refreshToken);
+      if (refreshResponse.user) {
+        await tokenStorage.setStoredUser(refreshResponse.user);
+      }
+      return refreshResponse.accessToken;
+    } catch {
+      await tokenStorage.clearTokens();
+      return null;
+    }
+  })().finally(() => {
+    refreshInFlight = null;
+  });
+
+  return refreshInFlight;
 }
 
-function onRefreshed(token: string | null) {
-  refreshSubscribers.forEach((cb) => cb(token));
-  refreshSubscribers = [];
-}
-
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const url = `${API_URL.replace(/\/$/, '')}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = new Headers(options.headers ?? {});
 
@@ -66,44 +83,24 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     );
   }
 
-  // Handle 401 Unauthorized with token refresh if not already refreshing
+  // Handle 401 Unauthorized with a single shared token refresh across concurrent requests
   if (response.status === 401 && !options.skipAuth && !options.skipRefresh) {
-    const refreshToken = await tokenStorage.getRefreshToken();
-    if (!refreshToken) {
-      await tokenStorage.clearTokens();
-      throw new ApiError('Session expired. Please sign in again.', 401);
-    }
-
-    if (!isRefreshing) {
-      isRefreshing = true;
-      try {
-        const refreshResponse = await authApi.refresh(refreshToken);
-        await tokenStorage.setTokens(refreshResponse.accessToken, refreshResponse.refreshToken);
-        if (refreshResponse.user) {
-          await tokenStorage.setStoredUser(refreshResponse.user);
-        }
-        isRefreshing = false;
-        onRefreshed(refreshResponse.accessToken);
-      } catch {
-        isRefreshing = false;
-        onRefreshed(null);
-        await tokenStorage.clearTokens();
-        throw new ApiError('Session expired. Please sign in again.', 401);
-      }
-    }
-
-    // Wait for the refresh to complete
-    const newToken = await new Promise<string | null>((resolve) => {
-      subscribeTokenRefresh((token) => resolve(token));
-    });
-
+    const newToken = await refreshAccessToken();
     if (!newToken) {
       throw new ApiError('Session expired. Please sign in again.', 401);
     }
 
-    // Retry original request with new token
     headers.set('Authorization', `Bearer ${newToken}`);
-    const retryRes = await fetch(url, { ...options, headers });
+    let retryRes: Response;
+    try {
+      retryRes = await fetch(url, { ...options, headers });
+    } catch (netError: any) {
+      throw new ApiError(
+        `Unable to connect to school server (${API_URL}). Please check your Wi-Fi/network connection.`,
+        0,
+        netError
+      );
+    }
     return parseResponse<T>(retryRes);
   }
 
@@ -158,7 +155,7 @@ export const authApi = {
       payload.organization = credentials.organization.trim();
     }
 
-    const res = await request<{
+    const res = await apiRequest<{
       accessToken: string;
       refreshToken?: string;
       expiresIn?: number | string;
@@ -185,7 +182,7 @@ export const authApi = {
    * Mobile clients send { refreshToken } in JSON body
    */
   async refresh(refreshToken: string): Promise<AuthSession> {
-    return request<AuthSession>('/api/auth/refresh', {
+    return apiRequest<AuthSession>('/api/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
       skipAuth: true,
@@ -199,7 +196,7 @@ export const authApi = {
    */
   async logout(refreshToken?: string): Promise<void> {
     try {
-      await request<void>('/api/auth/logout', {
+      await apiRequest<void>('/api/auth/logout', {
         method: 'POST',
         body: JSON.stringify({ refreshToken }),
         skipAuth: true,
@@ -216,7 +213,7 @@ export const authApi = {
    * Fetches current authenticated user profile & tenant organization
    */
   async getCurrentUser(): Promise<{ user: AuthUser; organizations: OrganizationInfo[] }> {
-    const res = await request<AuthUser & { organizations?: OrganizationInfo[] }>('/api/auth/me', {
+    const res = await apiRequest<AuthUser & { organizations?: OrganizationInfo[] }>('/api/auth/me', {
       method: 'GET',
     });
     const organizations = res.organizations ?? [];
@@ -228,7 +225,7 @@ export const authApi = {
    * Switches the active school tenant
    */
   async switchOrganization(organizationSlug: string, refreshToken?: string): Promise<AuthSession> {
-    return request<AuthSession>('/api/auth/switch-organization', {
+    return apiRequest<AuthSession>('/api/auth/switch-organization', {
       method: 'POST',
       body: JSON.stringify({ organization: organizationSlug, refreshToken }),
     });
@@ -238,7 +235,7 @@ export const authApi = {
    * POST /api/auth/forgot-password
    */
   async forgotPassword(payload: ForgotPasswordPayload): Promise<{ message?: string }> {
-    return request<{ message?: string }>('/api/auth/forgot-password', {
+    return apiRequest<{ message?: string }>('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify(payload),
       skipAuth: true,
@@ -250,7 +247,7 @@ export const authApi = {
    * POST /api/auth/reset-password
    */
   async resetPassword(payload: ResetPasswordPayload): Promise<{ message?: string }> {
-    return request<{ message?: string }>('/api/auth/reset-password', {
+    return apiRequest<{ message?: string }>('/api/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify(payload),
       skipAuth: true,
