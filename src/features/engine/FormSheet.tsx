@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+﻿import React, { useMemo, useRef, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 import { Sheet } from '@/ui/Sheet';
 import { Button } from '@/ui/basics';
 import { DateField, MultiSelectField, SelectField, SwitchField, TextField, TimeField, type Option } from '@/ui/Fields';
@@ -158,10 +158,16 @@ function FormSheetBody({
   submitLabel?: string;
   isEdit?: boolean;
   validate?: (values: FormValues) => FieldErrors;
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: FormValues) => void | Promise<void>;
   onClose: () => void;
 }) {
   const [values, setValues] = useState<FormValues>(initial);
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
+
+  const safeClose = () => {
+    if (!submittingRef.current) onClose();
+  };
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const set = (key: string, value: any) => {
@@ -179,23 +185,46 @@ function FormSheetBody({
     });
   };
 
-  const submit = () => {
-    const found = clean({ ...validateFields(fields, values), ...(validate?.(values) ?? {}) });
+  const submit = async () => {
+    if (submittingRef.current) return;
+
+    const found = clean({
+      ...validateFields(fields, values),
+      ...(validate?.(values) ?? {}),
+    });
+
     setErrors(found);
+
     if (Object.keys(found).length) return;
-    onSubmit(values);
+
+    submittingRef.current = true;
+    setSubmitting(true);
+
+    try {
+      await onSubmit(values);
+    } catch (error) {
+      Alert.alert(
+        'Unable to save',
+        error instanceof Error
+          ? error.message
+          : 'Please check your connection and try again.'
+      );
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
   };
 
   return (
     <Sheet
       visible
       title={title}
-      onClose={onClose}
+      onClose={safeClose}
       tall
       footer={
         <View className="flex-row gap-3">
-          <Button label="Cancel" variant="secondary" onPress={onClose} style={{ flex: 1 }} />
-          <Button label={submitLabel} onPress={submit} style={{ flex: 1 }} />
+          <Button label="Cancel" variant="secondary" onPress={safeClose} style={{ flex: 1 }} />
+          <Button label={submitting ? 'Saving...' : submitLabel} onPress={submit} style={{ flex: 1 }} />
         </View>
       }
     >
@@ -211,3 +240,4 @@ export function FormSheet(props: React.ComponentProps<typeof FormSheetBody> & { 
   if (!visible) return null;
   return <FormSheetBody {...rest} />;
 }
+

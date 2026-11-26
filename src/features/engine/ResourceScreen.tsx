@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router, type Href } from 'expo-router';
@@ -26,7 +26,53 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
   // Some pages (Events) are open to every role but only certain roles may change them.
   const canManage = roleCanManage && (!cfg.manageRoles || (!!role && cfg.manageRoles.includes(role)));
   const toast = useToast();
-  const allRows = useCollection<T>(cfg.collection);
+  const localRows = useCollection<T>(cfg.collection);
+  const [remoteData, setRemoteData] = useState<{
+    owner: typeof user;
+    rows: T[];
+  } | null>(null);
+  const [apiLoading, setApiLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const api = cfg.api;
+
+  useEffect(() => {
+    if (!api || !user) return;
+
+    let active = true;
+
+    setApiLoading(true);
+    setApiError('');
+
+    api.list()
+      .then((data) => {
+        if (active) {
+          setRemoteData({ owner: user, rows: data });
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setRemoteData(null);
+          setApiError(
+            error instanceof Error
+              ? error.message
+              : 'Unable to load records'
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setApiLoading(false);
+      });
+
+    return () => { active = false; };
+  }, [api, user, reloadKey]);
+
+  const allRows = api
+    ? remoteData?.owner === user
+      ? remoteData?.rows ?? []
+      : []
+    : localRows;
   // Row-level scoping (e.g. a student only sees their own fees), the mobile stand-in for the API's own scoping.
   const rows = useMemo(() => (cfg.rowScope ? allRows.filter((r) => cfg.rowScope!(r, user)) : allRows), [allRows, cfg, user]);
   const store = useMemo(() => repo<T>(cfg.collection), [cfg.collection]);
@@ -55,7 +101,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
 
   const allowCreate = canManage && cfg.canCreate !== false;
   const allowEdit = canManage && cfg.canEdit !== false;
-  const allowDelete = canManage && cfg.canDelete !== false;
+  const allowDelete = !api && canManage && cfg.canDelete !== false;
 
   /** Rows for the selected date (or all rows when the page has no date filter / "All dates" is on). */
   const scoped = useMemo(() => {
@@ -195,7 +241,22 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     }
   };
 
-  const save = (values: FormValues) => {
+  const save = async (values: FormValues) => {
+    if (api) {
+      if (!user) throw new Error('Please sign in again');
+
+      if (form?.mode === 'edit' && form.id) {
+        await api.update(form.id, values);
+        toast(`${cfg.entity} updated`);
+      } else {
+        await api.create(values);
+        toast(`${cfg.entity} added`);
+      }
+
+      setForm(null);
+      setReloadKey((key) => key + 1);
+      return;
+    }
     const existing = form?.mode === 'edit' ? rows.find((r) => r.id === form.id) : undefined;
     const typed = fromFormValues(cfg.form, values);
     const computed = cfg.prepare?.(typed, { existing, rows, lookup, user }) ?? {};
@@ -218,7 +279,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     [form?.mode, form?.id, cfg.form],
   );
 
-  const pageActionsVisible = (cfg.pageActions ?? []).filter((a) => a.manage === false || canManage);
+  const pageActionsVisible = (api ? [] : cfg.pageActions ?? []).filter((a) => a.manage === false || canManage);
 
   const runPageAction = (a: PageActionDef<T>, values: FormValues) => {
     a.run(values, {
@@ -313,13 +374,36 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     </View>
   );
 
-  const visibleActions = (r: T) => (cfg.actions ?? []).filter((a) => (a.manage === false || canManage) && (a.visible ? a.visible(r, role, user) : true));
+  const visibleActions = (r: T) => (api ? [] : cfg.actions ?? []).filter((a) => (a.manage === false || canManage) && (a.visible ? a.visible(r, role, user) : true));
   const formAction = actionForm ? actionForm.action : null;
   const formActionRow = actionForm ? rows.find((r) => r.id === actionForm.id) : undefined;
 
   return (
     <View className="flex-1 bg-[#f4f6fb] dark:bg-[#0F0C1C]">
       {top}
+
+      {api ? (
+        <View className="px-4 py-2">
+          {apiLoading ? (
+            <Text className="text-xs text-slate-500">
+              Loading records from server...
+            </Text>
+          ) : null}
+
+          {apiError ? (
+            <Text className="mb-2 text-xs text-red-600">
+              {apiError}
+            </Text>
+          ) : null}
+
+          <Button
+            label="Refresh"
+            variant="secondary"
+            small
+            onPress={() => setReloadKey((key) => key + 1)}
+          />
+        </View>
+      ) : null}
       <FlatList
         data={shown}
         keyExtractor={(r) => r.id}
@@ -331,7 +415,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
             selecting={selecting}
             selected={selected.includes(item.id)}
             onPress={() => (selecting ? toggleSelect(item.id) : setDetailId(item.id))}
-            onLongPress={() => (allowDelete || (canManage && cfg.bulk?.length) ? toggleSelect(item.id) : undefined)}
+            onLongPress={() => (!api && (allowDelete || (canManage && cfg.bulk?.length)) ? toggleSelect(item.id) : undefined)}
           />
         )}
         ListEmptyComponent={
@@ -402,7 +486,7 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
               </View>
             ))}
 
-            {cfg.extra?.(detail)}
+            {!api ? cfg.extra?.(detail) : null}
 
             <View className="mt-2 gap-2.5 pb-2">
               {visibleActions(detail).map((a) => (
@@ -545,3 +629,4 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
     </View>
   );
 }
+
