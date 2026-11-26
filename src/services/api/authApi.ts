@@ -1,4 +1,4 @@
-﻿import { API_URL } from '@/config/env';
+import { API_URL } from '@/config/env';
 import { tokenStorage } from './tokenStorage';
 import type {
   AuthSession,
@@ -55,7 +55,7 @@ async function refreshAccessToken(): Promise<string | null> {
   return refreshInFlight;
 }
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const url = `${API_URL.replace(/\/$/, '')}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = new Headers(options.headers ?? {});
 
@@ -85,35 +85,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
   // Handle 401 Unauthorized with a single shared token refresh across concurrent requests
   if (response.status === 401 && !options.skipAuth && !options.skipRefresh) {
-    const refreshToken = await tokenStorage.getRefreshToken();
-    if (!refreshToken) {
-      await tokenStorage.clearTokens();
-      throw new ApiError('Session expired. Please sign in again.', 401);
-    }
-
-    if (!isRefreshing) {
-      isRefreshing = true;
-      try {
-        const refreshResponse = await authApi.refresh(refreshToken);
-        await tokenStorage.setTokens(refreshResponse.accessToken, refreshResponse.refreshToken);
-        if (refreshResponse.user) {
-          await tokenStorage.setStoredUser(refreshResponse.user);
-        }
-        isRefreshing = false;
-        onRefreshed(refreshResponse.accessToken);
-      } catch {
-        isRefreshing = false;
-        onRefreshed(null);
-        await tokenStorage.clearTokens();
-        throw new ApiError('Session expired. Please sign in again.', 401);
-      }
-    }
-
-    // Wait for the refresh to complete
-    const newToken = await new Promise<string | null>((resolve) => {
-      subscribeTokenRefresh((token) => resolve(token));
-    });
-
+    const newToken = await refreshAccessToken();
     if (!newToken) {
       throw new ApiError('Session expired. Please sign in again.', 401);
     }
@@ -134,6 +106,8 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
   return parseResponse<T>(response);
 }
+
+export const request = apiRequest;
 
 // The backend wraps every successful response as { success: true, data, meta } (see backend/src/lib/respond.ts).
 // Error responses are NOT wrapped (e.g. { message, errors }), so only unwrap on the success path.
