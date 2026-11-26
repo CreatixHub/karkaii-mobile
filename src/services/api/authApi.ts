@@ -1,4 +1,4 @@
-import { API_URL } from '@/config/env';
+﻿import { API_URL } from '@/config/env';
 import { tokenStorage } from './tokenStorage';
 import type {
   AuthSession,
@@ -38,7 +38,7 @@ function onRefreshed(token: string | null) {
   refreshSubscribers = [];
 }
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const url = `${API_URL.replace(/\/$/, '')}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = new Headers(options.headers ?? {});
 
@@ -74,6 +74,10 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       throw new ApiError('Session expired. Please sign in again.', 401);
     }
 
+    const refreshedTokenPromise = new Promise<string | null>((resolve) => {
+      subscribeTokenRefresh(resolve);
+    });
+
     if (!isRefreshing) {
       isRefreshing = true;
       try {
@@ -93,9 +97,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     }
 
     // Wait for the refresh to complete
-    const newToken = await new Promise<string | null>((resolve) => {
-      subscribeTokenRefresh((token) => resolve(token));
-    });
+    const newToken = await refreshedTokenPromise;
 
     if (!newToken) {
       throw new ApiError('Session expired. Please sign in again.', 401);
@@ -258,3 +260,4 @@ export const authApi = {
     });
   },
 };
+

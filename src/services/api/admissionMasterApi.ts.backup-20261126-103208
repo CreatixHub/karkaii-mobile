@@ -1,0 +1,31 @@
+﻿import { request } from './authApi';
+
+export interface AdmissionClass {
+  id: string;
+  name: string;
+  gradeLevel?: number;
+  status?: string;
+  isActive?: boolean;
+}
+
+export interface AdmissionSection {
+  id: string;
+  classId: string;
+  name: string;
+  status?: string;
+  isActive?: boolean;
+}
+
+export const admissionMasterApi = {
+  async getClasses() {
+    return request<AdmissionClass[]>('/api/classes', {
+      method: 'GET',
+    });
+  },
+
+  async getSections() {
+    return request<AdmissionSection[]>('/api/sections', {
+      method: 'GET',
+    });
+  },
+};

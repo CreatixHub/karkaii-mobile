@@ -1,8 +1,13 @@
-/**
+﻿/**
  * Page registry: route page-key -> component. A page missing from here shows "being rebuilt" in the hub
  * (see FRONTEND_TO_MOBILE_VERIFICATION.md for the live status of each page).
  */
 import React from 'react';
+import { View, Text, ActivityIndicator, Pressable } from 'react-native';
+import { useAuth } from '@/core/auth/AuthProvider';
+import { LIVE_MODULES } from '@/config/liveModules';
+import { admissionMasterApi, type AdmissionClass } from '@/services/api/admissionMasterApi';
+import { buildLiveAdmissionConfig } from '@/features/people/buildLiveAdmissionConfig';
 import { useLocalSearchParams } from 'expo-router';
 import type { Entity } from '@/core/store/store';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
@@ -93,6 +98,117 @@ const deleteRequestsWithWorkflow: ResourceConfig<DeleteRequestRecord> = {
   extra: (r) => <WorkflowPanel request={r} />,
 };
 
+const OriginalAdmissionPage = resource(admissionsWithPanel);
+
+function ConnectedAdmissionPage({
+  breadcrumb,
+}: {
+  breadcrumb: string;
+}) {
+  const { user } = useAuth();
+  const { q } = useLocalSearchParams<{ q?: string }>();
+
+  const [result, setResult] = React.useState<{
+    owner: typeof user;
+    classes: AdmissionClass[];
+  } | null>(null);
+
+  const [failure, setFailure] = React.useState<{
+    owner: typeof user;
+    message: string;
+  } | null>(null);
+
+  const [retry, setRetry] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!user) return;
+
+    let active = true;
+
+    setResult(null);
+    setFailure(null);
+
+    admissionMasterApi.getClasses()
+      .then((classes) => {
+        if (active) {
+          setResult({ owner: user, classes });
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          setFailure({
+            owner: user,
+            message: err instanceof Error
+              ? err.message
+              : 'Unable to load school classes',
+          });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user, retry]);
+
+  const cfg = React.useMemo(
+    () => result && result.owner === user
+      ? buildLiveAdmissionConfig(result.classes)
+      : null,
+    [result, user]
+  );
+
+  if (!user) return null;
+
+  if (failure && failure.owner === user) {
+    return (
+      <View className="flex-1 items-center justify-center p-6">
+        <Text className="mb-4 text-center text-red-600">
+          {failure.message}
+        </Text>
+
+        <Pressable
+          className="rounded-xl bg-[#3D5EE1] px-6 py-3"
+          onPress={() => {
+            setFailure(null);
+            setResult(null);
+            setRetry((n) => n + 1);
+          }}
+        >
+          <Text className="font-bold text-white">
+            Retry
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (!cfg) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#3D5EE1" />
+
+        <Text className="mt-3 text-slate-500">
+          Loading school admission data...
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <ResourceScreen
+      cfg={cfg}
+      breadcrumb={breadcrumb}
+      initialQuery={typeof q === 'string' ? q : undefined}
+    />
+  );
+}
+
+function AdmissionPage(props: { breadcrumb: string }) {
+  return LIVE_MODULES.admissions
+    ? <ConnectedAdmissionPage {...props} />
+    : <OriginalAdmissionPage {...props} />;
+}
+
 export const PAGES: Record<string, PageComponent> = {
   // Main
   'admin-dashboard': dashboard('admin'),
@@ -104,7 +220,7 @@ export const PAGES: Record<string, PageComponent> = {
   students: resource(studentsCfg),
   'add-student': StudentForm,
   'student-profile': StudentProfile,
-  admissions: resource(admissionsWithPanel),
+  admissions: AdmissionPage,
   'student-promotion': StudentPromotion,
   alumni: AlumniScreen,
   teachers: resource(teachersCfg),
@@ -185,3 +301,4 @@ export const PAGES: Record<string, PageComponent> = {
   expenses: resource(expensesCfg),
   'expense-categories': resource(expenseCategoriesCfg),
 };
+
