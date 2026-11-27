@@ -1,3 +1,4 @@
+import { LiveTeacherProfile } from '@/features/people/LiveTeacherProfile';
 import { liveStudentsCfg } from '@/features/people/buildLiveStudentConfig';
 /**
  * Page registry: route page-key -> component. A page missing from here shows "being rebuilt" in the hub
@@ -40,8 +41,8 @@ import { deleteRequestsCfg, departmentsCfg, designationsCfg, rolesCfg, staffCfg,
 import { AdmissionPanel } from '@/features/people/AdmissionPanel';
 import { admissionsCfg } from '@/features/people/admissionConfigs';
 import { TeacherForm } from '@/features/people/TeacherForm';
-import { TeacherProfile, TeacherRoutine } from '@/features/people/TeacherProfile';
-import { teachersCfg } from '@/features/people/teacherConfigs';
+import { TeacherRoutine } from '@/features/people/TeacherProfile';
+import { liveTeachersCfg } from '@/features/people/buildLiveTeacherConfig';
 import { allocationsCfg, assetsCfg, servicesCfg, stockCfg } from '@/features/campus/assetConfigs';
 import { gatePassCfg } from '@/features/campus/gatePassConfigs';
 import { TrackingScreen } from '@/features/campus/TrackingScreen';
@@ -228,9 +229,9 @@ export const PAGES: Record<string, PageComponent> = {
   admissions: AdmissionPage,
   'student-promotion': StudentPromotion,
   alumni: AlumniScreen,
-  teachers: resource(teachersCfg),
+  teachers: resource(liveTeachersCfg),
   'add-teacher': TeacherForm,
-  'teacher-profile': TeacherProfile,
+  'teacher-profile': LiveTeacherProfile,
   'teacher-routine': TeacherRoutine,
   'student-attendance-history': StudentAttendanceHistory,
   'student-documents': resource(documentsCfg),
