@@ -3,13 +3,13 @@ import { AdmissionDecisionPanel } from './AdmissionDecisionPanel';
 
 import type { ResourceConfig } from '@/features/engine/types';
 import type { AdmissionRecord } from '@/data/seed/admissionsAlumni';
-import type { AdmissionClass } from '@/services/api/admissionMasterApi';
+import type { AdmissionClass, AdmissionAcademicYear } from '@/services/api/admissionMasterApi';
 
 import { admissionsCfg } from './admissionConfigs';
 import { configureAdmissionFields } from './admissionLiveConfig';
 import { createAdmissionResourceApi } from './admissionResourceApi';
 import type { LiveAdmissionRecord } from './admissionRecordAdapter';
-import { ACADEMIC_YEAR_ID } from '@/config/admission';
+
 
 const live = (r: AdmissionRecord) =>
   r as LiveAdmissionRecord;
@@ -23,20 +23,22 @@ const className = (r: AdmissionRecord) =>
   live(r).className;
 
 export function buildLiveAdmissionConfig(
-  classes: AdmissionClass[]
+  classes: AdmissionClass[],
+  academicYear: AdmissionAcademicYear
 ): ResourceConfig<AdmissionRecord> {
   return {
     ...admissionsCfg,
 
-    api: createAdmissionResourceApi(classes),
+    api: createAdmissionResourceApi(classes, academicYear),
 
     form: configureAdmissionFields(
       admissionsCfg.form,
-      classes
+      classes,
+      academicYear
     ),
 
     defaults: () => ({
-      academicYear: String(ACADEMIC_YEAR_ID),
+      academicYear: String(academicYear.id),
     }),
 
     searchText: (r) =>

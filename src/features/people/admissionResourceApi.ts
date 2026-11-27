@@ -1,4 +1,4 @@
-﻿import type { ResourceApi } from '@/features/engine/ResourceApi';
+import type { ResourceApi } from '@/features/engine/ResourceApi';
 import type { AdmissionRecord } from '@/data/seed/admissionsAlumni';
 
 import {
@@ -9,14 +9,16 @@ import {
 import {
   admissionMasterApi,
   type AdmissionClass,
+  type AdmissionAcademicYear,
 } from '@/services/api/admissionMasterApi';
 
-import { ACADEMIC_YEAR_ID } from '@/config/admission';
+
 import { toApiAdmission } from './admissionMapper';
 import { toAdmissionRecord } from './admissionRecordAdapter';
 
 export function createAdmissionResourceApi(
-  classes: AdmissionClass[]
+  classes: AdmissionClass[],
+  academicYear: AdmissionAcademicYear
 ): ResourceApi<AdmissionRecord> {
   return {
     async list() {
@@ -37,9 +39,18 @@ export function createAdmissionResourceApi(
         throw new Error('Select an active school class');
       }
 
+      const currentYear =
+        await admissionMasterApi.getCurrentAcademicYear();
+
+      if (currentYear.id !== academicYear.id) {
+        throw new Error(
+          'Academic year has changed. Reopen the Admission page and try again.'
+        );
+      }
+
       const payload = toApiAdmission(
         values,
-        String(ACADEMIC_YEAR_ID)
+        currentYear.id
       );
 
       const record = await admissionApi.create(payload);

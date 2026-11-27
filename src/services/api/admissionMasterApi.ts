@@ -1,4 +1,12 @@
-﻿import { request } from './authApi';
+import { request } from './authApi';
+
+export interface AdmissionAcademicYear {
+  id: string;
+  name: string;
+  startsOn: string;
+  endsOn: string;
+  isCurrent: boolean;
+}
 
 export interface AdmissionClass {
   id: string;
@@ -41,6 +49,28 @@ async function getAll<T>(endpoint: string): Promise<T[]> {
 }
 
 export const admissionMasterApi = {
+  async getCurrentAcademicYear(): Promise<AdmissionAcademicYear> {
+    const year = await request<AdmissionAcademicYear>(
+      '/api/academic-years/current',
+      { method: 'GET' }
+    );
+
+    if (
+      !year ||
+      !/^[1-9]\d*$/.test(String(year.id)) ||
+      typeof year.name !== 'string' ||
+      !year.name.trim() ||
+      year.isCurrent !== true
+    ) {
+      throw new Error('No valid current academic year found');
+    }
+
+    return {
+      ...year,
+      id: String(year.id),
+    };
+  },
+
   async getClasses() {
     return getAll<AdmissionClass>('/api/classes');
   },
