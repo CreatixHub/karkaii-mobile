@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router, type Href } from 'expo-router';
@@ -486,7 +486,13 @@ export function ResourceScreen<T extends Entity>({ cfg, breadcrumb, initialQuery
               </View>
             ))}
 
-            {!api ? cfg.extra?.(detail) : null}
+            {api
+              ? cfg.liveExtra?.(detail, {
+                  refresh: () => setReloadKey((key) => key + 1),
+                  canManage,
+                  role,
+                })
+              : cfg.extra?.(detail)}
 
             <View className="mt-2 gap-2.5 pb-2">
               {visibleActions(detail).map((a) => (

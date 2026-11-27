@@ -1,4 +1,7 @@
-﻿import type { ResourceConfig } from '@/features/engine/types';
+import React from 'react';
+import { AdmissionDecisionPanel } from './AdmissionDecisionPanel';
+
+import type { ResourceConfig } from '@/features/engine/types';
 import type { AdmissionRecord } from '@/data/seed/admissionsAlumni';
 import type { AdmissionClass } from '@/services/api/admissionMasterApi';
 
@@ -198,6 +201,14 @@ export function buildLiveAdmissionConfig(
     afterSave: undefined,
     auditEntity: undefined,
     extra: undefined,
+
+    liveExtra: (r, ctx) =>
+      React.createElement(AdmissionDecisionPanel, {
+        key: r.id,
+        record: live(r),
+        refresh: ctx.refresh,
+        canManage: ctx.canManage && ctx.role === 'admin',
+      }),
 
     actions: [],
     bulk: [],

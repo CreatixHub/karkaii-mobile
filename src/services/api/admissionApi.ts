@@ -1,4 +1,4 @@
-﻿import { request } from './authApi';
+import { request } from './authApi';
 
 export interface AdmissionInput {
   academicYearId: string;
@@ -32,6 +32,20 @@ export interface ApiAdmission extends AdmissionInput {
   applicationNo: string;
   status: string;
   appliedOn: string;
+}
+
+export interface AdmissionAcceptanceResponse extends ApiAdmission {
+  student?: {
+    id: string;
+    admissionNo?: string;
+    fullName?: string;
+    status?: string;
+  } | null;
+
+  login?: {
+    username: string;
+    password: string;
+  } | null;
 }
 
 const BASE = '/api/admissions';
@@ -135,6 +149,40 @@ export const admissionOperations = {
       {
         method: 'POST',
         body: JSON.stringify({}),
+      }
+    );
+  },
+};
+
+
+/** Live admin admission decisions. */
+export const admissionDecisions = {
+
+  async acceptWithCredentials(id: string) {
+    return request<AdmissionAcceptanceResponse>(
+      `${BASE}/${encodeURIComponent(id)}/accept`,
+      {
+        method: 'POST',
+        body: JSON.stringify({}),
+      }
+    );
+  },
+
+  async rejectWithReason(id: string, reason: string) {
+    const rejectionReason = reason.trim();
+
+    if (!rejectionReason) {
+      throw new Error('Enter a rejection reason');
+    }
+
+    return request<ApiAdmission>(
+      `${BASE}/${encodeURIComponent(id)}/status`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          status: 'rejected',
+          rejectionReason,
+        }),
       }
     );
   },

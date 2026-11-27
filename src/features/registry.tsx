@@ -1,4 +1,5 @@
-﻿/**
+import { liveStudentsCfg } from '@/features/people/buildLiveStudentConfig';
+/**
  * Page registry: route page-key -> component. A page missing from here shows "being rebuilt" in the hub
  * (see FRONTEND_TO_MOBILE_VERIFICATION.md for the live status of each page).
  */
@@ -217,7 +218,7 @@ export const PAGES: Record<string, PageComponent> = {
   'parent-dashboard': dashboard('parent'),
 
   // People & Admission
-  students: resource(studentsCfg),
+  students: resource(liveStudentsCfg),
   'add-student': StudentForm,
   'student-profile': StudentProfile,
   admissions: AdmissionPage,
