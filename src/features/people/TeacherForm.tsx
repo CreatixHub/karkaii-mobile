@@ -34,9 +34,7 @@ export function TeacherForm({ breadcrumb }: { breadcrumb: string }) {
         'dateOfLeaving', 'medicalLeaves', 'casualLeaves',
         'sickLeaves', 'maternityLeaves', 'motherName',
         'previousSchool', 'previousSchoolAddress',
-        'previousSchoolPhone', 'notes', 'route',
-        'vehicleNumber', 'pickupPoint', 'hostel', 'roomNo',
-        'resume', 'joiningLetter'
+        'previousSchoolPhone', 'notes'
       ]) {
         initial[key] = '';
       }
@@ -94,19 +92,19 @@ export function TeacherForm({ breadcrumb }: { breadcrumb: string }) {
       return TEACHER_SECTIONS.filter(s => s.key !== 'login');
     }
 
-    return TEACHER_SECTIONS.map(section => ({
-      ...section,
-      fields: section.fields.map(field => {
-        const unavailable = [
-          'department', 'designation', 'campus',
-          'basicSalary', 'workShift', 'workLocation',
-          'dateOfLeaving', 'medicalLeaves', 'casualLeaves',
-          'sickLeaves', 'maternityLeaves', 'motherName',
-          'languages', 'previousSchool', 'previousSchoolAddress',
-          'previousSchoolPhone', 'notes', 'route',
-          'vehicleNumber', 'pickupPoint', 'hostel', 'roomNo',
-          'resume', 'joiningLetter'
-        ];
+    return TEACHER_SECTIONS
+      .filter(section => section.key !== 'transport' && section.key !== 'social')
+      .map(section => ({
+        ...section,
+        fields: section.fields.map(field => {
+          const unavailable = [
+            'department', 'designation', 'campus',
+            'basicSalary', 'workShift', 'workLocation',
+            'dateOfLeaving', 'medicalLeaves', 'casualLeaves',
+            'sickLeaves', 'maternityLeaves', 'motherName',
+            'languages', 'previousSchool', 'previousSchoolAddress',
+            'previousSchoolPhone', 'notes'
+          ];
 
         if (unavailable.includes(field.key)) {
           return {
@@ -253,21 +251,6 @@ export function TeacherForm({ breadcrumb }: { breadcrumb: string }) {
       found.experienceYears = 'Enter experience from 0 to 50';
     }
 
-    const socialLinks: Record<string, string> = {};
-
-    for (const key of ['facebook', 'instagram', 'linkedin', 'youtube', 'twitter']) {
-      const value = str(key);
-      if (!value) continue;
-
-      try {
-        const url = new URL(value);
-        if (!['http:', 'https:'].includes(url.protocol)) throw new Error();
-        socialLinks[key] = value;
-      } catch {
-        found[key] = 'Enter a complete website URL';
-      }
-    }
-
     const secureFields = [
       'panId', 'epfNo', 'accountName', 'accountNumber',
       'bankName', 'ifscCode', 'branchName'
@@ -326,7 +309,6 @@ export function TeacherForm({ breadcrumb }: { breadcrumb: string }) {
       bankName: str('bankName'),
       bankIfsc: str('ifscCode').toUpperCase(),
       bankBranch: str('branchName'),
-      socialLinks: Object.keys(socialLinks).length ? socialLinks : undefined,
       createLogin: values.createLogin === true,
     };
 
