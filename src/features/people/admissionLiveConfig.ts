@@ -1,0 +1,94 @@
+﻿import type { FieldDef } from '@/features/engine/types';
+import type { AdmissionClass } from '@/services/api/admissionMasterApi';
+import { ACADEMIC_YEAR_ID } from '@/config/admission';
+
+const SUPPORTED_FIELDS = new Set([
+  'firstName',
+  'lastName',
+  'gender',
+  'dob',
+  'bloodGroup',
+  'address',
+  'classId',
+  'source',
+  'parentName',
+  'relationship',
+  'parentPhone',
+  'parentEmail',
+  'occupation',
+  'transport',
+  'hostel',
+  'previousSchool',
+  'lastClass',
+]);
+
+export function configureAdmissionFields(
+  original: FieldDef[],
+  classes: AdmissionClass[]
+): FieldDef[] {
+  return original
+    .filter((field) => SUPPORTED_FIELDS.has(field.key))
+    .map((field): FieldDef => {
+      switch (field.key) {
+        case 'classId':
+          return {
+            ...field,
+            optionsFrom: undefined,
+            options: classes.map((c) => ({
+              label: c.name,
+              value: String(c.id),
+            })),
+          };
+
+        case 'academicYear':
+          return {
+            ...field,
+            options: [{
+              label: 'Current academic year',
+              value: String(ACADEMIC_YEAR_ID),
+            }],
+            default: String(ACADEMIC_YEAR_ID),
+            readOnly: () => true,
+            hint: 'Uses the existing ERP academic year.',
+          };
+
+        case 'relationship':
+          return {
+            ...field,
+            default: 'Guardian',
+          };
+
+        case 'occupation':
+          return {
+            ...field,
+            hidden: (v) =>
+              v.relationship !== 'Father' &&
+              v.relationship !== 'Mother',
+          };
+
+        case 'parentName':
+          return {
+            ...field,
+            section: 'Guardian Information',
+          };
+
+        case 'source':
+          return {
+            ...field,
+            required: true,
+            options: [
+              'Walk-in',
+              'Website',
+              'Referral',
+              'Agent',
+              'Event',
+              'Other',
+            ],
+          };
+
+        default:
+          return { ...field };
+      }
+    });
+}
+

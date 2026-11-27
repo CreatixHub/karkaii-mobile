@@ -1,3 +1,4 @@
+﻿import type { ResourceApi } from './ResourceApi';
 import type React from 'react';
 import type { Feather } from '@expo/vector-icons';
 import type { Entity } from '@/core/store/store';
@@ -166,6 +167,7 @@ export interface PageActionDef<T extends Entity> {
 }
 
 export interface ResourceConfig<T extends Entity> {
+  api?: ResourceApi<T>;
   /** Singular name used in buttons and messages ("Fee Type"). */
   entity: string;
   collection: string;
@@ -232,3 +234,4 @@ export interface ResourceConfig<T extends Entity> {
 
   exportColumns?: { label: string; value: (r: T) => string | number | undefined | null }[];
 }
+
