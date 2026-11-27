@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   FieldDef,
   FieldErrors,
   FormValues,
@@ -12,7 +12,7 @@ import type {
   AdmissionInput,
 } from '@/services/api/admissionApi';
 
-import { ACADEMIC_YEAR_ID } from '@/config/admission';
+
 
 export function buildAdmissionFields(
   classes: AdmissionClass[]
@@ -178,8 +178,13 @@ export function validateAdmission(
 }
 
 export function toAdmissionInput(
-  values: FormValues
+  values: FormValues,
+  academicYearId: string
 ): AdmissionInput {
+  if (!/^[1-9]\d*$/.test(academicYearId)) {
+    throw new Error('Select a valid academic year');
+  }
+
   const text = (key: string) =>
     String(values[key] ?? '').trim();
 
@@ -187,7 +192,7 @@ export function toAdmissionInput(
     text(key) || undefined;
 
   return {
-    academicYearId: ACADEMIC_YEAR_ID,
+    academicYearId,
     classId: text('classId'),
     firstName: text('firstName'),
     lastName: text('lastName'),

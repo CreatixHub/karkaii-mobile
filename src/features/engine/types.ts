@@ -1,4 +1,4 @@
-﻿import type { ResourceApi } from './ResourceApi';
+import type { ResourceApi } from './ResourceApi';
 import type React from 'react';
 import type { Feather } from '@expo/vector-icons';
 import type { Entity } from '@/core/store/store';
@@ -190,6 +190,16 @@ export interface ResourceConfig<T extends Entity> {
   // Detail sheet (falls back to `facts`)
   detail?: { title: string; items: { label: string; value: (r: T) => string | number | undefined | null }[] }[];
   extra?: (r: T) => React.ReactNode;
+
+  /** Optional detail component for live API records. */
+  liveExtra?: (
+    r: T,
+    ctx: {
+      refresh: () => void;
+      canManage: boolean;
+      role: RoleKey | null;
+    }
+  ) => React.ReactNode;
 
   /** Page is a per-day register: rows are scoped to one date (default today) with a date stepper. */
   dateFilter?: { key: string; label?: string; allowAll?: boolean };

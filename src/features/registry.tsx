@@ -1,4 +1,5 @@
-﻿/**
+import { liveStudentsCfg } from '@/features/people/buildLiveStudentConfig';
+/**
  * Page registry: route page-key -> component. A page missing from here shows "being rebuilt" in the hub
  * (see FRONTEND_TO_MOBILE_VERIFICATION.md for the live status of each page).
  */
@@ -6,7 +7,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { useAuth } from '@/core/auth/AuthProvider';
 import { LIVE_MODULES } from '@/config/liveModules';
-import { admissionMasterApi, type AdmissionClass } from '@/services/api/admissionMasterApi';
+import { admissionMasterApi, type AdmissionClass, type AdmissionAcademicYear } from '@/services/api/admissionMasterApi';
 import { buildLiveAdmissionConfig } from '@/features/people/buildLiveAdmissionConfig';
 import { useLocalSearchParams } from 'expo-router';
 import type { Entity } from '@/core/store/store';
@@ -111,6 +112,7 @@ function ConnectedAdmissionPage({
   const [result, setResult] = React.useState<{
     owner: typeof user;
     classes: AdmissionClass[];
+    academicYear: AdmissionAcademicYear;
   } | null>(null);
 
   const [failure, setFailure] = React.useState<{
@@ -128,10 +130,13 @@ function ConnectedAdmissionPage({
     setResult(null);
     setFailure(null);
 
-    admissionMasterApi.getClasses()
-      .then((classes) => {
+    Promise.all([
+      admissionMasterApi.getClasses(),
+      admissionMasterApi.getCurrentAcademicYear(),
+    ])
+      .then(([classes, academicYear]) => {
         if (active) {
-          setResult({ owner: user, classes });
+          setResult({ owner: user, classes, academicYear });
         }
       })
       .catch((err) => {
@@ -140,7 +145,7 @@ function ConnectedAdmissionPage({
             owner: user,
             message: err instanceof Error
               ? err.message
-              : 'Unable to load school classes',
+              : 'Unable to load school classes or academic year',
           });
         }
       });
@@ -152,7 +157,7 @@ function ConnectedAdmissionPage({
 
   const cfg = React.useMemo(
     () => result && result.owner === user
-      ? buildLiveAdmissionConfig(result.classes)
+      ? buildLiveAdmissionConfig(result.classes, result.academicYear)
       : null,
     [result, user]
   );
@@ -217,7 +222,7 @@ export const PAGES: Record<string, PageComponent> = {
   'parent-dashboard': dashboard('parent'),
 
   // People & Admission
-  students: resource(studentsCfg),
+  students: resource(liveStudentsCfg),
   'add-student': StudentForm,
   'student-profile': StudentProfile,
   admissions: AdmissionPage,

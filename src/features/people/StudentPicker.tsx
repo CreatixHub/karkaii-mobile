@@ -21,6 +21,6 @@ export function useSelectedStudent() {
   return { student, setId: setPicked, options, locked: allowed.length <= 1 };
 }
 
-export function StudentPicker({ student, options, onChange, locked }: { student?: StudentRecord; options: Option[]; onChange: (id: string) => void; locked: boolean }) {
-  return <SelectField label="Student" value={student?.id ?? ''} options={options} onChange={onChange} disabled={locked} />;
+export function StudentPicker({ student, value, options, onChange, locked }: { student?: StudentRecord; value?: string; options: Option[]; onChange: (id: string) => void; locked: boolean }) {
+  return <SelectField label="Student" value={value ?? student?.id ?? ''} options={options} onChange={onChange} disabled={locked} />;
 }

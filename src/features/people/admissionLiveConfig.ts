@@ -1,6 +1,6 @@
-﻿import type { FieldDef } from '@/features/engine/types';
-import type { AdmissionClass } from '@/services/api/admissionMasterApi';
-import { ACADEMIC_YEAR_ID } from '@/config/admission';
+import type { FieldDef } from '@/features/engine/types';
+import type { AdmissionClass, AdmissionAcademicYear } from '@/services/api/admissionMasterApi';
+
 
 const SUPPORTED_FIELDS = new Set([
   'firstName',
@@ -10,6 +10,7 @@ const SUPPORTED_FIELDS = new Set([
   'bloodGroup',
   'address',
   'classId',
+  'academicYear',
   'source',
   'parentName',
   'relationship',
@@ -24,9 +25,25 @@ const SUPPORTED_FIELDS = new Set([
 
 export function configureAdmissionFields(
   original: FieldDef[],
-  classes: AdmissionClass[]
+  classes: AdmissionClass[],
+  academicYear: AdmissionAcademicYear
 ): FieldDef[] {
-  return original
+  const fields: FieldDef[] = original.some(
+    (field) => field.key === 'academicYear'
+  )
+    ? original
+    : [
+        ...original,
+        {
+          key: 'academicYear',
+          label: 'Academic Year',
+          type: 'select',
+          required: true,
+          section: 'Admission Details',
+        },
+      ];
+
+  return fields
     .filter((field) => SUPPORTED_FIELDS.has(field.key))
     .map((field): FieldDef => {
       switch (field.key) {
@@ -43,13 +60,16 @@ export function configureAdmissionFields(
         case 'academicYear':
           return {
             ...field,
+            type: 'select',
+            required: true,
+            optionsFrom: undefined,
             options: [{
-              label: 'Current academic year',
-              value: String(ACADEMIC_YEAR_ID),
+              label: academicYear.name,
+              value: String(academicYear.id),
             }],
-            default: String(ACADEMIC_YEAR_ID),
+            default: String(academicYear.id),
             readOnly: () => true,
-            hint: 'Uses the existing ERP academic year.',
+            hint: 'Current academic year from the school server.',
           };
 
         case 'relationship':
